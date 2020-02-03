@@ -1,0 +1,46 @@
+#shop-login-panel{
+    background-color: white;
+    width: 375px;
+    height: 550px;
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.shopLogo{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    line-height: 200px;
+    background-color: black;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+    font-size: 36px;
+    letter-spacing: 5px;
+    border: 5px solid #FF6D05;
+    margin: 50px auto 25px;
+}
+#shop-login-panel > span{
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    margin: 10px auto;
+}
+#shop-login-panel > input:nth-of-type(1),
+#shop-login-panel > input:nth-of-type(2){
+    width: 80%;
+    margin: 10px 10%;
+    line-height: 24px;
+    padding: 10px;
+    border-radius: 25px;
+    border: #FF6D05 2px double;
+    box-sizing: border-box;
+}
+#shop-login-panel > input:nth-of-type(3),
+#shop-login-panel > input:nth-of-type(4){
+    border: 0px;
+    background-color: transparent;
+    width: 30%;
+    margin: 20px 10%;
+}
