@@ -23,12 +23,13 @@
 }
 .shopBox{
     background-color: white;
+    display: inline-block;
     width: 250px;
     height: 300px;
     border-radius: 25px;
     text-align: center;
     overflow: hidden;
-    margin: 50px;
+    margin: 25px 50px;
 }
 .shopBox > .imgContainer{
     width: 150px;

@@ -1,19 +1,16 @@
-import {SIGN_IN, SIGN_UP, RESET_PW, UPDATE_PW} from "./actionTypes";
+import {SIGN_IN, SIGN_OUT, RESET_PW, UPDATE_PW} from "./actionTypes";
 
-export function signIn(email,password) {
+export function actionSignIn(user){
     return {
         type:SIGN_IN,
-        email:email,
-        password:password
+        MEMBER_UID:user.uid,
+        isLogin:true,
     }
 }
 
-export function signUp(name,email,password) {
+export function actionSignOut() {
     return {
-        type:SIGN_Up,
-        name:name,
-        email:email,
-        password:password
+        type:SIGN_OUT,
     }
 }
 

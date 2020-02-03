@@ -1,45 +1,43 @@
 import React,{Component} from "react";
 import {render} from "react-dom";
-import {Provider} from "react-redux";
 import {createStore} from 'redux';
-
-/** css file improt */
-import './css/reset.css';
-import './css/memberLogin.css';
-import './css/shopLogin.css';
-import './css/profile.css';
-
+import {Provider} from "react-redux";
+import { ReactReduxFirebaseProvider } from 'react-redux-firebase';
+import ssrmFirebase from './useFirebase';
 import ssrmReducers from './reducers/index.js';
 import App from './containers/App';
 
-const store=createStore(ssrmReducers,{
-    isFetch:false,
-    auth:initialLocalMemberInfo(),
-},window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+/** css file improt */
+import './css/reset.scss';
+import './css/memberLogin.css';
+import './css/shopLogin.css';
+import './css/dashboard.css';
 
-function initialLocalMemberInfo(){
-    let JSON_SSRM_MEMBER_INFO=localStorage.getItem('SSRM_MEMBER_INFO'), SSRM_MEMBER_INFO;
-    if(JSON_SSRM_MEMBER_INFO){
-        SSRM_MEMBER_INFO = JSON.parse(JSON_SSRM_MEMBER_INFO);
-        if(typeof SSRM_MEMBER_INFO==='object'){
-            return SSRM_MEMBER_INFO;
-        }
-    }
-    return resetLocalMemberInfo();
+/** redux store setting */
+const initialState={};
+
+const store=createStore(
+    ssrmReducers,
+    initialState,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
+const rrfConfig = {
+  userProfile: 'users',
+  useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
+  // enableClaims: true // Get custom claims along with the profile
 }
-function resetLocalMemberInfo(){
-    let SSRM_MEMBER_INFO={
-        member_uid:'',
-        member_email:'',
-        member_name:''
-    }
-    localStorage.setItem('SSRM_MEMBER_INFO',JSON.stringify(SSRM_MEMBER_INFO));
-    return SSRM_MEMBER_INFO;
+const rrfProps = {
+  firebase:ssrmFirebase,
+  config: rrfConfig,
+  dispatch: store.dispatch,
+  // createFirestoreInstance // <- needed if using firestore
 }
 
 render(
     <Provider store={store}>
-        <App />
+        <ReactReduxFirebaseProvider {...rrfProps}>
+            <App />
+        </ReactReduxFirebaseProvider>
     </Provider>
    ,document.querySelector("#root")
 )

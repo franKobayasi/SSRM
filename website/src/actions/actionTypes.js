@@ -1,5 +1,5 @@
 export const SIGN_IN='SIGN_IN', 
-             SIGN_UP='SIGN_UP',
+             SIGN_OUT='SIGN_OUT',
              RESET_PW='RESET_PASSWORD',
              UPDATE_PW='UPDATE_PASSWORD',
              FETCH_POST='FETCH_POST',

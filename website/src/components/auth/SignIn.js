@@ -1,6 +1,9 @@
 import React,{Component} from "react";
+import {connect} from "react-redux";
+import ssrmFirebase from "../../useFirebase";
+import {actionSignIn} from "../../actions/actionCreator";
 
-export default class SignIn extends Component{
+class SignIn extends Component{
     constructor(props){
         super(props);
         this.state={
@@ -22,7 +25,23 @@ export default class SignIn extends Component{
     }
     handleSubmit(e){
         e.preventDefault();
-        console.log(this.state);
+        ssrmFirebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
+            .then((res)=>{
+                console.log('login!');
+                let user=ssrmFirebase.auth().currentUser;
+                if(user){
+                    console.log(user);
+                }else{
+                    console.log('logouted');
+                }
+                this.props.dispatch(actionSignIn(user));
+                this.props.history.push('/');
+            })
+            .catch((e)=>{
+                var errorCode = e.code;
+                var errorMessage = e.message;
+                console.error(errorCode,errorMessage)
+            })
     }
     render(){
         return (
@@ -38,3 +57,11 @@ export default class SignIn extends Component{
         )
     }
 }
+
+function mapStateToProps({firebase},ownProps){
+    return {
+        firebase,
+    }
+}
+
+export default connect(mapStateToProps)(SignIn);

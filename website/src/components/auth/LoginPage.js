@@ -5,7 +5,6 @@ import SignUp from "./SignUp.js";
 // import {useHistory} from 'react-router-dom';
 
 function LoginPage(props){
-    console.log(props);
     let id=props.match.params.id;
 
     let checkOutLayer=(e)=>{
@@ -38,10 +37,12 @@ function LoginPage(props){
                 <SignUp signUp={(e)=>{console.log(e)}}
                         loginViaFacebook={(e)=>{console.log(e)}}
                         toSignIn={checkOutLayer}
+                        history={props.history}
                 />:
                 <SignIn toRegister={checkOutLayer}
                         loginViaEmailAndPassword={(e)=>{console.log(e)}}
                         loginViaFacebook={(e)=>{console.log(e)}}
+                        history={props.history}
                 />}
             </div>
         </Fragment>
