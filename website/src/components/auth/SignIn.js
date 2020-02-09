@@ -1,7 +1,7 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
-import ssrmFirebase from "../../useFirebase";
-import {actionSignIn} from "../../actions/actionCreator";
+import ssrmFirebase,{ssrmDB,getDataFromFireBase} from "../../useFirebase";
+import {actionSignIn} from "../../actions/auth";
 
 class SignIn extends Component{
     constructor(props){
@@ -27,20 +27,34 @@ class SignIn extends Component{
         e.preventDefault();
         ssrmFirebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
             .then((res)=>{
-                console.log('login!');
                 let user=ssrmFirebase.auth().currentUser;
                 if(user){
-                    console.log(user);
+                    getDataFromFireBase(null,'members',user.uid,(data)=>{
+                        let memberInfo={
+                            name:data.name,
+                            email:data.email,
+                            uid:user.uid
+                        }
+                        this.props.dispatch(actionSignIn(memberInfo));
+                        console.log('login!',memberInfo);
+                        this.props.history.push('/dashboard');
+                    });
                 }else{
-                    console.log('logouted');
+                    console.log('some error is happen...');
                 }
-                this.props.dispatch(actionSignIn(user));
-                this.props.history.push('/');
             })
             .catch((e)=>{
                 var errorCode = e.code;
                 var errorMessage = e.message;
-                console.error(errorCode,errorMessage)
+                if(errorCode==='auth/invalid-email'){
+                    console.log('ERROR\nsignin fail: EMAIL格式錯誤');
+                }else if(errorCode==='auth/wrong-password'){
+                    console.log('ERROR\nsignin fail: 密碼錯誤');
+                }else if(errorCode==='auth/too-many-requests'){
+                    console.log('ERROR\nsignin fail: 錯誤次數過多，請稍後再試！');
+                }else if(errorCode==='auth/user-not-found'){
+                    console.log('ERROR\nsignin fail: 無此帳號，請確認');
+                }
             })
     }
     render(){

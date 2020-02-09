@@ -1,5 +1,7 @@
 const initialState={
     MEMBER_UID:'',
+    MEMBER_NAME:'',
+    MEMBER_EMAIL:'',
     isLogin:undefined,
 }
 
@@ -8,28 +10,29 @@ const authReducer=(preState=initialState,action)=>{
         return initialState;
     }
     switch(action.type){
-        case 'SIGN_IN':
+        case 'CHANGE_TO_SIGN_IN_STATE':
             return Object.assign({},preState,{
                 MEMBER_UID:action.MEMBER_UID,
+                MEMBER_NAME:action.MEMBER_NAME,
+                MEMBER_EMAIL:action.MEMBER_EMAIL,
                 isLogin:true
             })
             break;
-        case 'SIGN_OUT':
+        case 'CHANGE_TO_SIGN_OUT_STATE':
             return Object.assign({},preState,{
                 MEMBER_UID:'',
+                MEMBER_NAME:'',
+                MEMBER_EMAIL:'',
                 isLogin:false
             })
             break;
-        // case 'RESET_PASSWORD':
-        //     return Object.assign({},preState,{
-
-        //     })
-        //     break;
-        // case 'UPDATE_PASSWORD':
-        //     return Object.assign({},preState,{
-
-        //     })
-        //     break;
+        case 'FIREBASE_AUTH_ERROR':
+            return Object.assign({},preState,{
+                MEMBER_UID:'',
+                MEMBER_NAME:'',
+                MEMBER_EMAIL:'',
+                isLogin:'ERROR'
+            })
         default:
             return preState
             break;

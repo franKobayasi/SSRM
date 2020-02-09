@@ -1,3 +1,8 @@
+@import './sideNav.scss';
+@import './memberLogin.css';
+@import './shopLogin.css';
+@import './dashboard.scss';
+
 html,body,ol,ul,h1,h2,h3,h4,h5,h6{
     margin: 0;
     padding: 0;    
@@ -8,4 +13,6 @@ html,body,ol,ul,h1,h2,h3,h4,h5,h6{
     background-color:  rgb(200, 200, 200);
 }
 
-$color:#fff;
+.btn{
+    cursor:default;
+}

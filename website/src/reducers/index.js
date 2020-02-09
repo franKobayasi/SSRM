@@ -1,16 +1,14 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 import fetchReducer from "./fetchReducer";
 import authReducer from "./authReducer";
 import shopReducer from "./shopReducer";
-import dashboardReducer from "./dashboardReducer";
-import { firebaseReducer } from 'react-redux-firebase';
+import shopListReducer from "./shopListReducer";
 
 const ssrmReducers=combineReducers({
     fetch:fetchReducer,
     auth:authReducer,
+    shopList:shopListReducer,
     shop:shopReducer,
-    firebase:firebaseReducer,
-    dashboard:dashboardReducer,
 })
 
 export default ssrmReducers;

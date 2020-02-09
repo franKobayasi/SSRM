@@ -1,7 +1,9 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
 import ssrmFirebase,{ssrmDB} from "../../useFirebase";
-import {createHashHistory} from 'history';
+import {actionSignIn,actionSignOut,actionAuthError} from "../../actions/auth";
+import {actionFetchPosted,actionFetchSuccessed,actionFetchFailed} from "../../actions/fetch";
+import {createHashHistory as history} from 'history';
 
 class SignUp extends Component{
     constructor(props){
@@ -28,37 +30,65 @@ class SignUp extends Component{
     }
     handleSubmit(e){
         e.preventDefault();
-        if(this.state.password===this.state.passwordCheck){
+        let dispatch=this.props.dispatch;
+        let firstName=this.state.firstName;
+        let lastName=this.state.lastName;
+        let email=this.state.email;
+        let isEmailCorrect=/\w+@\w+\.\w+/.test(email);
+        if(firstName.length===0){
+            alert('請輸入姓氏');
+        }else if(lastName.length===0){
+            alert('請輸入名字');
+        }else if(!isEmailCorrect){
+            alert('email格式錯誤！')
+        }else if(this.state.password<=5){
+            alert('密碼長度不能少於5位')
+        }else if(this.state.password===this.state.passwordCheck){
             let memberInfo={
-                username:`${this.state.firstName} ${this.state.lastName}`,
-                email:this.state.email,
+                name:`${this.state.firstName} ${this.state.lastName}`,
             }
             let authInfo={
                 email:this.state.email,
                 password:this.state.password,
             }
+            dispatch(actionFetchPosted());
             ssrmFirebase.auth().createUserWithEmailAndPassword(authInfo.email, authInfo.password)
                 .then((res)=>{
-                    console.log('firebase authentiaction sign up success！')
-                    ssrmDB.collection('member').doc(res.user.uid).set({
-                        email:authInfo.email,
-                        userName:memberInfo.username
-                    })
-                    .then((res)=>{
-                        console.log('member data update to firebase success!');
-                        alert("註冊成功");
-                        createHashHistory().push('/auth/signin');
-
-                    })
+                    console.log('firebase authentiaction sign up success！');
+                    ssrmFirebase.auth().signInWithEmailAndPassword(authInfo.email, authInfo.password)
+                        .then(()=>{
+                            console.log('firebase auto signin success after sign up！');
+                            let user = ssrmFirebase.auth().currentUser;
+                            user.updateProfile({
+                                displayName: memberInfo.name,
+                            }).then(function() {
+                                console.log('update user profile success！');
+                                dispatch(actionFetchSuccessed());
+                                history().push('/');
+                            }).catch(function(error) {  
+                                dispatch(actionFetchFailed()); 
+                                console.error('ERROR\nupdate user profile fail！');
+                                console.log(error);
+                            });
+                        })
+                        .catch(function(error) {
+                            dispatch(actionFetchFailed()); 
+                            let errorCode = error.code
+                            let errorMessage = error.message;
+                            console.error('ERROR\nauto signin fail after sign up！');
+                            console.log(`error type:${errorCode}\nerror msg:${errorMessage}`);
+                        });
                 })
+                /** 如果 firebase 伺服器發生問題 */
                 .catch((e)=>{
-                    console.log("ERROR",e);
+                    dispatch(actionFetchFailed());
+                    console.error("ERROR\n sign up for new member fail");
+                    console.log(e)
                 })
         }else{
             alert('密碼不一致，請確認');
         }
     }
-
     render(){
         return (
             <form onSubmit={this.handleSubmit} className="member-signUp">
@@ -68,7 +98,7 @@ class SignUp extends Component{
                 <input id="email" type="text" name="email" placeholder="郵箱" onChange={this.handleChange} />
                 <input id="password" type="password" name="password" placeholder="密碼" onChange={this.handleChange} />
                 <input id="passwordCheck" type="password" name="passwordCheck" placeholder="確認密碼" onChange={this.handleChange} />
-                <button type="submit">註冊並登入</button>
+                <button type="submit">確認註冊</button>
                 <button onClick={this.props.loginViaFacebook}>以 FACEBOOK 帳號登入</button>
                 <button onClick={this.props.toSignIn}>已經有帳號了？登入</button>
             </form>

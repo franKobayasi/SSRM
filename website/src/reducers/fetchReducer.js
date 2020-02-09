@@ -2,7 +2,7 @@ const initialState={
     isFetch:false
 }
 
-const authReducer=(preState=initialState,action)=>{
+const fetchReducer=(preState=initialState,action)=>{
      if(typeof preState==='undefined'){
         return initialState;
     }
@@ -28,4 +28,4 @@ const authReducer=(preState=initialState,action)=>{
     }
 }
 
-export default authReducer;
+export default fetchReducer;
