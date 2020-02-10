@@ -1,24 +1,19 @@
 $mainColor:#FF6D05;
 
-#profile-shopList{
+#dashboard-main{
+    width: 80%;
     display: inline-block;
     height: 100vh;
     vertical-align: middle;
     overflow: auto;
-}
-#profile-shopList{
-    width: 80%;
-}
-#profile-sideMenu > li{
-    color: white;
-    width: 200px;
-    margin: 10px 0 10px 75px;
-    list-style: none;
-    font-size: 18px;
-}
-#profile-sideMenu > li:nth-of-type(1){
-    font-size: 36px;
-    margin: 100px 0 50px 75px;
+    .noShopsMsg{
+        text-align: center;
+        position: relative;
+        top:50vh;
+        color: #666;
+        font-size: 18px;
+        font-weight: 600;
+    }
 }
 .shopBox, .shopBoxOnEdit{
     background-color: white;

@@ -156,7 +156,7 @@ class Dashboard extends Component{
     cancelShopCreating(){
         this.setState(preState=>{
             return {
-                onCreateNewShop:false,
+                isShopCreating:false,
                 tempShopTitle:'',
                 tempMasterKey:'',
                 tempMasterKeyCheck:'',
@@ -184,17 +184,21 @@ class Dashboard extends Component{
                 if(isTitleExisted){
                     alert("此商家名稱已存在，請命名其他名稱");
                 }else{
-                    let shop={title, masterKey,};
+                    let shop={title};
                     ssrmDB.collection('members').doc(uid).collection('shops').add(shop)
-                        .then(res=>{
-                            console.log('create sccesss');
-                            this.setState(preState=>({
-                                isNeedUpdate:true,
-                                isShopCreating:false,
-                                tempShopTitle:'',
-                                tempMasterKey:'',
-                                tempMasterKeyCheck:'',
-                            }));
+                        .then(docRef=>{
+                            ssrmDB.collection('members').doc(uid).collection('shops').doc(docRef.id).collection('users')
+                            .add({user:'master',password:masterKey})
+                            .then(res=>{
+                                console.log('create sccesss');
+                                this.setState(preState=>({
+                                    isNeedUpdate:true,
+                                    isShopCreating:false,
+                                    tempShopTitle:'',
+                                    tempMasterKey:'',
+                                    tempMasterKeyCheck:'',
+                                }));
+                            })
                         })
                         .catch((error)=>{
                             console.error('ERROR on FIREBASE: create new shop fail: 創建新店家發生錯誤')
@@ -229,7 +233,7 @@ class Dashboard extends Component{
         return (
             <Fragment>
                 <SideNav auth={this.props.auth}/>
-                <div id="profile-shopList">
+                <div id="dashboard-main">
                     {shopList.length>=1?shopList.map((shop,id)=>{
                         return <ShopSummary key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>
                     }):<div className="noShopsMsg">尚未建立任何商家</div>}
