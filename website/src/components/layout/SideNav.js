@@ -5,7 +5,7 @@ import ssrmFirebase,{ssrmDB} from "../../useFirebase";
 import {actionSignOut} from "../../actions/auth";
 import {createHashHistory as history} from 'history';
 
-function SideNav(props) {
+function SideNav(props){
     console.log(props);
     let user=props.auth;
     const signOut=(evnt)=>{
@@ -20,8 +20,11 @@ function SideNav(props) {
                 console.log(err)
             })
     }
+    const styleForShopSignIned = {
+        position:"absolute"
+    };
     return (
-        <div id="sideMenu">
+        <div id="sideMenu" style={props.currentShop?styleForShopSignIned:''} className={props.currentShop?"styleForShopSignIned":''}>
             <div id="website-logo"><img/>SSRM</div>
             <div className="member-name">{`Hi,  ${user.MEMBER_NAME}`}</div>
             <ul className="navBar">

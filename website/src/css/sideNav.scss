@@ -2,10 +2,11 @@
     position: relative;
     display: inline-block;
     vertical-align: middle;
-    width: 20%;
-    background-color: #FF6D05;
+    width: 275px;
     height: 100vh;
-    min-width: 225px;
+    background-color: #FF6D05;
+    border-radius: 0 25px 25px 0;
+    z-index: 1;
     #website-logo{
         color: white;
         font-weight: 900;
@@ -53,3 +54,20 @@
         }
     }
 }
+.styleForShopSignIned{
+    transform: translate(-260px,0);
+    &:hover{
+        animation-name:showUp;
+        animation-duration:1s;
+        animation-fill-mode: forwards;
+    }
+    @keyframes showUp{
+        from{
+            transform:translate(-240px, 0px);
+        }
+        to{
+            transform:translate(0px, 0px);
+        }
+    }
+}
+

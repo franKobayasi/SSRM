@@ -1,18 +1,28 @@
+@import './reset.scss';
 @import './sideNav.scss';
 @import './memberLogin.css';
 @import './shopAuth.scss';
 @import './dashboard.scss';
+@import './stock.scss';
 
-html,body,ol,ul,h1,h2,h3,h4,h5,h6{
-    margin: 0;
-    padding: 0;    
-}
+$backgroudColor:rgb(200, 200, 200);
+
 #root{
+    font-size: 16px;
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     background-color:  rgb(200, 200, 200);
 }
-
 .btn{
     cursor:default;
+}
+.shopMainArea{
+    position: relative;
+    width: 98.5%;
+    margin-left: 1.5%;
+    height: 100%;
+    z-index: 0;
+    background-color: rgba($color: white, $alpha: .5);
+    border: 10px $backgroudColor solid ;
+    border-radius: 25px;
 }

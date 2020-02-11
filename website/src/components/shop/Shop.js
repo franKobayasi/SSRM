@@ -10,8 +10,15 @@ import {
 } from 'react-router-dom';
 import MemberAuth from '../auth/MemberAuth';
 import Dashboard from '../dashboard/Dashboard.js';
-import ShopAuth from './ShopAuth.js';
+
 import ssrmFirebase,{fbAuthProvider,ssrmDB,getDataFromFireBase} from "../../useFirebase";
+/** Shop Pages */
+import ShopAuth from './ShopAuth';
+import Stock from './Stock';
+import Purchase from './Purchase'
+import Order from './Order';
+import Analysis from './Analysis';
+import SettingAndOther from './SettingAndOther';
 
 
 function Shop(props){
@@ -36,15 +43,15 @@ function ShopSignIn(props){
     return (
         <Router> 
             <Switch>
-                {/* <Route path="/shop/:id/order/checkout" render={Shop}/>  */}
-                {/* <Route path="/shop/:id/order/history" render={Shop}/>  */}
-                {/* <Route path="/shop/:id/purchase/keyin" render={Shop}/> */}
-                {/* <Route path="/shop/:id/purchase/history" render={Shop}/> */}
-                {/* <Route path="/shop/:id/stock/storage" render={Shop}/>  */}
-                {/* <Route path="/shop/:id/stock/history" render={Shop}/>  */}
-                {/* <Route path="/shop/:id/analysis" render={Shop}/>  */}
-                {/* <Route path="/shop/:id/setting" render={Shop}/> */}
-                {/* <Route path="/shop/:id/other" render={Shop}/> */}
+                <Route path="/shop/:id/order/checkout" component={Order}/> 
+                <Route path="/shop/:id/order/history" component={Order}/> 
+                <Route path="/shop/:id/purchase/keyin" component={Purchase}/>
+                <Route path="/shop/:id/purchase/history" component={Purchase}/>
+                <Route path="/shop/:id/stock/storage" component={Stock}/> 
+                <Route path="/shop/:id/stock/history" component={Stock}/> 
+                <Route path="/shop/:id/analysis" render={Analysis}/> 
+                <Route path="/shop/:id/setting/" render={SettingAndOther}/>
+                <Route path="/shop/:id/setting/other" render={SettingAndOther}/>
                 <Route path="/shop/:id">
                     {props.currentUser?<Redirect to={`${props.match.url}/order/checkout`}/>:<ShopAuth currentShop={currentShop}/>}
                 </Route>
