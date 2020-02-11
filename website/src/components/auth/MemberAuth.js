@@ -7,9 +7,12 @@ import SignUp from "./SignUp.js";
 import {actionSignIn} from "../../actions/auth";
 
 function MemberAuth(props){
+    console.log(props);
     let id=props.match.params.id;
     let history=props.history;
-
+    if(props.auth&&props.auth.isLogin){
+        history.push('/');
+    }
     let checkOutLayer=(e)=>{
         e.preventDefault();    
         if(id==='signup'){
@@ -64,6 +67,13 @@ function MemberAuth(props){
             </div>
         </Fragment>
     )
+}
+
+function mapStateToProps({auth},ownProps){
+    console.log(auth);
+    return {
+        auth,
+    }
 }
 
 export default connect()(MemberAuth);

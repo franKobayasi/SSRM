@@ -1,5 +1,6 @@
 const initialState={
-    
+    currentUser:'undefined',
+    currentShop:'undefined',    
 }
 
 const shopReducer=(preState=initialState,action)=>{
@@ -7,14 +8,16 @@ const shopReducer=(preState=initialState,action)=>{
         return initialState;
     }
     switch(action.type){
-        case 'ADD_NEW_SHOP':
+        case 'SHOP_SIGNINED':
             return Object.assign({},preState,{
-                
+                currentUser:action.currentUser,
+                currentShop:action.currentShop, 
             })
             break;
-        case 'EDIT_SHOP_INFO':
+        case 'SHOP_SIGNOUTED':
             return Object.assign({},preState,{
-                
+                currentUser:'undefined',
+                currentShop:'undefined',    
             })
             break;
         case 'DELETE_SHOP ':

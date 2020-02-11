@@ -61,7 +61,6 @@ function getAuthState(dispatch){
                 try{
                     dispatch(actionSignIn(user));
                     console.log('auto login!');
-                    history().push('/');
                 }catch(error){
                     console.error('ERROR\nUser infomation lost')
                     console.log(error);

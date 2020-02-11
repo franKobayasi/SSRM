@@ -1,8 +1,9 @@
 const initialState={
-    isFetch:false
+    isFetch:false,
+    isError:false,
 }
 
-const fetchReducer=(preState=initialState,action)=>{
+const stateReducer=(preState=initialState,action)=>{
      if(typeof preState==='undefined'){
         return initialState;
     }
@@ -28,4 +29,4 @@ const fetchReducer=(preState=initialState,action)=>{
     }
 }
 
-export default fetchReducer;
+export default stateReducer;

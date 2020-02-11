@@ -1,7 +1,7 @@
 import React,{Component,Fragment} from "react";
 import { Redirect,useHistory } from "react-router-dom";
 import {connect} from "react-redux";
-import {createHashHistory} from 'history';
+import {createHashHistory as history} from 'history';
 import ssrmFirebase,{ssrmDB,getDataFromFireBase} from "../../useFirebase";
 import SideNav from "../layout/SideNav";
 import {actionUpdateShopList} from "../../actions/shopList";
@@ -39,14 +39,15 @@ class ShopSummary extends Component{
     render(){
         let isEdit=this.state.isEdit;
         return (
-            <div id={this.props.shopID} className={isEdit?"shopBoxOnEdit":"shopBox"} title={this.props.title}>
+            <div id={this.props.shopID} className={isEdit?"shopBoxOnEdit":"shopBox"} title={this.props.title} onClick={this.props.toShop}>
                 <div className="imgContainer">
                     {this.props.title[0]}
                 </div>
                 {isEdit?
                 <div>
                     <input id="tempShopTitle" onChange={this.handleChange} defaultValue={this.props.title}/><span className="changeShopTitle_btn btn" onClick={(evnt)=>{
-                        this.props.updateShopInfo(evnt,this.state.tempShopTitle)
+                        console.log('更新中..');
+                        this.props.updateShopInfo(evnt,this.state.tempShopTitle,'title');
                     }}>變更</span>
                 </div>:
                 <div>{this.props.title}</div>}
@@ -92,22 +93,13 @@ class Dashboard extends Component{
         }
     }
     componentDidMount(){
-        console.log('new dashboard!');
+        console.log('dashboard is going to mount!');
+    }
+    componentDidUpdate(){
+        console.log('update dashboard!');
         /** 初始化抓取資料 */
         if(this.state.isNeedUpdate){
             console.log('getting data from DB via mount');
-            (async ()=>{
-                await this.asyncShopListFromFirebase();
-                this.setState(preState=>({
-                    isNeedUpdate:false,
-                }));
-            })();
-        }
-    }
-    componentDidUpdate(){
-        /** 更新資料 */
-        if(this.state.isNeedUpdate){
-            console.log('getting data from DB via update');
             (async ()=>{
                 await this.asyncShopListFromFirebase();
                 this.setState(preState=>({
@@ -164,6 +156,7 @@ class Dashboard extends Component{
         });
     }
     createNewShop(){
+        let name=this.props.auth.MEMBER_NAME;
         let uid=this.props.auth.MEMBER_UID;
         let shopList=this.props.shopList;
         let title=this.state.tempShopTitle
@@ -184,11 +177,11 @@ class Dashboard extends Component{
                 if(isTitleExisted){
                     alert("此商家名稱已存在，請命名其他名稱");
                 }else{
-                    let shop={title};
+                    let shop={title,currentUser:'undefined'};
                     ssrmDB.collection('members').doc(uid).collection('shops').add(shop)
                         .then(docRef=>{
                             ssrmDB.collection('members').doc(uid).collection('shops').doc(docRef.id).collection('users')
-                            .add({user:'master',password:masterKey})
+                            .add({type:'owner', name:name, password:masterKey})
                             .then(res=>{
                                 console.log('create sccesss');
                                 this.setState(preState=>({
@@ -219,14 +212,27 @@ class Dashboard extends Component{
     updateShopInfo=(evnt,value,type)=>{
         let target=evnt.target.parentNode.parentNode;
         if(type==='title'){
-            if(confirm(`確定將${target.title}改名為${newTitle}?`)){
+            if(target.title===value){
+                alert('名稱未不同，請確認');
+            }else if(confirm(`確定將${target.title}改名為${value}?`)){
                 ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').doc(target.id).update({
-                    title:newTitle
-                });
-                alert('變更成功！')
+                    title:value
+                }).then(()=>{
+                    alert('變更成功！')
+                    this.setState(preState=>({isNeedUpdate:true}));
+                }).catch(()=>{
+                    alert('變更失敗')
+                })
+                
             }
         }
         
+    }
+    toShop=(id)=>{
+        return function(evnt){
+            if(evnt.target.id===id)
+                history().push(`/shop/${id}`);
+        }
     }
     render(){
         let shopList=this.props.shopList
@@ -234,8 +240,8 @@ class Dashboard extends Component{
             <Fragment>
                 <SideNav auth={this.props.auth}/>
                 <div id="dashboard-main">
-                    {shopList.length>=1?shopList.map((shop,id)=>{
-                        return <ShopSummary key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>
+                    {shopList!=='undefined'&&shopList.length>=1?shopList.map((shop,id)=>{
+                        return <ShopSummary toShop={this.toShop(shop.id)} key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>
                     }):<div className="noShopsMsg">尚未建立任何商家</div>}
                     {this.state.isShopCreating?
                     <form className="shopCreator">

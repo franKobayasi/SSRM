@@ -1,11 +1,11 @@
 import { combineReducers } from "redux";
-import fetchReducer from "./fetchReducer";
+import stateReducer from "./stateReducer";
 import authReducer from "./authReducer";
 import shopReducer from "./shopReducer";
 import shopListReducer from "./shopListReducer";
 
 const ssrmReducers=combineReducers({
-    fetch:fetchReducer,
+    state:stateReducer,
     auth:authReducer,
     shopList:shopListReducer,
     shop:shopReducer,

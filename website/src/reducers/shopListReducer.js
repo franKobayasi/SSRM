@@ -1,4 +1,4 @@
-const initialState=[];
+const initialState="undefined";
 
 const shopListReducer=(preState=initialState,action)=>{
     if(typeof preState==='undefined'){
