@@ -1,6 +1,13 @@
 const initialState={
     currentUser:'undefined',
-    currentShop:'undefined',    
+    currentShop:{
+        id:'mAHT8POZz1AhyW2CEXXp',
+        title:'新竹中正台門市'
+    },
+    currentUser:{
+        name:'Frank',
+        tokenID:'mAHT8POZz1AhyW2CEXXp'
+    }    
 }
 
 const shopReducer=(preState=initialState,action)=>{

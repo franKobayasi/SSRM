@@ -3,6 +3,13 @@ const admin = require('firebase-admin');
 const cors = require('cors')({origin: true});
 
 
+// var serviceAccount = require("C:\\Users\\rebor\\Desktop\\SSRMservice-account-file.json");
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: "https://ssrm-e7bc3.firebaseio.com"
+// });
+
 const app=admin.initializeApp({
   credential: admin.credential.applicationDefault(),
   databaseURL: 'https://ssrm-e7bc3.firebaseio.com'
@@ -10,18 +17,6 @@ const app=admin.initializeApp({
 const DB = app.firestore();
 
 /** shop auth  */
-exports.post=functions.https.onRequest((req, res)=>{
-  let body=req.body
-  console.log(body);
-  res.status(200).send(`${body.name}'s password is ${body.password}`);
-});
-
-exports.get=functions.https.onRequest((req, res)=>{
-  let query=req.query;
-  console.log(query);
-  res.status(200).send(`the query: ${query}`);
-});
-
 exports.shopAuth=functions.https.onRequest(async(req,res)=>{
   cors(req, res, async()=>{
     if(req.method==="POST"){
@@ -80,8 +75,7 @@ exports.shopAuth=functions.https.onRequest(async(req,res)=>{
                 // employee login fail
               }
             }
-          }
-          
+          }       
         }
         res.send(resBody);
         return;
@@ -98,10 +92,91 @@ exports.shopAuth=functions.https.onRequest(async(req,res)=>{
     }else{
       console.log('type error');
       resBody={
-        type:'error',
+        state:'error',
         message:'error ajax method, please use post'
       }
       res.send(resBody);
+    }
+  })
+})
+
+/** add new supplier */
+exports.addNewSupplier=functions.https.onRequest(async(req,res)=>{
+  // 跨域請求
+  cors(req, res, async()=>{
+    // 收到供應商資料並確認是否有重複，如果沒有則新增成功
+    if(req.method==="POST"){
+      let data=req.body;
+      let supplier=data.supplier;
+      let isExist=false;
+      let resData;
+      try{
+        await DB.collection('members').doc(data.uid).collection('shops').doc(data.shopID).collection('provider')
+        .where('phone','==',`${supplier.phone}`).get()
+        .then(snapshot=>{
+          if(snapshot.empty){
+            console.log('確定無重複供應商，可以執行添加');
+            resData={
+              state:'succsee',
+              message:'新增成功'
+            }
+          }else{
+            snapshot.forEach(doc=>{
+              supplier.id=doc.id;
+            })
+            isExist=true;
+            resData={
+              state:'fail',
+              message:'供應商已經存在，新增失敗',
+              supplier:supplier
+            }
+          }
+          return ;
+        })
+        .catch((error)=>{
+          console.error('Error\n在新增供應商過程，查詢供應商發生錯誤')
+          console.log(error);
+          resData={
+            state:'error',
+            message:'在新增供應商過程，查詢供應商發生錯誤'
+          }
+          return ;
+        })
+      }
+      catch(error){
+        console.log("call firestore DB error");
+        console.log(error)
+        resData={
+          state:'error',
+          message:'在新增供應商過程，查詢供應商發生錯誤'
+        }
+      }
+      if(!isExist){
+        await DB.collection('members').doc(data.uid).collection('shops').doc(data.shopID).collection('provider').add(supplier)
+          .then(docRef=>{
+            console.log('供應商註冊中...')
+            supplier.id=docRef.id
+            resData.supplier=supplier;      
+            return ;
+          })
+          .catch(error=>{
+            console.error('Error\n在新增供應商過程，新增供應商發生錯誤')
+            console.log(error);
+            resData={
+              state:'error',
+              message:'在新增供應商過程，新增供應商發生錯誤'
+            }
+            return ;
+          })   
+      }
+      res.status(200).send(resBody);
+    }else{
+      console.error('ERROR\nclient request type error');
+      resBody={
+        state:'Error',
+        message:'wrong request method, this api need to use post'
+      }
+      res.status(404).send(resBody);
     }
   })
 })

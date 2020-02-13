@@ -19,6 +19,7 @@ import MemberAuth from '../components/auth/MemberAuth';
 import Dashboard from '../components/dashboard/Dashboard.js';
 import Shop from '../components/shop/Shop.js';
 import Stock from '../components/shop/Stock';
+import Purchase from '../components/shop/purchase/Purchase';
 
 /*
     載入App需依序確認幾件事情：
@@ -100,7 +101,7 @@ function AfterSignIn(){
     return (
         <Router> 
             <Switch>
-                <Route path="/test" render={()=><Stock />} />
+                <Route path="/test" render={()=><Purchase />} />
                 <Route path="/auth/:id" component={MemberAuth}/> 
                 <Route path="/shop/:id" component={Shop}/>
                 <Route path="/dashboard/setting" render={()=><Dashboard />}/>

@@ -21,7 +21,7 @@ function SideNav(props){
             })
     }
     const styleForShopSignIned = {
-        position:"absolute"
+        position:"absolute",
     };
     return (
         <div id="sideMenu" style={props.currentShop?styleForShopSignIned:''} className={props.currentShop?"styleForShopSignIned":''}>

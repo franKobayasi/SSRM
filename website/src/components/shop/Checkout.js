@@ -1,14 +1,14 @@
 import React,{ Component } from "react";
 import {connect} from "react-redux";
 
-class Purchase extends Component{
+class Checkout extends Component{
     constructor(props){
         super(props);
 
     }
     render(){
-        return <div> Purchase key in </div>
+        return <div> Order key in </div>
     }
 }
 
-export default connect()(Purchase);
+export default connect()(Checkout);

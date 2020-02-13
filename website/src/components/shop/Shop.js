@@ -15,11 +15,10 @@ import ssrmFirebase,{fbAuthProvider,ssrmDB,getDataFromFireBase} from "../../useF
 /** Shop Pages */
 import ShopAuth from './ShopAuth';
 import Stock from './Stock';
-import Purchase from './Purchase'
-import Order from './Order';
+import Purchase from './purchase/Purchase'
+import Checkout from './Checkout';
 import Analysis from './Analysis';
 import SettingAndOther from './SettingAndOther';
-
 
 function Shop(props){
     console.log(props);
@@ -43,8 +42,8 @@ function ShopSignIn(props){
     return (
         <Router> 
             <Switch>
-                <Route path="/shop/:id/order/checkout" component={Order}/> 
-                <Route path="/shop/:id/order/history" component={Order}/> 
+                <Route path="/shop/:id/order/checkout" component={Checkout}/> 
+                <Route path="/shop/:id/order/history" component={Checkout}/> 
                 <Route path="/shop/:id/purchase/keyin" component={Purchase}/>
                 <Route path="/shop/:id/purchase/history" component={Purchase}/>
                 <Route path="/shop/:id/stock/storage" component={Stock}/> 
