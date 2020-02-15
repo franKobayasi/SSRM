@@ -29,6 +29,17 @@ function randomStockOrderID(){
     let month=(parseInt(date.getMonth(),10)+1)>=10?`${parseInt(date.getMonth(),10)+1}`:`0${parseInt(date.getMonth(),10)+1}`;
     return `S${year}${month}${makerandomletter(2)}${randomusefloor(1,99999)}`;
 }
+function randomProductID(){
+    let date=new Date();
+    let year=`${date.getFullYear()}`.toUpperCase();
+    let month=(parseInt(date.getMonth(),10)+1)>=10?`${parseInt(date.getMonth(),10)+1}`:`0${parseInt(date.getMonth(),10)+1}`;
+    return `I${year}${month}${makerandomletter(3)}${randomusefloor(1,9999)}`;
+}
+
+/** Math round 取整數 */
+function roundAfterPointAt(value,target){ 
+  return Math.round(value*Math.pow(10,target))/Math.pow(10,target)
+}
 
 /** ajax */
 function ajax(method, src, args, headers, callback){
@@ -56,6 +67,4 @@ function setRequestHeaders(req, headers){
   }
 }
 
-
-
-export {randomPurchaseOrderID, randomCheckOutOrderID, randomStockOrderID, ajax};
+export {randomProductID, randomPurchaseOrderID, randomCheckOutOrderID, randomStockOrderID, roundAfterPointAt, ajax};

@@ -75,7 +75,7 @@ function getAuthState(dispatch){
     catch(error){
         console.error('ERROR\nFirebase server get user auth fail');
         console.log(error);
-        dispatch(actionAuthError());
+        dispatch(actionAuthError()); /** 優化：設計一個當前因伺服器問題無訪法登入的頁面 */
     }
 }
 

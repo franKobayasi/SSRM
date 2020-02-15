@@ -235,10 +235,10 @@ class Dashboard extends Component{
         }
     }
     render(){
-        let shopList=this.props.shopList
+        let shopList=this.props.shopList;
         return (
             <Fragment>
-                <SideNav auth={this.props.auth}/>
+                <SideNav />
                 <div id="dashboard-main">
                     {shopList!=='undefined'&&shopList.length>=1?shopList.map((shop,id)=>{
                         return <ShopSummary toShop={this.toShop(shop.id)} key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>

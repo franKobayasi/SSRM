@@ -5,7 +5,6 @@
     width: 275px;
     height: 100vh;
     background-color: #FF6D05;
-    border-radius: 0 25px 25px 0;
     z-index: 1;
     #website-logo{
         color: white;
@@ -55,6 +54,8 @@
     }
 }
 .styleForShopSignIned{
+    border-radius: 0 15px 15px 0;
+    position: absolute !important;
     transform: translate(-260px,0);
     &:hover{
         animation-name:showUp;

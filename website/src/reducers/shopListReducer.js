@@ -2,14 +2,6 @@ const initialState=[
     {
         id:"mAHT8POZz1AhyW2CEXXp",
         title:"Reborn中正台門市"
-    },
-    {
-        id:"mAHT8POZz1AhyW2CEXXp",
-        title:"Reborn中正台門市"
-    },
-    {
-        id:"mAHT8POZz1AhyW2CEXXp",
-        title:"Reborn中正台門市"
     }
 ];
 

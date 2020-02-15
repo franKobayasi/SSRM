@@ -1,13 +1,11 @@
+import {ssrmDB} from "../useFirebase";
 const initialState={
-    currentUser:'undefined',
-    currentShop:{
-        id:'mAHT8POZz1AhyW2CEXXp',
-        title:'新竹中正台門市'
+    user:{
+        name:'仲岳',
+        token:'H25sXb5Gi7I6qaypTiKQ',
     },
-    currentUser:{
-        name:'Frank',
-        tokenID:'mAHT8POZz1AhyW2CEXXp'
-    }    
+    id:'mAHT8POZz1AhyW2CEXXp',
+    name:'Reborn中正台門市'
 }
 
 const shopReducer=(preState=initialState,action)=>{

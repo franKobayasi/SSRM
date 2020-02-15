@@ -42,7 +42,6 @@ function App(props){
 
     /** this func aysc shopList from firebase to redux store */
     const asyncShopListFromFirebase=()=>{
-        if(shopList==="undefined"){
             dispatch(actionFetchPosted());
             ssrmDB.collection('members').doc(props.auth.MEMBER_UID).collection('shops').get()
             .then(snapshot=>{
@@ -58,7 +57,6 @@ function App(props){
                 dispatch(actionFetchSuccessed());
             })
         }
-    }
     /** check if app is on fatch */
     if(isFetch===true){
         return <div>is fetching data...please wait...</div>
@@ -68,16 +66,20 @@ function App(props){
         return <div id="errorMsg">網頁發生錯誤，系統修復中！我們將會在最短的時間內修復問題，造成不便，敬請見諒!</div>
     }
     /** check if store already have auth */
-    if(isLogin===undefined){
+    if(isLogin==='unconnect'){
         /** firebase check login */
         console.log('first time landing');
         getAuthState(dispatch);
-        return <div>is fetching data...please wait...</div>
+        return <div>check member login state..please wait...</div>
     }else{
         if(isLogin===true){
             console.log('登入了');
-            asyncShopListFromFirebase();
-            return <AfterSignIn />;
+            if(shopList==="undefined"){
+                asyncShopListFromFirebase();
+                return <div>is fetching data...please wait...</div>
+            }else{
+                return <AfterSignIn />;
+            }
         }else{
             console.log('還沒登入');
             return <BeforeSignIn />;
@@ -103,7 +105,7 @@ function AfterSignIn(){
             <Switch>
                 <Route path="/test" render={()=><Purchase />} />
                 <Route path="/auth/:id" component={MemberAuth}/> 
-                <Route path="/shop/:id" component={Shop}/>
+                <Route path="/shop/:shopid" component={Shop}/>
                 <Route path="/dashboard/setting" render={()=><Dashboard />}/>
                 <Route path="/dashboard" render={()=><Dashboard />}/>
                 <Route path="/">

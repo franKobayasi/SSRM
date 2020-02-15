@@ -1,12 +1,31 @@
 import React,{ Component,Fragment } from "react";
-import {randomPurchaseOrderID} from "../../../lib";
+import {ssrmDB} from "../../../useFirebase";
+import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from "../../../lib";
+import FormProductEditing from './FormProductEditing';
+import editImg from "../../../img/editBtn.png";
+import deleteImg from "../../../img/deleteBtn.png";
+
+/**
+This Component for create hold new order.
+Now can't pass history order into this component.
+ */
 class OrderCreating extends Component{
     constructor(props){
         super(props);
         this.state={
-            currentOrder:'undefined',
+            currentOrder:{
+                id:`${randomPurchaseOrderID()}`,
+                supplier:{
+                    title:'Supplier',
+                    address:'請先完成查詢或新增',
+                    phone:'請先完成查詢或新增',
+                    isQuery:false,
+                },
+                products:[],
+                isNeedUpdate:false
+            },
             onProductEditing:false,
-            onSupplierAdding:false
+            onSupplierAdding:false,
         }
     }
     handleChange=(evnt)=>{
@@ -18,88 +37,310 @@ class OrderCreating extends Component{
             }
         });
     }
+    /** show and hide 供應商註冊表單*/
     showSupplierAddingForm=()=>{
         this.setState(preState=>({
-            onSupplierAdding:!preState.onSupplierAdding,
+            onSupplierAdding:true,
         }))
     }
-    submitNewSupplier=()=>{
-        let supplier={
-            title:this.state.tempSupplierName,
-            address:this.state.tempSupplierAddress,
-            phone:this.state.tempSupplierPhone
-        }
-        alert('註冊成功！')
-        // 發送api
-        // alert('新增失敗，請稍後再試')
-        // alert('新增成功')
+    hideSupplierAddingForm=()=>{
+        this.setState(preState=>({
+            onSupplierAdding:false,
+        }))
+    }
+    /** 確認此供應商是否註冊過 */
+    checkSupplier=async(phone)=>{
+        let result={};
+        await ssrmDB.collection('members').doc(this.props.uid).collection('shops').doc(this.props.shop.id).collection('suppliers')
+        .doc(phone).get()
+        .then(doc=>{
+            if(!doc.exists){
+                result.message='查無供應商資料，請先新增'
+                return ;
+            }else{
+                result.supplier={
+                    title:doc.data().title,
+                    address:doc.data().address,
+                    phone:doc.id
+                }
+                return ; 
+            }
+        })
+        .catch(error=>{
+            console.error('ERROR\n查詢確認供應商資料失敗');
+            console.log(error);
+            return ;
+        })
+        return result;
+    }
+    /** 設定當前供應商 */
+    setCurrentSuppier=(title,address,phone)=>{
         this.setState(preState=>({
             tempSupplierName:'',
             tempSupplierAddress:'',
             tempSupplierPhone:'',
             onSupplierAdding:false,
+            currentOrder:{
+                ...preState.currentOrder,
+                supplier:{
+                    title,
+                    address,
+                    phone
+                },
+                isNeedUpdate:true
+            }
         }))
+    }
+    /** 輸入供應商 */
+    keyInSupplier=(evnt)=>{
+        let target=evnt.target;
+        let keyCode=evnt.charCode;
+        if(keyCode===13){
+            console.log(target.value);
+            (async()=>{
+                let result= await this.checkSupplier(target.value);
+                if(result.supplier){
+                    let supplier=result.supplier;
+                    console.log(supplier)
+                    this.setCurrentSuppier(supplier.title,supplier.address,supplier.phone)
+                }else{
+                    alert(`${result.message}`)
+                }
+            })();
+        }
+    }
+    /** 註冊新供應商 */
+    submitNewSupplier=()=>{
+        let title=this.state.tempSupplierName?this.state.tempSupplierName.trim():'';
+        let address=this.state.tempSupplierAddress?this.state.tempSupplierAddress.trim():'';
+        let phone=this.state.tempSupplierPhone?this.state.tempSupplierPhone.trim():'';
+        if(title.length===0){
+            alert('請輸入供應商名稱');
+        }else if(address.length===0){
+            alert('請輸入供應商地址');
+        }else if(phone.length===0){
+            alert('請輸入供應商電話');
+        }else{
+            (async()=>{
+                let result= await this.checkSupplier(phone);
+                console.log(result);
+                if(result.supplier){
+                    alert('供應商已存在，若供應商電話有重複或更改請至店家設定頁面更改');
+                    this.setCurrentSuppier(title,address,phone);
+                }else{
+                    await ssrmDB.collection('members').doc(this.props.uid).collection('shops').doc(this.props.shop.id).collection('suppliers')
+                        .doc(phone).set({
+                            title,
+                            address
+                        })
+                        .then((res)=>{
+                            console.log(res);
+                            alert('註冊成功！');
+                            this.setCurrentSuppier(title,address,phone);
+                        })
+                }
+            })();
+        }
+    }
+    /** show 產品添加表單 */
+    startProductAdding=()=>{
+        this.setState(preState=>({
+            onProductEditing:true,
+            currentProduct:{
+                id:`${randomProductID()}`,
+                name:'',
+                cost:'',
+                price:'',
+                startAt:1,
+                itemList:[],
+            }
+         }))
+    }
+    startModifyProduct=(evnt)=>{
+        let targetProduct=this.state.currentOrder.products.filter(product=>{
+            return product.id===evnt.target.parentNode.id;
+        })
+        if(targetProduct&&typeof targetProduct==="object"){
+            this.setState(preState=>({
+            onProductEditing:true,
+            currentProduct:targetProduct[0],
+         }))
+        }else{
+            console.error('Error\n edit particular exist order fail');
+        }
+    }
+    /** submit or canel new product */
+    submitNewProduct=(newProduct)=>{
+        console.log(newProduct);
+        let order=Object.assign({},this.state.currentOrder) //複製 currentOrder
+        let isOldProUpdate=false;
+        /** modify old product */
+        for(let product of order.products){
+            if(product.id===newProduct.id){
+                product=newProduct; // update old product
+                isOldProUpdate=true;
+            }
+        }
+        /** new product comming in */
+        if(!isOldProUpdate){
+            order.products.push(newProduct);
+        }
+        order.isNeedUpdate=true; /** update to local */
+        this.setState(preState=>({
+            currentOrder:order,
+            onProductEditing:false
+        }))
+    }
+    cancelUpdateProduct=()=>{
+        this.setState(preState=>({
+            onProductEditing:false
+        }))
+    }
+    /** delete product */
+    deleteProduct=(evnt)=>{
+        let order=Object.assign({},this.state.currentOrder);
+        let targetProduct=order.products.filter(product=>{
+            return product.id===evnt.target.parentNode.id;
+        })[0];
+        if(targetProduct&&typeof targetProduct==="object"){
+            if(confirm(`確定刪除整筆產品:${targetProduct.id}`)){
+                let index=order.products.indexOf(targetProduct);
+                if(index>=0){
+                    order.products.splice(index,1);
+                    this.setState(preState=>({
+                        isNeedUpdate:true,
+                        currentOrder:order,
+                    }))
+                }else{
+                    console.error('ERROR\n找不到要刪除的產品')
+                }
+            }
+        }else{
+            console.error('Error\n delete particular exist product fail');
+        }
+    }
+    /** compute sum of cost and avanrage profit */
+    computeCostAndProfit=()=>{
+        let products=this.state.currentOrder.products;
+        let result={
+            sumOfCost:0,
+            sumOfPrice:0,
+            avgProfit:0
+        };
+        for(let product of products){
+            for(let item of product.itemList){
+                result.sumOfCost+=(product.cost*item.num);
+                result.sumOfPrice+=(product.price*item.num);
+            }
+        }
+        let avgProfit=(result.sumOfPrice-result.sumOfCost)/result.sumOfPrice;
+        result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):"..."
+        return result;
+    }
+    /** submitOrder */
+    submitOrder=()=>{
+    /** Submit created purchase order to database and clear localStorage */
+    /** Stay at create and show new empty order form */
+    if(confirm('確定送出採購單？')){
+        let order=Object.assign({},this.state.currentOrder);
+        this.props.shop.shopRef.collection('purchases').doc(order.id).set(order)
+            .then(()=>{
+                alert(`採購單: ${order.id} 成功新增！`);
+                this.setState(preState=>({
+                    currentOrder:{
+                        id:`${randomPurchaseOrderID()}`,
+                        supplier:{
+                            title:'Supplier',
+                            address:'請先完成查詢或新增',
+                            phone:'請先完成查詢或新增',
+                            isQuery:false,
+                        },
+                        products:[],
+                        isNeedUpdate:true
+                    },
+                }))
+                return ;
+            })
+            .catch(error=>{
+                console.error('Error\n 送出採購單時發生錯誤，無法更新至資料庫');
+                console.log(error);
+                return ;
+            })
+        }
     }
     componentDidMount(){
         let currentOrder;
+        /** 設定current order */
+        /** 如果有未完成的Order，則不新增新的Order */
         if(!this.props.uncompletedNewOrder){
-            currentOrder={
-                id:`${randomPurchaseOrderID()}`
-            };
-            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder));
-            
+            currentOrder=this.state.currentOrder;
+            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder));       
         }else{
             currentOrder=this.props.uncompletedNewOrder;
+            /** 確認是否有空產品(該產品內的itemList為空陣列)*/
+            for(let product of currentOrder.products){
+                if(product.itemList.length===0){
+                    let index=currentOrder.products.indexOf(product);
+                    currentOrder.products.splice(index,1);
+                    localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder)); 
+                }
+            }
+            this.setState(preState=>({
+                currentOrder,
+            }))   
         }
-        this.setState(preState=>({
-            currentOrder,
-        }))   
+    }
+    componentDidUpdate(){
+        /** isNeedUpdate to local */
+        if(this.state.currentOrder.isNeedUpdate){
+            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(this.state.currentOrder))
+            this.setState(preState=>({
+                currentOrder:{
+                    ...preState.currentOrder,
+                    isNeedUpdate:false,
+                }
+            }))
+            console.log('update to local');
+        }
     }
     render(){
         let onProductEditing=this.state.onProductEditing;
         let onSupplierAdding=this.state.onSupplierAdding;
         let currentOrder=this.state.currentOrder;
-
-        console.log(currentOrder);
+        let currentProduct=this.state.currentProduct
         /**
             order={
                 id,
+                (isNeedUpdate)
                 products:[
                     products...
                 ],
-                provider: token
+                supplier: {
+                    address,
+                    title,
+                    phone
+                }
             }
          */
-
         return (
             <Fragment>
                 {/* 新增供應商 */}
-                <form className="addNewSupplierForm" style={onSupplierAdding?{display:"block"}:{display:"none"}}>
+                {onSupplierAdding?
+                <form className="addNewSupplierForm">
                     <div><label>供應商</label><input id="tempSupplierName" onChange={this.handleChange}/></div>
                     <div><label>地址</label><input id="tempSupplierAddress" onChange={this.handleChange}/></div>
                     <div><label>電話</label><input id="tempSupplierPhone" onChange={this.handleChange} placeholder={"這將作為查詢使用"}/></div>
                     <div className="buttons">
-                        <button className="finish">完成</button>
-                        <button className="cancel">取消</button>
+                        <button className="finish" onClick={this.submitNewSupplier}>完成</button>
+                        <button className="cancel" onClick={this.hideSupplierAddingForm}>取消</button>
                     </div>
-                </form>
+                </form>:null}
                 {/* 新增產品表單 */}
-                <form className="addNewProductForm" style={onProductEditing?{display:"block"}:{display:"none"}}>
-                    <div className="basicInfo">
-                        <div className="productID">產品編號: random number</div>
-                        <div><label className="title">商品名稱</label><input className="productName" /></div>
-                        <div><label className="title">進貨成本</label><input className="productCost" /></div>
-                        <div><label className="title">商品標價</label><input className="productPrice" /></div>
-                    </div>
-                    <div className="productSpec">
-                        <div>
-                            <label>尺寸</label><input />
-                            <label>顏色</label><input />
-                            <label>件數</label><input />
-                        </div>    
-                        <div className="addNewSpec_btn">+</div>
-                    </div>
-                </form>
+                {onProductEditing?
+                <FormProductEditing product={this.state.currentProduct} 
+                    submitNewProduct={this.submitNewProduct} 
+                    cancelUpdateProduct={this.cancelUpdateProduct}    
+                    />:null}
                 <div className="operatingArea">
                     <div className="currentInfo">
                         <div>採購管理 \ 採購登入</div>
@@ -115,10 +356,10 @@ class OrderCreating extends Component{
                 <div className="informationArea">
                     <div className="basicInfo">
                         <span className="number">{`採購單號 ${currentOrder.id}`}</span>
-                        <Supplier provider={currentOrder.provider}/>
+                        <Supplier supplier={currentOrder.supplier}/>
                     </div>
                     <div className="innerOperatingArea">
-                        <input placeholder="供應商搜尋(電話)"/>
+                        <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
                         <span className="title">進貨幣別</span>
                         <select className="moneyType">
                             <option value="TWD">{`台幣`}</option>
@@ -130,7 +371,7 @@ class OrderCreating extends Component{
                     </div>
                     <div className="contentTable">
                         <div className="tableHead">
-                            <span className="productTypeID">產品編號</span>
+                            <span className="productID">產品編號</span>
                             <span className="itemID">商品牌號</span>
                             <span className="productName">商品名稱</span>
                             <span className="itemSpec">尺寸</span>
@@ -141,29 +382,21 @@ class OrderCreating extends Component{
                             <span className="productPrice">商品標價</span>
                             <span className="productProfit">單項利潤</span>
                         </div>
-                        {currentOrder.itemList&&currentOrder.itemList.map((item,index)=>(
-                            <div key={index} className="itemBox">
-                                <span className="productID">{currentOrder.productTypeID}</span>
-                                <span className="itemID">{item.productID}</span>
-                                <span className="productName">{item.productName}</span>
-                                <span className="itemSpec">{item.size}</span>
-                                <span className="itemSpec">{item.color}</span>
-                                <span className="itemSpec">{item.num}</span>
-                                <span className="productCost">{item.cost}</span>
-                                <span className="sumOfCostPerRow">{`${item.num*item.cost}`}</span>
-                                <span className="productPrice">{item.price}</span>
-                                <span className="productProfit">{`${(item.price-item.cost)/item.cost}`}</span>
-                            </div>
+                        {currentOrder.products&&currentOrder.products.map((product,index)=>(
+                            <ProductBox key={index} product={product} 
+                            startModifyProduct={this.startModifyProduct}
+                            deleteProduct={this.deleteProduct}    
+                            />
                         ))}
-                        <div className="addNewProduct">+</div>
+                        <div onClick={this.startProductAdding} className="addNewProduct btn">+</div>
                     </div>
                     <div className="buttons">
-                        <button className="styleFormLittleBtn finish">完成</button>
+                        <button className="styleFormLittleBtn finish" onClick={this.submitOrder}>完成</button>
                         <button className="styleFormLittleBtn cancel">取消</button>
                     </div>
                     <div className="totalInfo">
-                        <span>成本總計</span><span className="sumOfCost">15200</span>
-                        <span>平均利潤</span><span className="sumOfProfit">{(42000-15200)/42000}</span>
+                        <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
+                        <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
                     </div>
                 </div>
             </Fragment>
@@ -173,67 +406,59 @@ class OrderCreating extends Component{
 
 /**
     product={
-        productID,
-        productName,
+        id,
+        name,
         cost,
         price,
+        startAt,
         itemList:[
             {
                 itemID,
                 size,
                 num,
                 color,
+                isEdit,
             }
         ]
     }
  */
 
-function productBox(product) {
+function ProductBox(props) {
+    let product=props.product;
     return (
-        <div className="productBox">
+        <div id={product.id} className="productBox">
             {product.itemList.map((item,index)=>{
                 return (
                     <div key={index} className="itemBox">
-                        <span className="productID">{product.productID}</span>
+                        <span className="productID">{product.id}</span>
                         <span className="itemID">{item.itemID}</span>
-                        <span className="productName">{product.productName}</span>
+                        <span className="productName">{product.name}</span>
                         <span className="itemSpec">{item.size}</span>
                         <span className="itemSpec">{item.color}</span>
                         <span className="itemSpec">{item.num}</span>
                         <span className="productCost">{product.cost}</span>
                         <span className="sumOfCostPerRow">{`${item.num*product.cost}`}</span>
                         <span className="productPrice">{product.price}</span>
-                        <span className="productProfit">{`${(item.price-item.cost)/item.cost}`}</span>
+                        <span className="productProfit">{`${roundAfterPointAt(((product.price-product.cost)/product.cost),2)}`}</span>
                     </div>
                 )
             })}
-            <button className="styleFormLittleBtn edit">編輯</button>
+            <img className="edit" src={editImg} onClick={props.startModifyProduct}/>
+            <img className="delete" src={deleteImg} onClick={props.deleteProduct}/>
         </div> 
     )
 }
 
-class Supplier extends Component{
-    constructor(props){
-        super(props);
-        this.state={
-            isNeedUpdate:true,
-            title:'Loading..',
-            address:'Loading..首爾市時代廣場A座3樓16C',
-        }
-    }
-    componentDidMount(){
-        //get supplier data from database then update to state
-    }
-    render(){
-        return (
-            <Fragment>
-                <span className="title">供應商：</span>
-                <span className="SupplierDetail">{this.state.title}</span>
-                <span className="title">商家地址：</span>
-                <span className="SupplierAddress">{this.state.address}</span>
-            </Fragment>
-        )
-    }
+function Supplier(props){
+    let supplier=props.supplier;
+    return (
+        <Fragment>
+            <span className="title">供應商：</span>
+            <span className="SupplierDetail">{supplier.title}</span>
+            <span className="title">商家地址：</span>
+            <span className="SupplierAddress">{supplier.address}</span>
+        </Fragment>
+    )
 }
 
 export default OrderCreating;

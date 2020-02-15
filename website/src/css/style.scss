@@ -16,6 +16,13 @@ $backgroudColor:rgb(200, 200, 200);
 }
 .btn{
     cursor:default;
+    background-color: $mainColor;
+    color: white;
+    width: 75px;
+    line-height: 30px;
+    border-radius: 15px;
+    border:1px solid white;
+    margin: 10px 20px;      
 }
 .shopMainArea{
     position: relative;

@@ -43,25 +43,32 @@ $mainColor:#FF6D05;
         }
     }
     .addNewProductForm{
-        width: 450px;
+        width: fit-content;
         height: fit-content;
-        background-color: $mainColor;
-        border-radius: 25px;
         position: absolute;
         top:50%;
         left: 50%;
         transform: translate(-50%,-50%);
         z-index: 5;
-        color: white;
-        overflow: hidden;
-        border: 5px solid gray;
+        background-color: white;
+        border-radius: 5px;
+        color: black;
+        border: 2.5px solid $mainColor;
         box-sizing: border-box;
-        .basicInfo{
-            padding-bottom: 10px;
+        .basicInfoArea{
+            .productID{
+                width: 100%;
+                text-align: center;
+                font-size: 20px;
+                font-weight: 500;
+                line-height: 45px;
+                margin: 0 !important;
+                background-color: $mainColor;
+                color: white;
+            }
             & > div{
                 margin: 10px 0;
                 text-align: center;
-                font-size: 18px;
                 label, input{
                     line-height: 30px;
                     vertical-align: middle;
@@ -69,61 +76,68 @@ $mainColor:#FF6D05;
                 }
                 input{
                     padding:0 10px;
-                    width: 200px;
+                    width: 150px;
                     background-color: white;
-                    border-radius: 15px;
-                    border: 1px white solid;
+                    border: 1px gray solid;
+                    border-width: 0 0 1px 0 ;
+                    text-align: center;
                 }
                 label{
-                    margin-right: 10px;
+                    margin-right: 30px;
                 }
             }
-            .productID{
-                width: 100%;
-                text-align: center;
-                font-size: 20px;
-                font-weight: 500;
-                margin: 20px 0;
-            }
-        }
-        .productSpec{
-            width: 100%;
+        } // end basicInfoArea
+        .productSpecArea{
             height: 200px;
-            padding-top: 10px;
-            background-color: gray;
+            padding: 10px 0;
             box-sizing: border-box;
             overflow: auto;
             & > div{
                 margin: 10px;
                 text-align: center;
-                label{
-                    font-size: 18px;
-                    margin-right: 10px;
+                input,span{
+                    display: inline-block;
+                    vertical-align: middle;
                 }
-                label:nth-of-type(2){
-                    margin-left: 20px;
-                }
-                label:nth-of-type(3){
-                    margin-left: 20px;
+                span{
+                    margin: 0 20px;
                 }
                 input{
-                    width: 50px;
-                    font-size: 18px;
-                    border-radius: 15px;
+                    width: 35px;
                     padding: 0 10px;
-                    border: white 1px solid;
+                    border: gray 1px solid;
+                    border-width: 0 0 1px 0;
                     text-align: center;
                 }
+                .editBlock, .infoBlock{
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 350px;
+                }
+                .editBlock{
+                    width: 400px;
+                }
             }
-            .addNewSpec_btn{
+        } // end productSpecArea
+        .specAddingArea{
+            text-align: center;
+            padding: 10px 10px 15px;
+            input,label{
+                margin: 0 10px;
                 text-align: center;
-                width: 35px;
-                line-height: 35px;
-                background-color: $mainColor;
-                color: white;
-                border-radius: 50%;
-                margin: 10px auto;
             }
+            input{
+                width: 50px;
+                border: 1px solid $mainColor;
+            }
+        }
+        .removeSpec_btn, .specAdding_btn, .specCheck_btn, .specEdit_btn{
+            width: 25px;
+            vertical-align: middle;
+            margin: 0 15px;
+        }
+        .formBtnArea{
+            text-align: center;
         }
     }
     .operatingArea{
@@ -203,7 +217,7 @@ $mainColor:#FF6D05;
                 font-weight: 500;
                 width: 125px;
             }
-            .productTypeID, .itemID{
+            .productID, .itemID{
                 width: 150px;
             }
             .itemSpec{
@@ -231,11 +245,16 @@ $mainColor:#FF6D05;
             }
             .productBox{
                 position: relative;
-                .edit{
+                .edit, .delete{
                     position: absolute;
                     top: 50%;
                     right: 15px;
                     transform: translate(0,-50%);
+                    width: 15px;
+                }
+                .delete{
+                    right:40px;
+                    width: 17px;
                 }
             }
         }

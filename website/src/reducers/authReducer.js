@@ -2,7 +2,7 @@ const initialState={
     MEMBER_UID:'xKWbiVJJqAeGwy5FBZf1PQFKUm13',
     MEMBER_NAME:'仲岳',
     MEMBER_EMAIL:'tofindeachotherandtofeel',
-    isLogin:true,
+    isLogin:true,  /** unconnect */
 }
 
 const authReducer=(preState=initialState,action)=>{

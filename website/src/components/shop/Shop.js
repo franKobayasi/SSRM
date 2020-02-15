@@ -21,10 +21,10 @@ import Analysis from './Analysis';
 import SettingAndOther from './SettingAndOther';
 
 function Shop(props){
-    console.log(props);
     let shopList=props.shopList;
     let currentShop={};
-    currentShop.id=props.match.params.id;
+    currentShop.id=props.match.params.shopid;
+    console.log(props, currentShop);
     for(let shop of shopList){
         if(shop.id===currentShop.id){
             currentShop.title=shop.title;
