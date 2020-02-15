@@ -161,8 +161,8 @@ class FormProductEditing extends Component{
                     ))}
                 </div>
                 <div className="formBtnArea">
-                    <button className="btnForFormL" onClick={this.submitNewProduct}>完成</button>
-                    <button className="btnForFormL" onClick={this.props.cancelUpdateProduct} >取消</button>
+                    <button className="btnForFormLittle" onClick={this.submitNewProduct}>完成</button>
+                    <button className="btnForFormLittle" onClick={this.props.cancelUpdateProduct} >取消</button>
                 </div>
             </form>
         )

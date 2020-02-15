@@ -25,7 +25,7 @@ class Purchase extends Component{
         let uid=this.props.auth.MEMBER_UID;
         let shop=this.props.shop;
         shop.shopRef=this.state.shopRef;
-        let location="new"
+        let location="history"
         return (
             <Fragment>
                 <ShopSideNav />

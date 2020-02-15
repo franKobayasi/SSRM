@@ -43,16 +43,114 @@ $slightBlack:#333;
             }
         }
     }
-    .operatingArea{
-        height: 10%;
-        min-height: 75px;
-        background-color: $slightBlack;
-        & > *{
-            display: inline-block;
+    .addNewProductForm{
+        width: fit-content;
+        height: fit-content;
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 5;
+        background-color: white;
+        border-radius: 5px;
+        color: black;
+        border: 2.5px solid $mainColor;
+        box-sizing: border-box;
+        .basicInfoArea{
+            .productID{
+                width: 100%;
+                text-align: center;
+                font-size: 20px;
+                font-weight: 500;
+                line-height: 45px;
+                margin: 0 !important;
+                background-color: $mainColor;
+                color: white;
+            }
+            & > div{
+                margin: 10px 0;
+                text-align: center;
+                label, input{
+                    line-height: 30px;
+                    vertical-align: middle;
+                    display: inline-block;
+                }
+                input{
+                    padding:0 10px;
+                    width: 150px;
+                    background-color: white;
+                    border: 1px gray solid;
+                    border-width: 0 0 1px 0 ;
+                    text-align: center;
+                }
+                label{
+                    margin-right: 30px;
+                }
+            }
+        } // end basicInfoArea
+        .productSpecArea{
+            height: 200px;
+            padding: 10px 0;
+            box-sizing: border-box;
+            overflow: auto;
+            & > div{
+                margin: 10px;
+                text-align: center;
+                input,span{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                span{
+                    margin: 0 20px;
+                }
+                input{
+                    width: 35px;
+                    padding: 0 10px;
+                    border: gray 1px solid;
+                    border-width: 0 0 1px 0;
+                    text-align: center;
+                }
+                .editBlock, .infoBlock{
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 350px;
+                }
+                .editBlock{
+                    width: 400px;
+                }
+            }
+        } // end productSpecArea
+        .specAddingArea{
+            text-align: center;
+            padding: 10px 10px 15px;
+            input,label{
+                margin: 0 10px;
+                text-align: center;
+            }
+            input{
+                width: 50px;
+                border: 1px solid $mainColor;
+            }
+        }
+        .removeSpec_btn, .specAdding_btn, .specCheck_btn, .specEdit_btn{
+            width: 25px;
             vertical-align: middle;
-            margin-top: 17.5px;
+            margin: 0 15px;
+        }
+        .formBtnArea{
+            text-align: center;
+        }
+    }
+    .operatingArea{
+        height: 75px;
+        background-color: $slightBlack;
+        & > div{
+            display: inline-block;
+            height: 75px;
+            vertical-align: middle;
         }
         .operatingBtns{
+            line-height: 75px;
             float: right;
             & > button{
                 background-color: $mainColor;
@@ -68,9 +166,10 @@ $slightBlack:#333;
     }
     .informationArea{
         position: relative;
-        height: 90%;
+        height: 100%;
         background-color: white;
         padding: 10px;
+        padding-bottom: 75px;
         & > *{
             display: inline-block;
             vertical-align: middle;
@@ -180,7 +279,7 @@ $slightBlack:#333;
         }
         .buttons{
             position: absolute;
-            bottom: 60px;
+            bottom: 80px;
             right: 30px;
             & > button{
                 margin-left:10px;
@@ -244,20 +343,72 @@ $slightBlack:#333;
         background-color: $slightBlack;
         & > div{
             display: inline-block;
-            line-height: 75px;
+            height: 75px;
             vertical-align: middle;
         }
         .currentInfo{
-            padding-left: 24px;
+            margin: 15px;
         }
         .operatingBtns{
+            line-height: 75px;
             float: right;
         }
     }
     .informationArea{
         position: relative;
-        height: 90%;
+        height: 100%;
         background-color: white;
         padding: 10px;
+        padding-bottom: 75px;
+        .contentTable{
+            .tr{
+                margin: 5px 0;
+                padding: 5px 0;
+                img{
+                    width: 25px;
+                }
+                .showPercentage{
+                    background-color: gray;
+                    line-height: 25px;
+                    position: relative;
+                    border-radius: 15px;
+                    overflow: hidden;
+                    .color{
+                        width: 70%;
+                        margin: 0 !important;
+                        display: inline-block;
+                        position: absolute;
+                        background-color: $mainColor;
+                        top:0;
+                        left:0;
+                    }
+                }
+                span,img{
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin: 0 5px;
+                    text-align: center;
+                }
+                span:nth-of-type(1),
+                span:nth-of-type(2),
+                span:nth-of-type(6),
+                span:nth-of-type(7){
+                    width: 150px;
+                }
+                span:nth-of-type(3),
+                span:nth-of-type(4),
+                span:nth-of-type(5){
+                    width: 100px;
+                }
+                span:nth-of-type(8){
+                    width: 200px;
+                }
+            }
+            .title{
+                border-bottom: 1px solid black;
+            }
+            
+            
+        }
     }
 }
