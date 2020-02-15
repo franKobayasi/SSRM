@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {ssrmDB} from '../../../useFirebase';
 import ShopSideNav from '../layout/ShopSideNav';
 import OrderCreating from './OrderCreating';
+import OrderHistory from './OrderHistory';
 
 class Purchase extends Component{
     constructor(props){
@@ -15,27 +16,6 @@ class Purchase extends Component{
         }
     }
     componentDidMount(){
-        let auth=this.props.auth;
-        let shop=this.props.shop;
-        /** get purchase data */
-        ssrmDB.collection('members').doc(auth.MEMBER_UID).collection('shops').doc(shop.id).collection('purchases')
-            .get()
-            .then(snapshot=>{
-                let purchaseOrderList=[];
-                snapshot.forEach(doc=>{
-                    if(doc.exists){
-                        let order=doc.data();
-                        order.id=doc.id;
-                        purchaseOrderList.push(order);
-                    }else{
-                        console.log('no any purchase history yet')
-                    }
-                })
-            })
-            .catch(error=>{
-                console.error("ERROR\n伺服器發生錯誤，目前無法獲取歷史訂單資料，請稍後再試")
-                console.log(error);
-            })
     }
     componentDidUpdate(){
     }
@@ -49,19 +29,15 @@ class Purchase extends Component{
         return (
             <Fragment>
                 <ShopSideNav />
-                <div className="shopMainArea">
-                    {
-                        location==="new"?
-                        <OrderCreating uncompletedNewOrder={uncompletedNewOrder} uid={uid} shop={shop} />:
-                        (
-                            location==="history"?
-                            <div>HISTORY PAGE</div>:
-                            <div>DETAIL PAGE</div>
-                        )
-
-                    }
-                    
-                </div>
+                {
+                    location==="new"?
+                    <OrderCreating uncompletedNewOrder={uncompletedNewOrder} uid={uid} shop={shop} />:
+                    (
+                        location==="history"?
+                        <OrderHistory shop={shop} />:
+                        <div>DETAIL PAGE</div>
+                    )
+                }
             </Fragment>     
         )
     }

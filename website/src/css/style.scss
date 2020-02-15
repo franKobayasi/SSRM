@@ -15,6 +15,9 @@ $backgroudColor:rgb(200, 200, 200);
     background-color:  rgb(200, 200, 200);
 }
 .btn{
+    cursor:default;  
+}
+.btnForFormLittle{
     cursor:default;
     background-color: $mainColor;
     color: white;
@@ -22,9 +25,23 @@ $backgroudColor:rgb(200, 200, 200);
     line-height: 30px;
     border-radius: 15px;
     border:1px solid white;
-    margin: 10px 20px;      
+    margin: 10px 20px;    
 }
-.shopMainArea{
+.btnForFormBig{
+    cursor:default;
+    background-color: $mainColor;
+    width: 100px;
+    line-height: 35px;
+    color: white;
+    font-size: 16px;
+    border-radius: 25px;
+    border: $mainColor 1px solid;
+    margin-right: 25px;
+}
+.shopMainArea-purchase-orderHistory,
+.shopMainArea-purchase-orderCreating,
+.shopMainArea-purchase-orderDetail
+{
     position: relative;
     width: 98.5%;
     margin-left: 1.5%;

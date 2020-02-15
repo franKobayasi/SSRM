@@ -94,7 +94,7 @@ class FormProductEditing extends Component{
         }else if(this.state.itemList.length===0){
             alert('尚未新增任何產品規格，請新增');
         }else{
-            if(confirm('確定新增商品？')){
+            if(confirm('確定完成商品編輯？')){
                 let productToSubmit={
                     id:this.state.id,
                     name:this.state.name,
@@ -161,8 +161,8 @@ class FormProductEditing extends Component{
                     ))}
                 </div>
                 <div className="formBtnArea">
-                    <button className="btn" onClick={this.submitNewProduct}>完成</button>
-                    <button className="btn" onClick={this.props.cancelUpdateProduct} >取消</button>
+                    <button className="btnForFormL" onClick={this.submitNewProduct}>完成</button>
+                    <button className="btnForFormL" onClick={this.props.cancelUpdateProduct} >取消</button>
                 </div>
             </form>
         )
