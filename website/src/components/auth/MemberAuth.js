@@ -8,14 +8,14 @@ import {actionSignIn} from "../../actions/auth";
 
 function MemberAuth(props){
     console.log(props);
-    let id=props.match.params.id;
+    let type=props.match.params.type;
     let history=props.history;
     if(props.auth&&props.auth.isLogin){
         history.push('/');
     }
     let checkOutLayer=(e)=>{
         e.preventDefault();    
-        if(id==='signup'){
+        if(type==='signup'){
             history.push('/auth/signin');
         }else{
             history.push('/auth/signup');
@@ -26,7 +26,6 @@ function MemberAuth(props){
         e.preventDefault();
         ssrmFirebase.auth().signInWithPopup(fbAuthProvider)
             .then((result)=>{
-                console.log('work');
                 let user = result.user;
                 let memberInfo={
                     email:user.email,
@@ -61,7 +60,7 @@ function MemberAuth(props){
                 </div>
             </div>
             <div id="inputPanel">
-                {id==="signup"?
+                {type==="signup"?
                 <SignUp toSignIn={checkOutLayer} loginViaFacebook={loginViaFacebook} history={props.history} />:
                 <SignIn toRegister={checkOutLayer} loginViaFacebook={loginViaFacebook} history={props.history}/>}
             </div>

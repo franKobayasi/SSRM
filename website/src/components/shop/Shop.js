@@ -8,66 +8,94 @@ import {
     Switch,
     Redirect
 } from 'react-router-dom';
-import MemberAuth from '../auth/MemberAuth';
-import Dashboard from '../dashboard/Dashboard.js';
-
+/** firebase */
 import ssrmFirebase,{fbAuthProvider,ssrmDB,getDataFromFireBase} from "../../useFirebase";
-/** Shop Pages */
-import ShopAuth from './ShopAuth';
-import Stock from './Stock';
-import Purchase from './purchase/Purchase'
-import Checkout from './Checkout';
-import Analysis from './Analysis';
-import SettingAndOther from './SettingAndOther';
+/** action creators */
+import {actionShopSignIn,actionShopSignOut} from '../../actions/shop';
+/** component */
+import ShopAuth from './shopauth/ShopAuth';
+import ShopSignIned from './shopauth/ShopSignIned';
 
-function Shop(props){
-    let shopList=props.shopList;
-    let currentShop={};
-    currentShop.id=props.match.params.shopid;
-    console.log(props, currentShop);
-    for(let shop of shopList){
-        if(shop.id===currentShop.id){
-            currentShop.title=shop.title;
-            console.log(shop.title);
-        }
+class Shop extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            shop:{
+                id:this.props.match.params.shopid,
+            },
+            isWrongID:'uncheck',
+        };
     }
-    return (
-       <ShopSignOut currentShop={currentShop.title?currentShop:{title:'資料錯誤'}}/>
-    )
-}
-function ShopSignOut(props){
-    return <ShopAuth currentShop={props.currentShop}/>
-}
-function ShopSignIn(props){
-    return (
-        <Router> 
-            <Switch>
-                <Route path="/shop/:id/order/checkout" component={Checkout}/> 
-                <Route path="/shop/:id/order/history" component={Checkout}/> 
-                <Route path="/shop/:id/purchase/keyin" component={Purchase}/>
-                <Route path="/shop/:id/purchase/history" component={Purchase}/>
-                <Route path="/shop/:id/stock/storage" component={Stock}/> 
-                <Route path="/shop/:id/stock/history" component={Stock}/> 
-                <Route path="/shop/:id/analysis" render={Analysis}/> 
-                <Route path="/shop/:id/setting/" render={SettingAndOther}/>
-                <Route path="/shop/:id/setting/other" render={SettingAndOther}/>
-                <Route path="/shop/:id">
-                    {props.currentUser?<Redirect to={`${props.match.url}/order/checkout`}/>:<ShopAuth currentShop={currentShop}/>}
-                </Route>
-                <Route path="/auth/:id" component={MemberAuth}/> 
-                <Route path="/dashboard/setting" render={()=><Dashboard />}/>
-                <Route path="/dashboard" render={()=><Dashboard />}/>
-                <Route exact path="/">
-                    <Redirect to="/dashboard"/>
-                </Route>
-            </Switch>
-        </Router> 
-    )
+    componentDidMount(){
+        /** 
+            to get shop current state and info from firebase
+            - state is signIn: 【state is signIned】
+                update shop info to redux and turn to ShopSignIned component;
+            - state is signOut: 【state is signOuted】
+                set shop basic info to state and sent to ShopSignOuted component via props;
+            - wrong shop id: 【state is uncheck】
+                alert and then go back to dashboard;
+        */
+        let auth=this.props.auth;
+        let shopid=this.state.shop.id;
+        let shopRef=ssrmDB.collection('members').doc(auth.MEMBER_UID).collection('shops').doc(shopid);
+        shopRef.get().then(doc=>{
+            if(doc.exists){
+                let shop=doc.data();
+                shop.id=doc.id;
+                // 尚未登入
+                if(shop.currentUser==="undefined"){
+                    console.log('no user sign in shop yet');
+                    this.props.dispatch(actionShopSignOut());
+                }else{
+                    this.props.dispatch(actionShopSignIn({
+                        user:shop.currentUser,
+                        title:shop.title,
+                        id:shop.id,
+                    }))
+                    console.log('shop auto login');
+                }
+                this.setState(preState=>({
+                    shop:{
+                        ...preState.shop,
+                        title:shop.title,
+                    },
+                    isWrongID:false,
+                }));
+            }else{ // 店家不存在，錯誤店家代碼
+                this.setState(preState=>({
+                    isWrongID:true,
+                }))
+            }
+        })
+    }
+    componentDidUpdate(){
+
+    }
+    render(){
+        let shop=this.props.shop;
+        let isWrongID=this.state.isWrongID;
+        if(isWrongID==="uncheck"){
+            return <div>shop data loading...</div>
+        }else if(isWrongID===true){
+            alert('錯誤的店家代碼，即將返回會員主控頁');
+            history().push('/dashboard');
+            return null;
+        }else{
+            return (
+                shop.user==="undefined"?
+                <ShopAuth currentShop={this.state.shop}/>:
+                <ShopSignIned shopUrl={this.props.match.url} shop={this.state.shop}/>
+            )   
+        } 
+    }
 }
 
-function mapStateToProps({shopList},ownProps){
+function mapStateToProps({auth, shopList, shop},ownProps){
     return {
+        auth,
         shopList,
+        shop,
     };
 }
 

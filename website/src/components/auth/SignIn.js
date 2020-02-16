@@ -37,7 +37,7 @@ class SignIn extends Component{
                         }
                         this.props.dispatch(actionSignIn(memberInfo));
                         console.log('login!',memberInfo);
-                        this.props.history.push('/dashboard');
+                        this.props.history.push('/');
                     });
                 }else{
                     console.log('some error is happen...');

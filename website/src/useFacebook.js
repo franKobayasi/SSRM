@@ -1,4 +1,6 @@
-export function initializeFacebook(dispatch){
+/** This file for connect to Facebook CDN for facebook login */
+
+export function initializeFacebook(){
     window.fbAsyncInit = function() {
         FB.init({
         appId      : '183549722751333',

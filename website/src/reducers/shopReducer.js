@@ -1,11 +1,9 @@
 import {ssrmDB} from "../useFirebase";
 const initialState={
-    user:{
-        name:'仲岳',
-        token:'H25sXb5Gi7I6qaypTiKQ',
-    },
-    id:'mAHT8POZz1AhyW2CEXXp',
-    name:'Reborn中正台門市'
+    user:'undefined',
+    id:'undefined',
+    title:'undefined',
+    state:'uncheck',
 }
 
 const shopReducer=(preState=initialState,action)=>{
@@ -13,23 +11,31 @@ const shopReducer=(preState=initialState,action)=>{
         return initialState;
     }
     switch(action.type){
-        case 'SHOP_SIGNINED':
+        case 'SHOP_SIGN_IN':
+            console.log(action);
             return Object.assign({},preState,{
-                currentUser:action.currentUser,
-                currentShop:action.currentShop, 
+                user:action.user,
+                id:action.id,
+                title:action.title,
+                state:'signIned',
             })
             break;
-        case 'SHOP_SIGNOUTED':
+        case 'SHOP_SIGN_OUT':
             return Object.assign({},preState,{
-                currentUser:'undefined',
-                currentShop:'undefined',    
+                user:'undefined',
+                id:'undefined',
+                title:'undefined',
+                state:'signOuted',
             })
             break;
-        case 'DELETE_SHOP ':
+        case 'CHANGE_TO_SIGN_OUT_STATE':
             return Object.assign({},preState,{
-               
+                user:'undefined',
+                id:'undefined',
+                title:'undefined',
+                state:'uncheck',
             })
-            break;
+            break;  
         default:
             return preState
             break;

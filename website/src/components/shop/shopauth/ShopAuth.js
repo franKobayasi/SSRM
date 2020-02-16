@@ -1,6 +1,8 @@
 import React,{Component,Fragment} from "react";
 import {connect} from "react-redux";
-import bgImg_memberLogin from "../../img/BgImage_member_login_page.jpg";
+import {actionShopSignIn} from "../../../actions/shop";
+import {ssrmDB} from "../../../useFirebase";
+import {ajax} from "../../../lib";
 
 class ShopAuth extends Component{ 
     constructor(props){
@@ -19,38 +21,19 @@ class ShopAuth extends Component{
         })
     }
     signInShop=(evnt)=>{
-        let isMaster=this.state.isMaster
-        let name=isMaster?this.props.auth.MEMBER_NAME:this.state.name?this.state.name.trim():'';
+        let auth=this.props.auth;
+        let shop=this.props.currentShop;
+        let isMaster=this.state.isMaster;
+        let name=isMaster?auth.MEMBER_NAME:this.state.name?this.state.name.trim():'';
         let password=this.state.password?this.state.password.trim():'';
         if(name.length===0){
             alert('請輸入用戶名稱');
         }else if(password.length===0){
             alert('請輸入密碼');
         }else{
-            const httpRequest = new XMLHttpRequest();
-            httpRequest.open("POST","https://us-central1-ssrm-e7bc3.cloudfunctions.net/shopAuth",true);
-            httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-            console.log('sign in shop!');
-            httpRequest.onreadystatechange = function(){
-                try{
-                    if (httpRequest.readyState===XMLHttpRequest.DONE) {
-                        if(httpRequest.status===200){
-                            console.log(httpRequest.response)
-                            if(response.state==="success"){
-                                /** 成功登入 */
-                                alert('準備登入');
-                            }
-                        }else{
-                            console.log("error");
-                        }
-                    }
-                }catch(error){
-                    alert(error);
-                }
-            };
             let reqBody={
-                uid:this.props.auth.MEMBER_UID,
-                shopID:this.props.currentShop.id,
+                uid:auth.MEMBER_UID,
+                shopID:shop.id,
                 user:{
                     type:isMaster?'owner':'employee',
                     name:name,
@@ -58,9 +41,31 @@ class ShopAuth extends Component{
                 }
             }
             console.log(reqBody);
-            httpRequest.send(JSON.stringify(reqBody));
+            let callback=(req)=>{
+                let res=JSON.parse(req.response);
+                console.log(res);
+                if(res.state==="fail"){
+                    alert(`登入失敗，${res.message}`);
+                }else if(res.state==="success"){
+                    this.props.dispatch(actionShopSignIn({
+                        user:res.user,
+                        id:shop.id,
+                        title:shop.title,
+                    }));
+                    ssrmDB.collection('members').doc(auth.MEMBER_UID).collection('shops').doc(shop.id).update({
+                        currentUser:res.user
+                    })
+                    alert("登入成功");
+                }else{
+                    console.log(res);
+                }
+            }
+            try{
+                ajax('POST', "https://us-central1-ssrm-e7bc3.cloudfunctions.net/shopAuth", reqBody, {}, callback)
+            }catch(error){
+                console.log(error);
+            }
         }
-        
     }
     checkOutPanel=(evnt)=>{
         this.setState(preState=>{
@@ -71,6 +76,7 @@ class ShopAuth extends Component{
     }
     render(){
         let shop=this.props.currentShop;
+        console.log(this.props);
         return (
             <Fragment>
                 <div id="shop-login-panel">
@@ -82,8 +88,8 @@ class ShopAuth extends Component{
                 }<br/>
                 <input className="keyInBlock" onChange={this.handleChange} id="password" type="password" placeholder="輸入密碼"/><br/>
                 {this.state.isMaster?
-                <div onClick={this.checkOutPanel} className="checkOutPanel">店員<br/>登入</div>:
-                <div onClick={this.checkOutPanel} className="checkOutPanel">店長<br/>登入</div>}
+                <div onClick={this.checkOutPanel} className="btn checkOutPanel">店員<br/>登入</div>:
+                <div onClick={this.checkOutPanel} className="btn checkOutPanel">店長<br/>登入</div>}
                 <div onClick={this.signInShop} className="signIn_btn">登入</div>
                 </div>
             </Fragment>
@@ -97,7 +103,3 @@ function mapStateToProps({auth},ownProps){
     }
 }
 export default connect(mapStateToProps)(ShopAuth);
-
-/**
-https://us-central1-ssrm-e7bc3.cloudfunctions.net/shopAuth
- */

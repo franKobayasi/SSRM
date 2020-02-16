@@ -5,7 +5,6 @@ const actionType={
 }
 
 export function actionSignIn(member){
-    console.log(member);
     return {
         type:actionType.SIGN_IN,
         MEMBER_UID:member.uid,

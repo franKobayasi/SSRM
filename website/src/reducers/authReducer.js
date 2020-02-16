@@ -1,8 +1,8 @@
 const initialState={
-    MEMBER_UID:'xKWbiVJJqAeGwy5FBZf1PQFKUm13',
-    MEMBER_NAME:'仲岳',
-    MEMBER_EMAIL:'tofindeachotherandtofeel',
-    isLogin:true,  /** unconnect */
+    MEMBER_UID:'undefined', /** xKWbiVJJqAeGwy5FBZf1PQFKUm13 */
+    MEMBER_NAME:'undefined', /** 仲岳 */
+    MEMBER_EMAIL:'undefined', /** tofindeachotherandtofeel */
+    isLogin:'unconnect',  /** unconnect */
 }
 
 const authReducer=(preState=initialState,action)=>{
@@ -20,18 +20,18 @@ const authReducer=(preState=initialState,action)=>{
             break;
         case 'CHANGE_TO_SIGN_OUT_STATE':
             return Object.assign({},preState,{
-                MEMBER_UID:'',
-                MEMBER_NAME:'',
-                MEMBER_EMAIL:'',
+                MEMBER_UID:'undefined',
+                MEMBER_NAME:'undefined',
+                MEMBER_EMAIL:'undefined',
                 isLogin:false
             })
             break;
-        case 'FIREBASE_AUTH_ERROR':
+        case 'FIREBASE_AUTH_FORBID':
             return Object.assign({},preState,{
-                MEMBER_UID:'',
-                MEMBER_NAME:'',
-                MEMBER_EMAIL:'',
-                isLogin:'ERROR'
+                MEMBER_UID:'undefined',
+                MEMBER_NAME:'undefined',
+                MEMBER_EMAIL:'undefined',
+                isLogin:'forbid'
             })
         default:
             return preState

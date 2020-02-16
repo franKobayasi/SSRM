@@ -1,5 +1,5 @@
 import React,{Component,Fragment} from "react";
-import { Redirect,useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
 import {createHashHistory as history} from 'history';
 import ssrmFirebase,{ssrmDB,getDataFromFireBase} from "../../useFirebase";
@@ -12,20 +12,17 @@ class ShopSummary extends Component{
         this.state={
             isEdit:false,
         }
-        this.handleChange=this.handleChange.bind(this);
-        this.switchEditState=this.switchEditState.bind(this);
     }
-    handleChange(evnt){
+    handleChange=(evnt)=>{
         let id=evnt.target.id;
         let value=evnt.target.value;
-        console.log(id,value)
         this.setState((preState)=>{
             return {
                 [id]:value,
             }
         });
     }
-    switchEditState(){
+    switchEditState=()=>{
         this.setState((preState)=>{
             return {
                 isEdit:!preState.isEdit,
@@ -45,7 +42,8 @@ class ShopSummary extends Component{
                 </div>
                 {isEdit?
                 <div>
-                    <input id="tempShopTitle" onChange={this.handleChange} defaultValue={this.props.title}/><span className="changeShopTitle_btn btn" onClick={(evnt)=>{
+                    <input id="tempShopTitle" onChange={this.handleChange} defaultValue={this.props.title}/>
+                    <span className="changeShopTitle_btn btn" onClick={(evnt)=>{
                         console.log('更新中..');
                         this.props.updateShopInfo(evnt,this.state.tempShopTitle,'title');
                     }}>變更</span>
@@ -69,7 +67,6 @@ class ShopSummary extends Component{
                         }
                     })}}>編輯</button>
                 </div>}
-                
             </div>
         )
     }
@@ -78,12 +75,6 @@ class ShopSummary extends Component{
 class Dashboard extends Component{
     constructor(props){
         super(props);
-        this.handleChange=this.handleChange.bind(this);
-        this.startShopCreating=this.startShopCreating.bind(this);
-        this.cancelShopCreating=this.cancelShopCreating.bind(this);
-        this.asyncShopListFromFirebase=this.asyncShopListFromFirebase.bind(this);
-        this.createNewShop=this.createNewShop.bind(this);
-        this.deleteShop=this.deleteShop.bind(this);
         this.state={
             isNeedUpdate:true,
             isShopCreating:false,
@@ -93,10 +84,15 @@ class Dashboard extends Component{
         }
     }
     componentDidMount(){
-        console.log('dashboard is going to mount!');
+        console.log('getting data from DB via mount');
+        (async ()=>{
+            await this.asyncShopListFromFirebase();
+            this.setState(preState=>({
+                isNeedUpdate:false,
+            }));
+        })();
     }
     componentDidUpdate(){
-        console.log('update dashboard!');
         /** 初始化抓取資料 */
         if(this.state.isNeedUpdate){
             console.log('getting data from DB via mount');
@@ -109,9 +105,8 @@ class Dashboard extends Component{
         }
     }
     componentWillUnmount(){
-        console.log('dashboard is going to fade!');
     }
-    handleChange(evnt){
+    handleChange=(evnt)=>{
         let id=evnt.target.id;
         let value=evnt.target.value;
         this.setState((preState)=>{
@@ -122,7 +117,7 @@ class Dashboard extends Component{
     }
     /** functions below handle shoplist */
     /** this func aysc shopList from firebase to redux store */
-    asyncShopListFromFirebase(){
+    asyncShopListFromFirebase=()=>{
         ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').get()
         .then(snapshot=>{
             let shopList=[];
@@ -138,14 +133,14 @@ class Dashboard extends Component{
         })
     }
     /** show or hide shop create form */
-    startShopCreating(){
+    startShopCreating=()=>{
         this.setState(preState=>{
             return {
                 isShopCreating:true,
             }
         })
     }
-    cancelShopCreating(){
+    cancelShopCreating=()=>{
         this.setState(preState=>{
             return {
                 isShopCreating:false,
@@ -155,32 +150,27 @@ class Dashboard extends Component{
             }
         });
     }
-    createNewShop(){
+    createNewShop=()=>{
         let name=this.props.auth.MEMBER_NAME;
         let uid=this.props.auth.MEMBER_UID;
         let shopList=this.props.shopList;
         let title=this.state.tempShopTitle
         let masterKey=this.state.tempMasterKey;
         let masterKeyCheck=this.state.tempMasterKeyCheck;
+        let shopsRef=ssrmDB.collection('members').doc(uid).collection('shops');
         if(!(masterKey===masterKeyCheck)){
             alert("密碼不一致，請確認");
         }else{
             if(masterKey.length<5){
                 alert("密碼過短，至少輸入5位數");
             }else{
-                let isTitleExisted=(()=>{
-                    for(let shop of shopList){
-                        if(shop.title===title)
-                            return true;
-                    }
-                })();
-                if(isTitleExisted){
-                    alert("此商家名稱已存在，請命名其他名稱");
-                }else{
-                    let shop={title,currentUser:'undefined'};
-                    ssrmDB.collection('members').doc(uid).collection('shops').add(shop)
+                let shop={title, currentUser:'undefined'}; // shop document的初始狀態
+                shopsRef.where('title','==',title).get()
+                .then(snapshot=>{
+                    if(snapshot.empty){
+                        shopsRef.add(shop)
                         .then(docRef=>{
-                            ssrmDB.collection('members').doc(uid).collection('shops').doc(docRef.id).collection('users')
+                            shopsRef.doc(docRef.id).collection('users')
                             .add({type:'owner', name:name, password:masterKey})
                             .then(res=>{
                                 console.log('create sccesss');
@@ -197,12 +187,18 @@ class Dashboard extends Component{
                             console.error('ERROR on FIREBASE: create new shop fail: 創建新店家發生錯誤')
                             console.log(error);
                         })
-                }
+                    }else{
+                        alert(`店家名稱"${title}"重複，無法新增，請新增其他未重複的名稱`);
+                    }
+                })
+                .catch(error=>{
+                    console.error('ERROR\n搜尋店家列表時發生錯誤');
+                    console.log(error);
+                })
             }
         }
-
     }
-    deleteShop(evnt){
+    deleteShop=(evnt)=>{
         let target=evnt.target.parentNode.parentNode;
         if(confirm(`確定刪除${target.title}?`)){
             ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').doc(target.id).delete();
@@ -212,8 +208,8 @@ class Dashboard extends Component{
     updateShopInfo=(evnt,value,type)=>{
         let target=evnt.target.parentNode.parentNode;
         if(type==='title'){
-            if(target.title===value){
-                alert('名稱未不同，請確認');
+            if(target.title===value||value===undefined){
+                alert('名稱未更改，請確認');
             }else if(confirm(`確定將${target.title}改名為${value}?`)){
                 ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').doc(target.id).update({
                     title:value
@@ -240,19 +236,26 @@ class Dashboard extends Component{
             <Fragment>
                 <SideNav />
                 <div id="dashboard-main">
-                    {shopList!=='undefined'&&shopList.length>=1?shopList.map((shop,id)=>{
-                        return <ShopSummary toShop={this.toShop(shop.id)} key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>
-                    }):<div className="noShopsMsg">尚未建立任何商家</div>}
-                    {this.state.isShopCreating?
-                    <form className="shopCreator">
-                        <div>新增店家</div>
-                        <input id="tempShopTitle" type="text" placeholder="商家名稱" onChange={this.handleChange}/>
-                        <input id="tempMasterKey" type="password" placeholder="管理者密碼" onChange={this.handleChange}/>
-                        <input id="tempMasterKeyCheck" type="password" placeholder="密碼確認" onChange={this.handleChange}/>
-                        <button onClick={this.createNewShop}>確認</button>
-                        <button onClick={this.cancelShopCreating}>取消</button>
-                    </form>:
-                    <div id="creatNewShop_btn" onClick={this.startShopCreating}>+</div>}
+                    { /** handle shopList */
+                        shopList!=='undefined'&&shopList.length>=1?
+                        shopList.map((shop,id)=>{
+                            return <ShopSummary toShop={this.toShop(shop.id)} key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>}):
+                            shopList==='undefined'?
+                            <div>shop loading...</div>:
+                            <div className="noShopsMsg">尚未建立任何商家</div>
+                    }
+                    {   /** shop creating and editing form */
+                        this.state.isShopCreating?
+                        <form className="shopCreator">
+                            <div>新增店家</div>
+                            <input id="tempShopTitle" type="text" placeholder="商家名稱" onChange={this.handleChange}/>
+                            <input id="tempMasterKey" type="password" placeholder="管理者密碼" onChange={this.handleChange}/>
+                            <input id="tempMasterKeyCheck" type="password" placeholder="密碼確認" onChange={this.handleChange}/>
+                            <button onClick={this.createNewShop}>確認</button>
+                            <button onClick={this.cancelShopCreating}>取消</button>
+                        </form>:
+                        <div id="creatNewShop_btn" onClick={this.startShopCreating}>+</div>
+                    }
                 </div>
             </Fragment>
         )

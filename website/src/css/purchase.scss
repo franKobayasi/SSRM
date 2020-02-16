@@ -1,7 +1,8 @@
 $mainColor:#FF6D05;
 $slightBlack:#333;
 
-.shopMainArea-purchase-orderCreating{
+.shopMainArea-purchase-orderCreating,
+.shopMainArea-purchase-orderDetail{
     .supplierAddingForm{
         position: absolute;
         top:50%;

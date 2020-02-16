@@ -23,6 +23,12 @@ const stateReducer=(preState=initialState,action)=>{
                 isFetch:false,
             })
             break;
+        case 'CHANGE_TO_SIGN_OUT_STATE':
+            return Object.assign({},preState,{
+                isFetch:false,
+                isError:false,
+            })
+            break;
         default:
             return preState
             break;

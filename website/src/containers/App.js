@@ -14,22 +14,17 @@ import ssrmFirebase,{ssrmDB,getAuthState,getDataFromFireBase} from '../useFireba
 /** action creator */
 import {actionUpdateShopList} from "../actions/shopList";
 import {actionFetchPosted,actionFetchSuccessed} from "../actions/fetch";
-/** pages */
+/** component */
 import MemberAuth from '../components/auth/MemberAuth';
 import Dashboard from '../components/dashboard/Dashboard.js';
 import Shop from '../components/shop/Shop.js';
 import Stock from '../components/shop/Stock';
-import Purchase from '../components/shop/purchase/Purchase';
 
 /*
-    載入App需依序確認幾件事情：
-    1. member登入狀態
-        - SignIned
-        - SignOuted
-    2. shop登入狀態
-        - 需要 currentShop && currentUser
-
-    每次 dispatch就會觸發程式從頭來過，避免不必要的dispatch
+    This Component 
+    - have to check user's auth state to give different Routes Sets:  SignIn/SignOut
+    - According to App state to render different views.:  isFetch/isError/....
+    
 */
 
 function App(props){
@@ -40,23 +35,6 @@ function App(props){
     let shopList=props.shopList;
     let currentShop;
 
-    /** this func aysc shopList from firebase to redux store */
-    const asyncShopListFromFirebase=()=>{
-            dispatch(actionFetchPosted());
-            ssrmDB.collection('members').doc(props.auth.MEMBER_UID).collection('shops').get()
-            .then(snapshot=>{
-                let shopList=[];
-                snapshot.forEach(doc=>{
-                    let shop={
-                        id:doc.id,
-                        title:doc.data().title
-                    };
-                    shopList.push(shop);
-                })
-                dispatch(actionUpdateShopList(shopList));
-                dispatch(actionFetchSuccessed());
-            })
-        }
     /** check if app is on fatch */
     if(isFetch===true){
         return <div>is fetching data...please wait...</div>
@@ -74,12 +52,7 @@ function App(props){
     }else{
         if(isLogin===true){
             console.log('登入了');
-            if(shopList==="undefined"){
-                asyncShopListFromFirebase();
-                return <div>is fetching data...please wait...</div>
-            }else{
-                return <AfterSignIn />;
-            }
+            return <AfterSignIn />;
         }else{
             console.log('還沒登入');
             return <BeforeSignIn />;
@@ -87,7 +60,6 @@ function App(props){
     }
  
 }
-
 function BeforeSignIn(){
     return (
         <Router> 
@@ -103,10 +75,10 @@ function AfterSignIn(){
     return (
         <Router> 
             <Switch>
-                <Route path="/test" render={()=><Purchase />} />
-                <Route path="/auth/:id" component={MemberAuth}/> 
+                {/* <Route path="/test" render={()=><Purchase />} /> */}
+                <Route path="/auth/:type" component={MemberAuth}/> 
                 <Route path="/shop/:shopid" component={Shop}/>
-                <Route path="/dashboard/setting" render={()=><Dashboard />}/>
+                <Route exact path="/dashboard/setting" render={()=><Dashboard />}/>
                 <Route path="/dashboard" render={()=><Dashboard />}/>
                 <Route path="/">
                     <Redirect to="/dashboard"/>
