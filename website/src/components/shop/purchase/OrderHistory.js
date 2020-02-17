@@ -42,68 +42,6 @@ class OrderHistory extends Component{
     }
     componentDidUpdate(){
     }
-    showSupplierAddingForm=()=>{
-        this.setState(preState=>({
-            onSupplierAdding:true,
-        }))
-    }
-    hideSupplierAddingForm=()=>{
-        this.setState(preState=>({
-            onSupplierAdding:false,
-        }))
-    }
-    supplierExist=(title,address,phone)=>{
-        alert(`供應商 ${title} 已經存在，\n地址：${address}\n電話：${phone}`);
-    }
-    addingSuccess=(title,address,phone)=>{
-        alert(`供應商 ${title} 註冊成功，\n地址：${address}\n電話：${phone}`);
-    }
-    addingFail=(error)=>{
-        console.error('ERROR\n 註冊供應商時發生錯誤');
-        console.log(error)
-    }
-    getOrderComputedResult(order){
-        let sumOfCost=0,sumOfNum=0,sumOfPrice=0,avgProfit=0;
-        if(order){
-            for(let product of order.products){
-                for(let item of product.itemList){
-                    sumOfCost+=item.num*product.cost;
-                    sumOfNum+=parseInt(item.num);
-                    sumOfPrice+=item.num*product.price;
-                }
-            }
-            avgProfit=roundAfterPointAt((sumOfPrice-sumOfCost)/sumOfPrice,2);
-            return {
-                sumOfCost,
-                sumOfNum,
-                avgProfit,
-            }
-        }else{
-            return {
-                sumOfCost:"...",
-                sumOfNum:"...",
-                avgProfit:"...",
-            }
-        }
-    }
-    getDateToYMD(seconds){
-        let date=new Date(seconds*1000);
-        return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
-    }
-    showPercentage(order){
-        let number="70%";
-        let style={
-            width:number
-        }
-        return (
-            <Fragment>
-                .<span className="color" style={style}>{number}</span>
-            </Fragment>
-        )
-    }
-    toDetailPage=(orderid)=>{
-        history().push(`${this.props.shopUrl}/purchase/history/${orderid}`);
-    }
     render(){
         let onSupplierAdding=this.state.onSupplierAdding;
         let orderList=this.state.orderList;
@@ -114,9 +52,9 @@ class OrderHistory extends Component{
                 {
                     orderid?
                     <OrderDetail shopUrl={this.props.shopUrl} shop={this.props.shop} id={orderid} />:
-                    <div className="shopMainArea-purchase-orderHistory">
+                    <div className="shopMainArea shopMainArea-purchase-orderHistory">
                         {/* 新增供應商 */}
-                        {onSupplierAdding?<SupplierAddingForm cancel={this.hideSupplierAddingForm} supplierExist={this.supplierExist} addingSuccess={this.addingSuccess} addingFail={this.addingFail}/>:null}
+                        {onSupplierAdding?<SupplierAddingForm shopRef={this.props.shop.shopRef} cancel={this.hideSupplierAddingForm} supplierExist={this.supplierExist} addingSuccess={this.addingSuccess} addingFail={this.addingFail}/>:null}
                         <div className="operatingArea">
                             <div className="currentInfo">
                                 <div>採購管理 \ 歷史採購訂單</div>
@@ -166,6 +104,74 @@ class OrderHistory extends Component{
                 }
             </Fragment>
         )
+    }
+    showSupplierAddingForm=()=>{
+        this.setState(preState=>({
+            onSupplierAdding:true,
+        }))
+    }
+    hideSupplierAddingForm=()=>{
+        this.setState(preState=>({
+            onSupplierAdding:false,
+        }))
+    }
+    supplierExist=(title,address,phone)=>{
+        alert(`供應商 ${title} 已經存在，\n地址：${address}\n電話：${phone}`);
+        this.setState(preState=>({
+            onSupplierAdding:false
+        }))
+    }
+    addingSuccess=(title,address,phone)=>{
+        alert(`供應商 ${title} 註冊成功，\n地址：${address}\n電話：${phone}`);
+        this.setState(preState=>({
+            onSupplierAdding:false
+        }))
+    }
+    addingFail=(error)=>{
+        console.error('ERROR\n 註冊供應商時發生錯誤');
+        console.log(error)
+    }
+    getOrderComputedResult(order){
+        let sumOfCost=0,sumOfNum=0,sumOfPrice=0,avgProfit=0;
+        if(order){
+            for(let product of order.products){
+                for(let item of product.itemList){
+                    sumOfCost+=item.num*product.cost;
+                    sumOfNum+=parseInt(item.num);
+                    sumOfPrice+=item.num*product.price;
+                }
+            }
+            avgProfit=roundAfterPointAt((sumOfPrice-sumOfCost)/sumOfPrice,2);
+            return {
+                sumOfCost,
+                sumOfNum,
+                avgProfit,
+            }
+        }else{
+            return {
+                sumOfCost:"...",
+                sumOfNum:"...",
+                avgProfit:"...",
+            }
+        }
+    }
+    getDateToYMD(seconds){
+        let date=new Date(seconds*1000);
+        return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
+    }
+    showPercentage(order){
+        let number="10%";
+        let style={
+            width:number
+        }
+        return (
+            <Fragment>
+                <span className="color" style={style}>.</span>{number}
+            </Fragment>
+        )
+    }
+    toDetailPage=(orderid)=>{
+        history().push(`${this.props.shopUrl}/purchase/history/${orderid}`);
     }
 }
 

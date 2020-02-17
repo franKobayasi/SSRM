@@ -12,17 +12,218 @@ import deleteImg from "../../../img/deleteBtn.png";
 /**
 This Component for view and edit history order.
 Need to pass history order into this component.
+
  */
 class OrderDetail extends Component{
     constructor(props){
         super(props);
         this.state={
-            currentOrder:'undefined',
+            currentOrder:'loading',
+            unsavedHistoryOrder:'loading',
             onOrderEditing:false,
             onProductEditing:false,
             onSupplierAdding:false,
             isModified:false,
+            showModifyConfirm:false,
             isNeedUpdate:true,
+        }
+    }
+    componentDidMount(){
+        //尋找是否有此訂單的 unsavedHistoryOrder 並儲存到 state
+            //預備動作
+        //至資料庫查找此訂單的資料並更新到currentOrder;
+            //目的是render提供查看
+        let currentOrder,unsavedHistoryOrder;
+        let shopRef=this.props.shop.shopRef;
+        let search=localStorage.getItem(`History_${this.props.id}`);
+        unsavedHistoryOrder=search?JSON.parse(search):'unfound';
+        shopRef.collection('purchases').doc(this.props.id).get()
+            .then(doc=>{
+                if(doc.exists){
+                    currentOrder=doc.data();
+                    this.setState(preState=>({
+                        currentOrder,
+                        unsavedHistoryOrder
+                    }))
+                }
+            })
+    }
+    componentDidUpdate(){
+        console.log('OrderDetail更新')
+        /** auto upadte order to localStorage */
+        if(this.state.unsavedHistoryOrder.isNeedUpdate){
+            localStorage.setItem(`History_${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
+            this.setState(preState=>({
+                unsavedHistoryOrder:{
+                    ...preState.unsavedHistoryOrder,
+                    isNeedUpdate:false,
+                }
+            }))
+            console.log('update to local');
+        }
+        if(this.state.currentOrder==='loading'){
+            let currentOrder,unsavedHistoryOrder;
+            let shopRef=this.props.shop.shopRef;
+            let search=localStorage.getItem(`History_${this.props.id}`);
+            unsavedHistoryOrder=search?JSON.parse(search):'unfound';
+            shopRef.collection('purchases').doc(this.props.id).get()
+                .then(doc=>{
+                    if(doc.exists){
+                        currentOrder=doc.data();
+                        this.setState(preState=>({
+                            currentOrder,
+                            unsavedHistoryOrder
+                        }))
+                    }
+                })
+        }
+    }
+    render(){
+        console.log('OrderDetail開始render');
+        let onProductEditing=this.state.onProductEditing;
+        let onSupplierAdding=this.state.onSupplierAdding;
+        let onOrderEditing=this.state.onOrderEditing;
+        let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
+        let currentProduct=this.state.currentProduct;
+        /**
+            order={
+                id,
+                (isNeedUpdate)
+                products:[
+                    products...
+                ],
+                supplier: {
+                    address,
+                    title,
+                    phone
+                }
+            }
+         */
+        return (
+            orderToRender==="loading"?
+            <div>data is loading..</div>:
+            <div className="shopMainArea shopMainArea-purchase-orderDetail">
+                {/* 填寫修改原因訊息 */}
+                {this.state.showModifyConfirm?
+                <form className="modifyConfirm">
+                    <div>修改原因：</div>
+                    <textarea id="modifyDescription" onChange={this.handleChange} />
+                    <div className="btns"> 
+                    <button onClick={this.submitOrder}>送出</button>
+                    <button onClick={this.cancelSubmit}>取消</button>
+                    </div>
+                </form>:null
+                }
+                {/* 新增供應商 */}
+                {onSupplierAdding?
+                <form className="supplierAddingForm">
+                    <div><label>供應商</label><input id="tempSupplierName" onChange={this.handleChange}/></div>
+                    <div><label>地址</label><input id="tempSupplierAddress" onChange={this.handleChange}/></div>
+                    <div><label>電話</label><input id="tempSupplierPhone" onChange={this.handleChange} placeholder={"這將作為查詢使用"}/></div>
+                    <div className="buttons">
+                        <button className="finish" onClick={this.submitNewSupplier}>完成</button>
+                        <button className="cancel" onClick={this.hideSupplierAddingForm}>取消</button>
+                    </div>
+                </form>:null}
+                {/* 新增產品表單 */}
+                {onProductEditing?
+                <FormProductEditing product={this.state.currentProduct} 
+                    submitNewProduct={this.submitNewProduct} 
+                    cancelUpdateProduct={this.cancelUpdateProduct}    
+                    />:null}
+                <div className="operatingArea">
+                    <div className="currentInfo">
+                        <div>採購管理 \ 歷史訂單詳情</div>
+                        <div>user: <span>{`Frank Lin`}</span></div>
+                    </div>
+                    <div className="operatingBtns">
+                        <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
+                        <button className="btnForFormBig">庫存查詢</button>
+                        <button className="btnForFormBig" onClick={this.showSupplierAddingForm}>新增供應商</button>
+                    </div>
+                </div>
+                <div className="informationArea">
+                    <div className="basicInfo">
+                        <span className="number">{`採購單號 ${orderToRender.id}`}</span>
+                        <Supplier title={orderToRender.supplierTitle} address={orderToRender.supplierAddress} phone={orderToRender.supplierPhone}/>
+                    </div>
+                    {
+                        onOrderEditing?
+                        <div className="innerOperatingArea">
+                            <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
+                            <span className="title">進貨幣別</span>
+                            <select className="moneyType">
+                                <option value="TWD">{`台幣`}</option>
+                                <option value="WON">{`韓元`}</option>
+                                <option value="USD">{`美金`}</option>
+                                <option value="CNY">{`人民幣`}</option>
+                                <option value="JPY">{`日幣`}</option>
+                            </select>
+                        </div>:null
+                    }
+                    <div className="contentTable">
+                        <div className="tableHead">
+                            <span className="productID">產品編號</span>
+                            <span className="itemID">商品牌號</span>
+                            <span className="productName">商品名稱</span>
+                            <span className="itemSpec">尺寸</span>
+                            <span className="itemSpec">顏色</span>
+                            <span className="itemSpec">件數</span>
+                            <span className="productCost">進貨單價</span>
+                            <span className="sumOfCostPerRow">成本小計</span>
+                            <span className="productPrice">商品標價</span>
+                            <span className="productProfit">單項利潤</span>
+                        </div>
+                        {orderToRender.products&&orderToRender.products.map((product,index)=>(
+                            <ProductBox key={index} product={product} 
+                            startModifyProduct={this.startModifyProduct}
+                            deleteProduct={this.deleteProduct}
+                            onOrderEditing={onOrderEditing}    
+                            />
+                        ))}
+                        {
+                            onOrderEditing?
+                            <div onClick={this.startProductAdding} className="addNewProduct btn">+</div>:null
+                        }
+                    </div>
+                    <footer>
+                        <div className="buttons">
+                            {
+                                onOrderEditing?
+                                <Fragment>
+                                <button className="btnForFormLittle" onClick={this.showModifyConfirm}>完成</button>
+                                <button className="btnForFormLittle" onClick={this.cancelEditOrder}>取消</button>
+                                </Fragment>:
+                                <button className="btnForFormLittle" onClick={this.editOrder}>編輯</button>
+                            }
+                        </div>
+                        <div className="totalInfo">
+                            <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
+                            <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        )
+    }
+    editOrder=()=>{
+        let unsavedHistoryOrder=this.state.unsavedHistoryOrder;
+        if(unsavedHistoryOrder==='unfound'){
+            // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
+            unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
+            unsavedHistoryOrder.isNeedUpdate=true;
+            this.setState((preState)=>{
+                return {
+                    onOrderEditing:true,
+                    unsavedHistoryOrder,
+                }
+            });
+        }else{
+            this.setState((preState)=>{
+                return {
+                    onOrderEditing:true,
+                }
+            });
         }
     }
     handleChange=(evnt)=>{
@@ -48,7 +249,7 @@ class OrderDetail extends Component{
     /** 確認此供應商是否註冊過 */
     checkSupplier=async(phone)=>{
         let result={};
-        await ssrmDB.collection('members').doc(this.props.uid).collection('shops').doc(this.props.shop.id).collection('suppliers')
+        await this.props.shop.shopRef.collection('suppliers')
         .doc(phone).get()
         .then(doc=>{
             if(!doc.exists){
@@ -77,8 +278,8 @@ class OrderDetail extends Component{
             tempSupplierAddress:'',
             tempSupplierPhone:'',
             onSupplierAdding:false,
-            currentOrder:{
-                ...preState.currentOrder,
+            unsavedHistoryOrder:{
+                ...preState.unsavedHistoryOrder,
                 supplierTitle:title,
                 supplierAddress:address,
                 supplierPhone:phone,
@@ -122,9 +323,8 @@ class OrderDetail extends Component{
                 console.log(result);
                 if(result.supplier){
                     alert('供應商已存在，若供應商電話有重複或更改請至店家設定頁面更改');
-                    this.setCurrentSuppier(title,address,phone);
                 }else{
-                    await ssrmDB.collection('members').doc(this.props.uid).collection('shops').doc(this.props.shop.id).collection('suppliers')
+                    await this.props.shop.shopRef.collection('suppliers')
                         .doc(phone).set({
                             title,
                             address
@@ -132,7 +332,9 @@ class OrderDetail extends Component{
                         .then((res)=>{
                             console.log(res);
                             alert('註冊成功！');
-                            this.setCurrentSuppier(title,address,phone);
+                            this.setState(preState=>({
+                                onSupplierAdding:false
+                            }))
                         })
                 }
             })();
@@ -168,22 +370,23 @@ class OrderDetail extends Component{
     /** submit or canel new product */
     submitNewProduct=(newProduct)=>{
         console.log(newProduct);
-        let order=Object.assign({},this.state.currentOrder) //複製 currentOrder
+        let order=Object.assign({},this.state.unsavedHistoryOrder) //複製 currentOrder
         let isOldProUpdate=false;
         /** modify old product */
-        for(let product of order.products){
+        order.products.map((product,index)=>{
             if(product.id===newProduct.id){
-                product=newProduct; // update old product
+                order.products[index]=newProduct;
                 isOldProUpdate=true;
             }
-        }
+            return ;
+        })
         /** new product comming in */
         if(!isOldProUpdate){
             order.products.push(newProduct);
         }
         order.isNeedUpdate=true; /** update to local */
         this.setState(preState=>({
-            currentOrder:order,
+            unsavedHistoryOrder:order,
             onProductEditing:false
         }))
     }
@@ -194,7 +397,7 @@ class OrderDetail extends Component{
     }
     /** delete product */
     deleteProduct=(evnt)=>{
-        let order=Object.assign({},this.state.currentOrder);
+        let order=Object.assign({},this.state.unsavedHistoryOrder);
         let targetProduct=order.products.filter(product=>{
             return product.id===evnt.target.parentNode.id;
         })[0];
@@ -203,9 +406,9 @@ class OrderDetail extends Component{
                 let index=order.products.indexOf(targetProduct);
                 if(index>=0){
                     order.products.splice(index,1);
+                    order.isNeedUpdate=true;
                     this.setState(preState=>({
-                        isNeedUpdate:true,
-                        currentOrder:order,
+                        unsavedHistoryOrder:order,
                     }))
                 }else{
                     console.error('ERROR\n找不到要刪除的產品')
@@ -234,25 +437,39 @@ class OrderDetail extends Component{
         return result;
     }
     /** submitOrder */
-    submitOrder=()=>{
+    showModifyConfirm=()=>{
         /** Submit created purchase order to database and clear localStorage */
         /** Stay at create and show new empty order form */
-        if(confirm('確定送出採購單？')){
-            let order=Object.assign({},this.state.currentOrder);
-            order.time=new Date();
+        this.setState(preState=>({
+            showModifyConfirm:true,
+            modifyDescription:'',
+        }))
+    }
+    submitOrder=(evnt)=>{
+        evnt.preventDefault();
+        let description=this.state.modifyDescription;
+        if(description.length===0){
+            alert('請填寫修改原因');
+        }else if(confirm('確定修改？')){
+            let order=Object.assign({},this.state.unsavedHistoryOrder);
+            if(!order.modify){
+                order.modify=[];
+            }
+            order.modify.push({
+                    description:description,
+                    time:new Date(),
+                    user:this.props.shop.user.name,
+                });
             this.props.shop.shopRef.collection('purchases').doc(order.id).set(order)
                 .then(()=>{
-                    alert(`採購單: ${order.id} 成功新增！`);
+                    alert(`採購單: ${order.id} 修改成功！`);
                     this.setState(preState=>({
-                        currentOrder:{
-                            id:`${randomPurchaseOrderID()}`,
-                            supplierTitle:'Supplier',
-                            supplierAddress:'請先完成查詢或新增',
-                            supplierPhone:'請先完成查詢或新增',
-                            products:[],
-                            isNeedUpdate:true
-                        },
+                        currentOrder:'loading',
+                        unsavedHistoryOrder:'loading',
+                        showModifyConfirm:false,
+                        onOrderEditing:false,
                     }))
+                    localStorage.removeItem(`History_${this.props.id}`)
                     return ;
                 })
                 .catch(error=>{
@@ -262,187 +479,18 @@ class OrderDetail extends Component{
                 })
             }
     }
+    cancelSubmit=()=>{
+        this.setState(preState=>({
+            showModifyConfirm:false,
+        }))
+    }
     /** cancel order */
-    cancelOrder=()=>{
-        if(confirm('確定取消新增此訂單？')){
+    cancelEditOrder=()=>{
+        if(confirm('有尚未儲存的修改內容，確定取消修改？')){
             this.setState(preState=>({
-                currentOrder:{
-                    id:`${randomPurchaseOrderID()}`,
-                    supplierTitle:'Supplier',
-                    supplierAddress:'請先完成查詢或新增',
-                    supplierPhone:'請先完成查詢或新增',
-                    products:[],
-                },
+                onOrderEditing:false,
             }))
         }
-    }
-    componentDidMount(){
-        console.log('OrderDetail生成')
-        let currentOrder;
-        let shopRef=this.props.shop.shopRef
-        let unsavedHistoryOrder=JSON.parse(localStorage.getItem('unsaved-purchase-historyOrder'));
-        /** 設定current order */
-        /** 如果有未完成的Order，確認是否與當前的訂單相同?
-                -  不同，通知有修改但未儲存的訂單，詢問是否放棄修改內容
-                    -  是，放棄修改，載入新訂單
-                    -  否，重新導址並載入先前訂單
-                -  相同，直接載入
-            沒有未完成訂單
-                從資料庫載入訂單資料
-         */
-         console.log(unsavedHistoryOrder);
-        if(!unsavedHistoryOrder){
-            shopRef.collection('purchases').doc(this.props.id).get()
-                .then(doc=>{
-                    if(doc.exists){
-                        currentOrder=doc.data();
-                        currentOrder.isNeedUpdate=true;
-                        this.setState(preState=>({
-                            currentOrder,
-                        }))
-                    }
-                })
-        }else{
-            if(unsavedHistoryOrder.id===this.props.id){
-                let currentOrder=unsavedHistoryOrder;
-                this.setState(preState=>({
-                    currentOrder,
-                }))
-            }else{
-                if(confirm(`訂單: ${unsavedHistoryOrder.id}修改中尚未存儲，是否放棄修改內容，載入當前欲瀏覽訂單？`)){
-                    shopRef.collection('purchases').doc(this.props.id).get()
-                        .then(doc=>{
-                            if(doc.exists){
-                                currentOrder=doc.data();
-                                this.setState(preState=>({
-                                    currentOrder,
-                                }))
-                            }
-                        })
-                }else{
-                    history().push(`${this.props.shopUrl}/purchase/history/${unsavedHistoryOrder.id}`);
-                    let currentOrder=unsavedHistoryOrder;
-                    this.setState(preState=>({
-                        currentOrder,
-                    }))
-                }
-            }
-        }
-    }
-    componentDidUpdate(){
-        console.log('OrderDetail更新')
-        /** auto upadte order to localStorage */
-        if(this.state.currentOrder.isNeedUpdate){
-            localStorage.setItem('unsaved-purchase-historyOrder',JSON.stringify(this.state.currentOrder))
-            this.setState(preState=>({
-                currentOrder:{
-                    ...preState.currentOrder,
-                    isNeedUpdate:false,
-                }
-            }))
-            console.log('update to local');
-        }
-    }
-    render(){
-        let onProductEditing=this.state.onProductEditing;
-        let onSupplierAdding=this.state.onSupplierAdding;
-        let currentOrder=this.state.currentOrder;
-        let currentProduct=this.state.currentProduct
-        /**
-            order={
-                id,
-                (isNeedUpdate)
-                products:[
-                    products...
-                ],
-                supplier: {
-                    address,
-                    title,
-                    phone
-                }
-            }
-         */
-        return (
-            currentOrder==="undefined"?
-            <div>data is loading..</div>:
-            <div className="shopMainArea-purchase-orderDetail">
-                {/* 新增供應商 */}
-                {onSupplierAdding?
-                <form className="addNewSupplierForm">
-                    <div><label>供應商</label><input id="tempSupplierName" onChange={this.handleChange}/></div>
-                    <div><label>地址</label><input id="tempSupplierAddress" onChange={this.handleChange}/></div>
-                    <div><label>電話</label><input id="tempSupplierPhone" onChange={this.handleChange} placeholder={"這將作為查詢使用"}/></div>
-                    <div className="buttons">
-                        <button className="finish" onClick={this.submitNewSupplier}>完成</button>
-                        <button className="cancel" onClick={this.hideSupplierAddingForm}>取消</button>
-                    </div>
-                </form>:null}
-                {/* 新增產品表單 */}
-                {onProductEditing?
-                <FormProductEditing product={this.state.currentProduct} 
-                    submitNewProduct={this.submitNewProduct} 
-                    cancelUpdateProduct={this.cancelUpdateProduct}    
-                    />:null}
-                <div className="operatingArea">
-                    <div className="currentInfo">
-                        <div>採購管理 \ 歷史訂單詳情</div>
-                        <div>user: <span>{`Frank Lin`}</span></div>
-                    </div>
-                    <div className="operatingBtns">
-                        <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
-                        <button className="btnForFormBig">庫存查詢</button>
-                        <button className="btnForFormBig">修改訂單</button>
-                        <button className="btnForFormBig" onClick={this.showSupplierAddingForm}>新增供應商</button>
-                    </div>
-                </div>
-                <div className="informationArea">
-                    <div className="basicInfo">
-                        <span className="number">{`採購單號 ${currentOrder.id}`}</span>
-                        <Supplier title={currentOrder.supplierTitle} address={currentOrder.supplierAddress} phone={currentOrder.supplierPhone}/>
-                    </div>
-                    <div className="innerOperatingArea">
-                        <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                        <span className="title">進貨幣別</span>
-                        <select className="moneyType">
-                            <option value="TWD">{`台幣`}</option>
-                            <option value="WON">{`韓元`}</option>
-                            <option value="USD">{`美金`}</option>
-                            <option value="CNY">{`人民幣`}</option>
-                            <option value="JPY">{`日幣`}</option>
-                        </select>
-                    </div>
-                    <div className="contentTable">
-                        <div className="tableHead">
-                            <span className="productID">產品編號</span>
-                            <span className="itemID">商品牌號</span>
-                            <span className="productName">商品名稱</span>
-                            <span className="itemSpec">尺寸</span>
-                            <span className="itemSpec">顏色</span>
-                            <span className="itemSpec">件數</span>
-                            <span className="productCost">進貨單價</span>
-                            <span className="sumOfCostPerRow">成本小計</span>
-                            <span className="productPrice">商品標價</span>
-                            <span className="productProfit">單項利潤</span>
-                        </div>
-                        {currentOrder.products&&currentOrder.products.map((product,index)=>(
-                            <ProductBox key={index} product={product} 
-                            startModifyProduct={this.startModifyProduct}
-                            deleteProduct={this.deleteProduct}    
-                            />
-                        ))}
-                        <div onClick={this.startProductAdding} className="addNewProduct btn">+</div>
-                    </div>
-                    <div className="buttons">
-                        <button className="btnForFormLittle finish" onClick={this.submitOrder}>完成</button>
-                        <button className="btnForFormLittle cancel" onClick={this.cancelOrder}>取消</button>
-                    </div>
-                    <div className="totalInfo">
-                        <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
-                        <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
-                    </div>
-                </div>
-            </div>
-        )
     }
 }
 
@@ -485,8 +533,15 @@ function ProductBox(props) {
                     </div>
                 )
             })}
-            <img className="edit" src={editImg} onClick={props.startModifyProduct}/>
-            <img className="delete" src={deleteImg} onClick={props.deleteProduct}/>
+            { 
+                props.onOrderEditing?
+                <Fragment>
+                    <img className="edit" src={editImg} onClick={props.startModifyProduct}/>
+                    <img className="delete" src={deleteImg} onClick={props.deleteProduct}/>
+                </Fragment>:
+                null
+            }
+            
         </div> 
     )
 }

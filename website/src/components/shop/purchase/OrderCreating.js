@@ -28,6 +28,146 @@ class OrderCreating extends Component{
             onSupplierAdding:false,
         }
     }
+    componentDidMount(){
+        let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-purchase-newOrder'));
+        let currentOrder;
+        /** 設定current order */
+        /** 如果有未完成的Order，則不新增新的Order */
+        if(!uncompletedNewOrder){
+            currentOrder=this.state.currentOrder;
+            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder));       
+        }else{
+            currentOrder=uncompletedNewOrder;
+            /** 確認是否有空產品(該產品內的itemList為空陣列)*/
+            for(let product of currentOrder.products){
+                if(product.itemList.length===0){
+                    let index=currentOrder.products.indexOf(product);
+                    currentOrder.products.splice(index,1);
+                    localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder)); 
+                }
+            }
+            this.setState(preState=>({
+                currentOrder,
+            }))   
+        }
+    }
+    componentDidUpdate(){
+        /** auto upadte order to localStorage */
+        if(this.state.currentOrder.isNeedUpdate){
+            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(this.state.currentOrder))
+            this.setState(preState=>({
+                currentOrder:{
+                    ...preState.currentOrder,
+                    isNeedUpdate:false,
+                }
+            }))
+            console.log('update to local');
+        }
+    }
+    render(){
+        let onProductEditing=this.state.onProductEditing;
+        let onSupplierAdding=this.state.onSupplierAdding;
+        let currentOrder=this.state.currentOrder;
+        let currentProduct=this.state.currentProduct
+        /**
+            order={
+                id,
+                (isNeedUpdate)
+                products:[
+                    products...
+                ],
+                supplier: {
+                    address,
+                    title,
+                    phone
+                }
+            }
+         */
+        return (
+            <Fragment>
+                <SideNav />
+                <div className="shopMainArea shopMainArea-purchase-orderCreating">
+                    {/* 新增供應商 */}
+                    {onSupplierAdding?
+                    <form className="supplierAddingForm">
+                        <div><label>供應商</label><input id="tempSupplierName" onChange={this.handleChange}/></div>
+                        <div><label>地址</label><input id="tempSupplierAddress" onChange={this.handleChange}/></div>
+                        <div><label>電話</label><input id="tempSupplierPhone" onChange={this.handleChange} placeholder={"這將作為查詢使用"}/></div>
+                        <div className="buttons">
+                            <button className="finish" onClick={this.submitNewSupplier}>完成</button>
+                            <button className="cancel" onClick={this.hideSupplierAddingForm}>取消</button>
+                        </div>
+                    </form>:null}
+                    {/* 新增產品表單 */}
+                    {onProductEditing?
+                    <FormProductEditing product={this.state.currentProduct} 
+                        submitNewProduct={this.submitNewProduct} 
+                        cancelUpdateProduct={this.cancelUpdateProduct}    
+                        />:null}
+                    <div className="operatingArea">
+                        <div className="currentInfo">
+                            <div>採購管理 \ 採購登入</div>
+                            <div>user: <span>{`Frank Lin`}</span></div>
+                        </div>
+                        <div className="operatingBtns">
+                            <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
+                            <button className="btnForFormBig">庫存查詢</button>
+                            <button className="btnForFormBig">修改訂單</button>
+                            <button className="btnForFormBig" onClick={this.showSupplierAddingForm}>新增供應商</button>
+                        </div>
+                    </div>
+                    <div className="informationArea">
+                        <div className="basicInfo">
+                            <span className="number">{`採購單號 ${currentOrder.id}`}</span>
+                            <Supplier title={currentOrder.supplierTitle} address={currentOrder.supplierAddress} phone={currentOrder.supplierPhone}/>
+                        </div>
+                        <div className="innerOperatingArea">
+                            <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
+                            <span className="title">進貨幣別</span>
+                            <select className="moneyType">
+                                <option value="TWD">{`台幣`}</option>
+                                <option value="WON">{`韓元`}</option>
+                                <option value="USD">{`美金`}</option>
+                                <option value="CNY">{`人民幣`}</option>
+                                <option value="JPY">{`日幣`}</option>
+                            </select>
+                        </div>
+                        <div className="contentTable">
+                            <div className="tableHead">
+                                <span className="productID">產品編號</span>
+                                <span className="itemID">商品牌號</span>
+                                <span className="productName">商品名稱</span>
+                                <span className="itemSpec">尺寸</span>
+                                <span className="itemSpec">顏色</span>
+                                <span className="itemSpec">件數</span>
+                                <span className="productCost">進貨單價</span>
+                                <span className="sumOfCostPerRow">成本小計</span>
+                                <span className="productPrice">商品標價</span>
+                                <span className="productProfit">單項利潤</span>
+                            </div>
+                            {currentOrder.products&&currentOrder.products.map((product,index)=>(
+                                <ProductBox key={index} product={product} 
+                                startModifyProduct={this.startModifyProduct}
+                                deleteProduct={this.deleteProduct}    
+                                />
+                            ))}
+                            <div onClick={this.startProductAdding} className="addNewProduct btn">+</div>
+                        </div>
+                        <footer>
+                            <div className="buttons">
+                                <button className="btnForFormLittle finish" onClick={this.submitOrder}>完成</button>
+                                <button className="btnForFormLittle cancel" onClick={this.cancelOrder}>取消</button>
+                            </div>
+                            <div className="totalInfo">
+                                <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
+                                <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </Fragment>
+        )
+    }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
         let value=evnt.target.value;
@@ -125,7 +265,6 @@ class OrderCreating extends Component{
                 console.log(result);
                 if(result.supplier){
                     alert('供應商已存在，若供應商電話有重複或更改請至店家設定頁面更改');
-                    this.setCurrentSuppier(title,address,phone);
                 }else{
                     await this.props.shop.shopRef.collection('suppliers')
                         .doc(phone).set({
@@ -135,7 +274,6 @@ class OrderCreating extends Component{
                         .then((res)=>{
                             console.log(res);
                             alert('註冊成功！');
-                            this.setCurrentSuppier(title,address,phone);
                         })
                 }
             })();
@@ -279,144 +417,6 @@ class OrderCreating extends Component{
                 },
             }))
         }
-    }
-    componentDidMount(){
-        let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-purchase-newOrder'));
-        let currentOrder;
-        /** 設定current order */
-        /** 如果有未完成的Order，則不新增新的Order */
-        if(!uncompletedNewOrder){
-            currentOrder=this.state.currentOrder;
-            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder));       
-        }else{
-            currentOrder=uncompletedNewOrder;
-            /** 確認是否有空產品(該產品內的itemList為空陣列)*/
-            for(let product of currentOrder.products){
-                if(product.itemList.length===0){
-                    let index=currentOrder.products.indexOf(product);
-                    currentOrder.products.splice(index,1);
-                    localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder)); 
-                }
-            }
-            this.setState(preState=>({
-                currentOrder,
-            }))   
-        }
-    }
-    componentDidUpdate(){
-        /** auto upadte order to localStorage */
-        if(this.state.currentOrder.isNeedUpdate){
-            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(this.state.currentOrder))
-            this.setState(preState=>({
-                currentOrder:{
-                    ...preState.currentOrder,
-                    isNeedUpdate:false,
-                }
-            }))
-            console.log('update to local');
-        }
-    }
-    render(){
-        let onProductEditing=this.state.onProductEditing;
-        let onSupplierAdding=this.state.onSupplierAdding;
-        let currentOrder=this.state.currentOrder;
-        let currentProduct=this.state.currentProduct
-        /**
-            order={
-                id,
-                (isNeedUpdate)
-                products:[
-                    products...
-                ],
-                supplier: {
-                    address,
-                    title,
-                    phone
-                }
-            }
-         */
-        return (
-            <Fragment>
-                <SideNav />
-                <div className="shopMainArea-purchase-orderCreating">
-                    {/* 新增供應商 */}
-                    {onSupplierAdding?
-                    <form className="addNewSupplierForm">
-                        <div><label>供應商</label><input id="tempSupplierName" onChange={this.handleChange}/></div>
-                        <div><label>地址</label><input id="tempSupplierAddress" onChange={this.handleChange}/></div>
-                        <div><label>電話</label><input id="tempSupplierPhone" onChange={this.handleChange} placeholder={"這將作為查詢使用"}/></div>
-                        <div className="buttons">
-                            <button className="finish" onClick={this.submitNewSupplier}>完成</button>
-                            <button className="cancel" onClick={this.hideSupplierAddingForm}>取消</button>
-                        </div>
-                    </form>:null}
-                    {/* 新增產品表單 */}
-                    {onProductEditing?
-                    <FormProductEditing product={this.state.currentProduct} 
-                        submitNewProduct={this.submitNewProduct} 
-                        cancelUpdateProduct={this.cancelUpdateProduct}    
-                        />:null}
-                    <div className="operatingArea">
-                        <div className="currentInfo">
-                            <div>採購管理 \ 採購登入</div>
-                            <div>user: <span>{`Frank Lin`}</span></div>
-                        </div>
-                        <div className="operatingBtns">
-                            <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
-                            <button className="btnForFormBig">庫存查詢</button>
-                            <button className="btnForFormBig">修改訂單</button>
-                            <button className="btnForFormBig" onClick={this.showSupplierAddingForm}>新增供應商</button>
-                        </div>
-                    </div>
-                    <div className="informationArea">
-                        <div className="basicInfo">
-                            <span className="number">{`採購單號 ${currentOrder.id}`}</span>
-                            <Supplier title={currentOrder.supplierTitle} address={currentOrder.supplierAddress} phone={currentOrder.supplierPhone}/>
-                        </div>
-                        <div className="innerOperatingArea">
-                            <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                            <span className="title">進貨幣別</span>
-                            <select className="moneyType">
-                                <option value="TWD">{`台幣`}</option>
-                                <option value="WON">{`韓元`}</option>
-                                <option value="USD">{`美金`}</option>
-                                <option value="CNY">{`人民幣`}</option>
-                                <option value="JPY">{`日幣`}</option>
-                            </select>
-                        </div>
-                        <div className="contentTable">
-                            <div className="tableHead">
-                                <span className="productID">產品編號</span>
-                                <span className="itemID">商品牌號</span>
-                                <span className="productName">商品名稱</span>
-                                <span className="itemSpec">尺寸</span>
-                                <span className="itemSpec">顏色</span>
-                                <span className="itemSpec">件數</span>
-                                <span className="productCost">進貨單價</span>
-                                <span className="sumOfCostPerRow">成本小計</span>
-                                <span className="productPrice">商品標價</span>
-                                <span className="productProfit">單項利潤</span>
-                            </div>
-                            {currentOrder.products&&currentOrder.products.map((product,index)=>(
-                                <ProductBox key={index} product={product} 
-                                startModifyProduct={this.startModifyProduct}
-                                deleteProduct={this.deleteProduct}    
-                                />
-                            ))}
-                            <div onClick={this.startProductAdding} className="addNewProduct btn">+</div>
-                        </div>
-                        <div className="buttons">
-                            <button className="btnForFormLittle finish" onClick={this.submitOrder}>完成</button>
-                            <button className="btnForFormLittle cancel" onClick={this.cancelOrder}>取消</button>
-                        </div>
-                        <div className="totalInfo">
-                            <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
-                            <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
-                        </div>
-                    </div>
-                </div>
-            </Fragment>
-        )
     }
 }
 

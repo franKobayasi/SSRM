@@ -6,10 +6,15 @@
 @import './purchase.scss';
 @import './stock.scss';
 
+/** COLOR */
+$mainColor:#FF6D05;
 $backgroudColor:rgb(200, 200, 200);
+$slightBlack:#333;
+/** FONT */
+$defaultFontSize:16px;
 
 #root{
-    font-size: 16px;
+    font-size: $defaultFontSize;
     width: 100%;
     height: 100vh;
     background-color:  rgb(200, 200, 200);
@@ -24,8 +29,7 @@ $backgroudColor:rgb(200, 200, 200);
     width: 75px;
     line-height: 30px;
     border-radius: 15px;
-    border:1px solid white;
-    margin: 10px 20px;    
+    border:1px solid white; 
 }
 .btnForFormBig{
     cursor:default;
@@ -33,21 +37,47 @@ $backgroudColor:rgb(200, 200, 200);
     width: 100px;
     line-height: 35px;
     color: white;
-    font-size: 16px;
+    font-size: $defaultFontSize;
     border-radius: 25px;
     border: $mainColor 1px solid;
-    margin-right: 25px;
 }
-.shopMainArea-purchase-orderHistory,
-.shopMainArea-purchase-orderCreating,
-.shopMainArea-purchase-orderDetail
-{
+/** SHOP COMMON STYLE */
+.shopMainArea{
     position: relative;
-    width: 98.5%;
-    margin-left: 1.5%;
+    width: 99.5%;
+    margin-left: .5%;
     height: 100%;
     z-index: 0;
     background-color: rgba($color: white, $alpha: .5);
     border: 10px $backgroudColor solid ;
     border-radius: 25px;
+    .operatingArea{
+        height: 75px;
+        background-color: $slightBlack;
+        .currentInfo{
+            margin: 17.5px 0 0 15px;
+            float: left;
+            color: white;
+        }
+        .operatingBtns{
+            float:right;
+            line-height: 75px;
+            & > button{
+                background-color: $mainColor;
+                width: 125px;
+                line-height: 35px;
+                color: white;
+                font-size: $defaultFontSize;
+                border-radius: 25px;
+                border: $mainColor 1px solid;
+            }
+        }
+    }
+    .informationArea{
+        position: relative;
+        height: 100%;
+        background-color: white;
+        padding: 15px;
+        padding-bottom: 75px;
+    }
 }

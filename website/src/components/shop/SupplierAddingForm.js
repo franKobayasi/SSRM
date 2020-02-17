@@ -27,6 +27,31 @@ class SupplierAddingForm extends Component{
             }
         });
     }
+    /** 確認此供應商是否註冊過 */
+    checkSupplier=async(phone)=>{
+        let result={};
+        await this.props.shopRef.collection('suppliers')
+        .doc(phone).get()
+        .then(doc=>{
+            if(!doc.exists){
+                result.message='查無供應商資料，請先新增'
+                return ;
+            }else{
+                result.supplier={
+                    title:doc.data().title,
+                    address:doc.data().address,
+                    phone:doc.id
+                }
+                return ; 
+            }
+        })
+        .catch(error=>{
+            console.error('ERROR\n查詢確認供應商資料失敗');
+            console.log(error);
+            return ;
+        })
+        return result;
+    }
     /** 註冊新供應商 */
     submitNewSupplier=()=>{
         let title=this.state.tempSupplierName?this.state.tempSupplierName.trim():'';

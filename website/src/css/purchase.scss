@@ -1,8 +1,39 @@
 $mainColor:#FF6D05;
 $slightBlack:#333;
 
-.shopMainArea-purchase-orderCreating,
-.shopMainArea-purchase-orderDetail{
+.shopMainArea{
+    .operatingBtns{
+        & > button{
+            margin-right:15px;
+        }
+    }
+    .modifyConfirm{
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 5;
+        background-color: $mainColor;
+        padding: 5px 15px;
+        border-radius: 15px;
+        color: white;
+        div{
+            margin: 5px 0;
+        }
+        textarea{
+            width: 300px;
+            height:150px;
+        }
+        .btns{
+            text-align: right;
+            button{
+                border-radius: 5px;
+                background-color: white;
+                border: 1px white solid;
+                margin: 0 10px;
+            }
+        }
+    }
     .supplierAddingForm{
         position: absolute;
         top:50%;
@@ -140,37 +171,10 @@ $slightBlack:#333;
         }
         .formBtnArea{
             text-align: center;
-        }
-    }
-    .operatingArea{
-        height: 75px;
-        background-color: $slightBlack;
-        & > div{
-            display: inline-block;
-            height: 75px;
-            vertical-align: middle;
-        }
-        .operatingBtns{
-            line-height: 75px;
-            float: right;
-            & > button{
-                background-color: $mainColor;
-                width: 125px;
-                line-height: 35px;
-                color: white;
-                font-size: 16px;
-                border-radius: 25px;
-                border: $mainColor 1px solid;
-                margin-right: 25px;
-            }
+            margin-bottom: 15px;
         }
     }
     .informationArea{
-        position: relative;
-        height: 100%;
-        background-color: white;
-        padding: 10px;
-        padding-bottom: 75px;
         & > *{
             display: inline-block;
             vertical-align: middle;
@@ -208,20 +212,20 @@ $slightBlack:#333;
                 border-radius:2px;
             }
         }
-        & > .contentTable{
+        .contentTable{
             width: 100%;
+            height: 80%;
             margin-top: 25px;
-            *{
-                font-size: 12px;
-            }
             span{
+                font-size: 16px;
                 display: inline-block;
                 text-align: center;
-                font-weight: 500;
-                width: 125px;
+                width: 100px;
+                margin: 0 5px;
+                color: $slightBlack;
             }
-            .productID, .itemID{
-                width: 150px;
+            .productID, .itemID, .productName{
+                width: 175px;
             }
             .itemSpec{
                 width: 75px;
@@ -261,38 +265,36 @@ $slightBlack:#333;
                 }
             }
         }
-        .totalInfo{
+        footer{
             position: absolute;
-            bottom: 15px;
-            left: 0;
-            z-index: 10;
-            width: 98%;
-            text-align: center;
-            padding: 10px 10px 0;
-            border-top: 1px solid black;
-            margin: 0 1%;
-            span:nth-of-type(2n){
-                margin-left: 20px;
+            bottom: 75px;
+            left:0;
+            width: 100%;
+            height: 50px;
+            .totalInfo{
+                width: 400px;
+                text-align: center;
+                padding: 10px;
+                border-top: 1px solid $mainColor;
+                color: $mainColor;
+                margin-left: 200px;
+                span:nth-of-type(2n){
+                    margin-left: 20px;
+                }
+                span:nth-of-type(3){
+                    margin-left: 40px;
+                }
             }
-            span:nth-of-type(3){
-                margin-left: 40px;
-            }
-        }
-        .buttons{
-            position: absolute;
-            bottom: 80px;
-            right: 30px;
-            & > button{
-                margin-left:10px;
-            }
-        }
-    }
-    .currentInfo{
-        margin: 15px;
-        & > div{
-            color: white;
-            font-size: 18px;
-        }
+            .buttons{
+                float:right;
+                text-align: right;
+                width: 300px;
+                margin-right: 20px;
+                button{
+                    margin: 0 10px;
+                }
+            }    
+        };
     }
 }
 
@@ -374,12 +376,14 @@ $slightBlack:#333;
                     position: relative;
                     border-radius: 15px;
                     overflow: hidden;
+                    color:white;
                     .color{
                         width: 70%;
                         margin: 0 !important;
                         display: inline-block;
                         position: absolute;
                         background-color: $mainColor;
+                        color: $mainColor;
                         top:0;
                         left:0;
                     }
@@ -407,9 +411,7 @@ $slightBlack:#333;
             }
             .title{
                 border-bottom: 1px solid black;
-            }
-            
-            
+            }   
         }
     }
 }
