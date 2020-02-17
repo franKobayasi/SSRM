@@ -112,7 +112,6 @@ class OrderCreating extends Component{
                         <div className="operatingBtns">
                             <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
                             <button className="btnForFormBig">庫存查詢</button>
-                            <button className="btnForFormBig">修改訂單</button>
                             <button className="btnForFormBig" onClick={this.showSupplierAddingForm}>新增供應商</button>
                         </div>
                     </div>

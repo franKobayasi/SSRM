@@ -4,6 +4,7 @@ import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from "../../.
 import {createHashHistory as history} from "history";
 /** component */
 import SideNav from '../../layout/SideNav';
+import ContentTable from './common/ContentTable';
 import FormProductEditing from './FormProductEditing';
 /** other resource */
 import editImg from "../../../img/editBtn.png";
@@ -161,31 +162,9 @@ class OrderDetail extends Component{
                             </select>
                         </div>:null
                     }
-                    <div className="contentTable">
-                        <div className="tableHead">
-                            <span className="productID">產品編號</span>
-                            <span className="itemID">商品牌號</span>
-                            <span className="productName">商品名稱</span>
-                            <span className="itemSpec">尺寸</span>
-                            <span className="itemSpec">顏色</span>
-                            <span className="itemSpec">件數</span>
-                            <span className="productCost">進貨單價</span>
-                            <span className="sumOfCostPerRow">成本小計</span>
-                            <span className="productPrice">商品標價</span>
-                            <span className="productProfit">單項利潤</span>
-                        </div>
-                        {orderToRender.products&&orderToRender.products.map((product,index)=>(
-                            <ProductBox key={index} product={product} 
-                            startModifyProduct={this.startModifyProduct}
-                            deleteProduct={this.deleteProduct}
-                            onOrderEditing={onOrderEditing}    
-                            />
-                        ))}
-                        {
-                            onOrderEditing?
-                            <div onClick={this.startProductAdding} className="addNewProduct btn">+</div>:null
-                        }
-                    </div>
+                    <ContentTable mode="detail" order={orderToRender}
+                        onOrderEditing={onOrderEditing} modifyProduct={this.modifyProduct} 
+                        deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
                     <footer>
                         <div className="buttons">
                             {
@@ -354,7 +333,7 @@ class OrderDetail extends Component{
             }
          }))
     }
-    startModifyProduct=(evnt)=>{
+    modifyProduct=(evnt)=>{
         let targetProduct=this.state.currentOrder.products.filter(product=>{
             return product.id===evnt.target.parentNode.id;
         })
@@ -512,39 +491,6 @@ class OrderDetail extends Component{
         ]
     }
  */
-
-function ProductBox(props) {
-    let product=props.product;
-    return (
-        <div id={product.id} className="productBox">
-            {product.itemList.map((item,index)=>{
-                return (
-                    <div key={index} className="itemBox">
-                        <span className="productID">{product.id}</span>
-                        <span className="itemID">{item.itemID}</span>
-                        <span className="productName">{product.name}</span>
-                        <span className="itemSpec">{item.size}</span>
-                        <span className="itemSpec">{item.color}</span>
-                        <span className="itemSpec">{item.num}</span>
-                        <span className="productCost">{product.cost}</span>
-                        <span className="sumOfCostPerRow">{`${item.num*product.cost}`}</span>
-                        <span className="productPrice">{product.price}</span>
-                        <span className="productProfit">{`${roundAfterPointAt(((product.price-product.cost)/product.price),2)}`}</span>
-                    </div>
-                )
-            })}
-            { 
-                props.onOrderEditing?
-                <Fragment>
-                    <img className="edit" src={editImg} onClick={props.startModifyProduct}/>
-                    <img className="delete" src={deleteImg} onClick={props.deleteProduct}/>
-                </Fragment>:
-                null
-            }
-            
-        </div> 
-    )
-}
 function Supplier(props){
     return (
         <Fragment>
