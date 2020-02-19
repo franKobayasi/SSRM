@@ -1,24 +1,9 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
-import {
-    HashRouter as Router, 
-    Route,
-    Link,
-    Switch,
-    Redirect,
-    useParams,
-    useLocation,
-} from 'react-router-dom';
-import {createHashHistory as history} from 'history';
-import ssrmFirebase,{ssrmDB,getAuthState,getDataFromFireBase} from '../useFirebase';
-/** action creator */
-import {actionUpdateShopList} from "../actions/shopList";
-import {actionFetchPosted,actionFetchSuccessed} from "../actions/fetch";
+import {getAuthState} from '../useFirebase';
 /** component */
-import MemberAuth from '../components/auth/MemberAuth';
-import Dashboard from '../components/dashboard/Dashboard.js';
-import Shop from '../components/shop/Shop.js';
-import Stock from '../components/shop/Stock';
+import AfterSignIned from './AfterSignIned';
+import BeforeSignIned from './BeforeSignIned.js';
 
 /*
     This Component 
@@ -32,8 +17,6 @@ function App(props){
     let isFetch=props.state.isFetch;
     let isError=props.state.isError;
     let dispatch=props.dispatch;
-    let shopList=props.shopList;
-    let currentShop;
 
     /** check if app is on fatch */
     if(isFetch===true){
@@ -46,52 +29,25 @@ function App(props){
     /** check if store already have auth */
     if(isLogin==='unconnect'){
         /** firebase check login */
-        console.log('first time landing');
+        console.log('first time landing...checking user login state...');
         getAuthState(dispatch);
         return <div>check member login state..please wait...</div>
     }else{
         if(isLogin===true){
-            console.log('登入了');
-            return <AfterSignIn />;
+            console.log('state: sign in');
+            return <AfterSignIned />;
         }else{
-            console.log('還沒登入');
-            return <BeforeSignIn />;
+            console.log('state: sign out');
+            return <BeforeSignIned />;
         }
     }
  
 }
-function BeforeSignIn(){
-    return (
-        <Router> 
-            <Route path="/auth/:id" component={MemberAuth}/>
-             <Route exact path="/">
-                <Redirect to="/auth/signin"/>
-            </Route>
-        </Router> 
-    )
-}
-/** enter the app */
-function AfterSignIn(){
-    return (
-        <Router> 
-            <Switch>
-                {/* <Route path="/test" render={()=><Purchase />} /> */}
-                <Route path="/auth/:type" component={MemberAuth}/> 
-                <Route path="/shop/:shopid" component={Shop}/>
-                <Route exact path="/dashboard/setting" render={()=><Dashboard />}/>
-                <Route path="/dashboard" render={()=><Dashboard />}/>
-                <Route path="/">
-                    <Redirect to="/dashboard"/>
-                </Route>
-            </Switch>
-        </Router>
-    )
-}
-function mapStateToProps({auth,state,shopList},ownProps){
+
+function mapStateToProps({auth,state},ownProps){
     return {
         auth,
         state,
-        shopList,
     }
 }
 export default connect(mapStateToProps)(App);

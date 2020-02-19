@@ -52,9 +52,7 @@ class ShopAuth extends Component{
                         id:shop.id,
                         title:shop.title,
                     }));
-                    ssrmDB.collection('members').doc(auth.MEMBER_UID).collection('shops').doc(shop.id).update({
-                        currentUser:res.user
-                    })
+                    localStorage.setItem(`SSRM_${shop.id}_USERTOKEN`,JSON.stringify(res.user.id));
                     alert("登入成功");
                 }else{
                     console.log(res);

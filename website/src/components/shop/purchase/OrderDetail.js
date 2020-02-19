@@ -1,14 +1,13 @@
-import React,{ Component,Fragment } from "react";
-import {ssrmDB} from "../../../useFirebase";
-import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from "../../../lib";
-import {createHashHistory as history} from "history";
+import React,{ Component,Fragment } from 'react';
+import {ssrmDB} from '../../../useFirebase';
+import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../../lib';
+import {createHashHistory as history} from 'history';
 /** component */
 import SideNav from '../../layout/SideNav';
+import Supplier from './common/Suppiler';
 import ContentTable from './common/ContentTable';
-import FormProductEditing from './FormProductEditing';
-/** other resource */
-import editImg from "../../../img/editBtn.png";
-import deleteImg from "../../../img/deleteBtn.png";
+import SupplierAddingForm from './common/SupplierAddingForm';
+import FormProductEditing from './common/FormProductEditing';
 
 /**
 This Component for view and edit history order.
@@ -26,7 +25,7 @@ class OrderDetail extends Component{
             onSupplierAdding:false,
             isModified:false,
             showModifyConfirm:false,
-            isNeedUpdate:true,
+            localStorageLock:true,
         }
     }
     componentDidMount(){
@@ -52,13 +51,10 @@ class OrderDetail extends Component{
     componentDidUpdate(){
         console.log('OrderDetail更新')
         /** auto upadte order to localStorage */
-        if(this.state.unsavedHistoryOrder.isNeedUpdate){
+        if(!this.state.localStorageLock){
             localStorage.setItem(`History_${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
-                unsavedHistoryOrder:{
-                    ...preState.unsavedHistoryOrder,
-                    isNeedUpdate:false,
-                }
+                localStorageLock:true,
             }))
             console.log('update to local');
         }
@@ -86,20 +82,7 @@ class OrderDetail extends Component{
         let onOrderEditing=this.state.onOrderEditing;
         let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
         let currentProduct=this.state.currentProduct;
-        /**
-            order={
-                id,
-                (isNeedUpdate)
-                products:[
-                    products...
-                ],
-                supplier: {
-                    address,
-                    title,
-                    phone
-                }
-            }
-         */
+        
         return (
             orderToRender==="loading"?
             <div>data is loading..</div>:
@@ -115,17 +98,9 @@ class OrderDetail extends Component{
                     </div>
                 </form>:null
                 }
-                {/* 新增供應商 */}
-                {onSupplierAdding?
-                <form className="supplierAddingForm">
-                    <div><label>供應商</label><input id="tempSupplierName" onChange={this.handleChange}/></div>
-                    <div><label>地址</label><input id="tempSupplierAddress" onChange={this.handleChange}/></div>
-                    <div><label>電話</label><input id="tempSupplierPhone" onChange={this.handleChange} placeholder={"這將作為查詢使用"}/></div>
-                    <div className="buttons">
-                        <button className="finish" onClick={this.submitNewSupplier}>完成</button>
-                        <button className="cancel" onClick={this.hideSupplierAddingForm}>取消</button>
-                    </div>
-                </form>:null}
+                { /* 新增供應商 */
+                    onSupplierAdding?
+                    <SupplierAddingForm shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
                 {/* 新增產品表單 */}
                 {onProductEditing?
                 <FormProductEditing product={this.state.currentProduct} 
@@ -134,13 +109,17 @@ class OrderDetail extends Component{
                     />:null}
                 <div className="operatingArea">
                     <div className="currentInfo">
-                        <div>採購管理 \ 歷史訂單詳情</div>
-                        <div>user: <span>{`Frank Lin`}</span></div>
+                        <div>採購歷史訂單詳細頁面</div>
+                        <div>使用者：<span>{`${this.props.shop.user.name}`}</span></div>
                     </div>
                     <div className="operatingBtns">
-                        <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
+                        <button className="btnForFormBig" onClick={()=>{
+                            this.props.updateOrdersFromDB();
+                            history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
                         <button className="btnForFormBig">庫存查詢</button>
-                        <button className="btnForFormBig" onClick={this.showSupplierAddingForm}>新增供應商</button>
+                        <button className="btnForFormBig" onClick={()=>{
+                            this.toggleSupplierAddingForm(true)
+                        }}>新增供應商</button>
                     </div>
                 </div>
                 <div className="informationArea">
@@ -190,19 +169,15 @@ class OrderDetail extends Component{
         if(unsavedHistoryOrder==='unfound'){
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
             unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
-            unsavedHistoryOrder.isNeedUpdate=true;
-            this.setState((preState)=>{
-                return {
-                    onOrderEditing:true,
-                    unsavedHistoryOrder,
-                }
-            });
+            this.setState((preState)=>({
+                localStorageLock:false,
+                onOrderEditing:true,
+                unsavedHistoryOrder,
+            }));
         }else{
-            this.setState((preState)=>{
-                return {
-                    onOrderEditing:true,
-                }
-            });
+            this.setState((preState)=>({
+                onOrderEditing:true,
+            }));
         }
     }
     handleChange=(evnt)=>{
@@ -214,15 +189,11 @@ class OrderDetail extends Component{
             }
         });
     }
+    /** Supplier */
     /** show and hide 供應商註冊表單*/
-    showSupplierAddingForm=()=>{
+    toggleSupplierAddingForm=(bool)=>{
         this.setState(preState=>({
-            onSupplierAdding:true,
-        }))
-    }
-    hideSupplierAddingForm=()=>{
-        this.setState(preState=>({
-            onSupplierAdding:false,
+            onSupplierAdding:bool,
         }))
     }
     /** 確認此供應商是否註冊過 */
@@ -257,12 +228,12 @@ class OrderDetail extends Component{
             tempSupplierAddress:'',
             tempSupplierPhone:'',
             onSupplierAdding:false,
-            unsavedHistoryOrder:{
-                ...preState.unsavedHistoryOrder,
+            localStorageLock:false,
+            currentOrder:{
+                ...preState.currentOrder,
                 supplierTitle:title,
                 supplierAddress:address,
                 supplierPhone:phone,
-                isNeedUpdate:true
             }
         }))
     }
@@ -281,40 +252,6 @@ class OrderDetail extends Component{
                     this.setCurrentSuppier(supplier.title,supplier.address,supplier.phone)
                 }else{
                     alert(`${result.message}`)
-                }
-            })();
-        }
-    }
-    /** 註冊新供應商 */
-    submitNewSupplier=()=>{
-        let title=this.state.tempSupplierName?this.state.tempSupplierName.trim():'';
-        let address=this.state.tempSupplierAddress?this.state.tempSupplierAddress.trim():'';
-        let phone=this.state.tempSupplierPhone?this.state.tempSupplierPhone.trim():'';
-        if(title.length===0){
-            alert('請輸入供應商名稱');
-        }else if(address.length===0){
-            alert('請輸入供應商地址');
-        }else if(phone.length===0){
-            alert('請輸入供應商電話');
-        }else{
-            (async()=>{
-                let result= await this.checkSupplier(phone);
-                console.log(result);
-                if(result.supplier){
-                    alert('供應商已存在，若供應商電話有重複或更改請至店家設定頁面更改');
-                }else{
-                    await this.props.shop.shopRef.collection('suppliers')
-                        .doc(phone).set({
-                            title,
-                            address
-                        })
-                        .then((res)=>{
-                            console.log(res);
-                            alert('註冊成功！');
-                            this.setState(preState=>({
-                                onSupplierAdding:false
-                            }))
-                        })
                 }
             })();
         }
@@ -363,10 +300,10 @@ class OrderDetail extends Component{
         if(!isOldProUpdate){
             order.products.push(newProduct);
         }
-        order.isNeedUpdate=true; /** update to local */
         this.setState(preState=>({
             unsavedHistoryOrder:order,
-            onProductEditing:false
+            onProductEditing:false,
+            localStorageLock:false, /** update to local */
         }))
     }
     cancelUpdateProduct=()=>{
@@ -385,9 +322,9 @@ class OrderDetail extends Component{
                 let index=order.products.indexOf(targetProduct);
                 if(index>=0){
                     order.products.splice(index,1);
-                    order.isNeedUpdate=true;
                     this.setState(preState=>({
                         unsavedHistoryOrder:order,
+                        localStorageLock:false,
                     }))
                 }else{
                     console.error('ERROR\n找不到要刪除的產品')
@@ -403,10 +340,12 @@ class OrderDetail extends Component{
         let result={
             sumOfCost:0,
             sumOfPrice:0,
-            avgProfit:0
+            avgProfit:0,
+            sumOfNum:0,
         };
         for(let product of products){
             for(let item of product.itemList){
+                result.sumOfNum+=parseInt(item.num);
                 result.sumOfCost+=(product.cost*item.num);
                 result.sumOfPrice+=(product.price*item.num);
             }
@@ -431,6 +370,10 @@ class OrderDetail extends Component{
             alert('請填寫修改原因');
         }else if(confirm('確定修改？')){
             let order=Object.assign({},this.state.unsavedHistoryOrder);
+            let result=this.computeCostAndProfit();
+            order.avgProfit=result.avgProfit;
+            order.sumOfCost=result.sumOfCost;
+            order.sumOfNum=result.sumOfNum;
             if(!order.modify){
                 order.modify=[];
             }
@@ -471,37 +414,6 @@ class OrderDetail extends Component{
             }))
         }
     }
-}
-
-/**
-    product={
-        id,
-        name,
-        cost,
-        price,
-        startAt,
-        itemList:[
-            {
-                itemID,
-                size,
-                num,
-                color,
-                isEdit,
-            }
-        ]
-    }
- */
-function Supplier(props){
-    return (
-        <Fragment>
-            <span className="title">供應商：</span>
-            <span className="SupplierDetail">{props.title}</span>
-            <span className="title">商家電話：</span>
-            <span className="SupplierAddress">{props.phone}</span>
-            <span className="title">商家地址：</span>
-            <span className="SupplierAddress">{props.address}</span>
-        </Fragment>
-    )
 }
 
 export default OrderDetail;

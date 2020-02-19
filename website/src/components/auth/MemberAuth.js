@@ -30,10 +30,11 @@ function MemberAuth(props){
                 let memberInfo={
                     email:user.email,
                     displayName:user.displayName,
-                    uid:result.credential.accessToken,
+                    uid:user.uid,
                 }
                 props.dispatch(actionSignIn(memberInfo));
                 props.history.push('/');
+                console.log('sign in via facebook')
             })
             .catch(function(error) {
                 let errorCode = error.code;

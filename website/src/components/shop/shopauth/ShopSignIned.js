@@ -12,6 +12,9 @@ import {ssrmDB} from '../../../useFirebase';
 /** Component */
 import PurchaseOrderHistory from '../purchase/OrderHistory';
 import PurchaseOrderCreating from '../purchase/OrderCreating';
+import StockOrderCreating from '../stock/OrderCreating';
+import StockOrderHistory from '../stock/OrderHistory';
+import StockManager from '../stock/StockManager';
 
 /**
     This Component should provide ShopRef and other common data which children component need.
@@ -40,8 +43,15 @@ class ShopSignIned extends Component{
                 <PurchaseOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/purchase/new/`} render={({history,match,location})=>
                 <PurchaseOrderCreating history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
-                {/* <Route path="/shop/:shopid/stock/storage" component={Stock}/>  */}
-                {/* <Route path="/shop/:shopid/stock/history" component={Stock}/>  */}
+                <Route path={`${shopUrl}/stock/history/:orderid`} render={({history,match,location})=>
+                <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+                <Route path={`${shopUrl}/stock/history/`} render={({history,match,location})=>
+                <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+                <Route path={`${shopUrl}/stock/new/`} render={({history,match,location})=>
+                <StockOrderCreating history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+                <Route path={`${shopUrl}/stock/`} render={({history,match,location})=>
+                <StockManager history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+           
                 {/* <Route path="/shop/:shopid/analysis" render={Analysis}/>  */}
                 {/* <Route path="/shop/:shopid/setting/" render={SettingAndOther}/> */}
                 {/* <Route path="/shop/:shopid/setting/other" render={SettingAndOther}/> */}
@@ -54,9 +64,10 @@ class ShopSignIned extends Component{
     }
 }
 
-function mapStateToProps({auth,shop}){
+function mapStateToProps({auth,shop,shopList}){
     return {
         auth,
+        shopList,
         shop,
     }
 }

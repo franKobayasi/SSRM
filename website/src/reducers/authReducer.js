@@ -1,8 +1,14 @@
 const initialState={
-    MEMBER_UID:'undefined', /** xKWbiVJJqAeGwy5FBZf1PQFKUm13 */
-    MEMBER_NAME:'undefined', /** 仲岳 */
-    MEMBER_EMAIL:'undefined', /** tofindeachotherandtofeel */
-    isLogin:'unconnect',  /** unconnect */
+    // MEMBER_UID:'undefined',
+    // MEMBER_NAME:'undefined', 
+    // MEMBER_EMAIL:'undefined',
+    // isLogin:'unconnect', 
+    /** 測試用 */
+    MEMBER_UID:'xKWbiVJJqAeGwy5FBZf1PQFKUm13',
+    MEMBER_NAME:'仲岳', 
+    MEMBER_EMAIL:'tofindeachotherandtofeel', 
+    isLogin:true,  
+
 }
 
 const authReducer=(preState=initialState,action)=>{

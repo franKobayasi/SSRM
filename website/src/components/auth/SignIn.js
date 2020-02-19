@@ -36,7 +36,7 @@ class SignIn extends Component{
                             uid:user.uid
                         }
                         this.props.dispatch(actionSignIn(memberInfo));
-                        console.log('login!',memberInfo);
+                        console.log('sign in via email and password!');
                         this.props.history.push('/');
                     });
                 }else{

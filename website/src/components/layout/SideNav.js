@@ -31,8 +31,11 @@ function SideNav(props){
             {
                 props.shop.state==="signIned"?
                 <ul className="navBar">
-                    <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/purchase/new`}>採購單登入</NavLink></li>
-                    <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/purchase/history`}>歷史訂單</NavLink></li>
+                    <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/purchase/new`}>採購單登錄</NavLink></li>
+                    <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/purchase/history`}>歷史採購訂單</NavLink></li>
+                    <li><NavLink activeClassName="active" exact to={`/shop/${props.shop.id}/stock/`}>庫存管理</NavLink></li>
+                    <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/stock/new`}>進貨單登錄</NavLink></li>
+                    <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/stock/history`}>歷史進貨訂單</NavLink></li>
                 </ul>:null
             }
             <ul className="navFooter">

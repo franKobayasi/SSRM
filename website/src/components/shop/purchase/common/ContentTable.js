@@ -65,10 +65,15 @@ function ContentTable(props){
                     deleteProduct={props.deleteProduct}/>:
                     null
                 }
-                
             </div> 
         ))}
-        <div onClick={props.startProductAdding} className="addNewProduct btn">+</div>
+        {
+            mode==="create"?
+            <div onClick={props.startProductAdding} className="addNewProduct btn">+</div>:
+            props.onOrderEditing?
+            <div onClick={props.startProductAdding} className="addNewProduct btn">+</div>:
+            null
+        }
     </div>
     )
 }

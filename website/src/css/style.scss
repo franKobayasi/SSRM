@@ -77,7 +77,14 @@ $defaultFontSize:16px;
         position: relative;
         height: 100%;
         background-color: white;
-        padding: 15px;
+        padding: 10px;
         padding-bottom: 75px;
+        .orderFliter{
+            line-height: 50px;
+            background-color: rgba($color: $slightBlack, $alpha: .4);
+            width: 100%;
+            border-radius: 5px;
+            color:white;
+        }
     }
 }

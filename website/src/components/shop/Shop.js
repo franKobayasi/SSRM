@@ -12,6 +12,7 @@ import {
 import ssrmFirebase,{fbAuthProvider,ssrmDB,getDataFromFireBase} from "../../useFirebase";
 /** action creators */
 import {actionShopSignIn,actionShopSignOut} from '../../actions/shop';
+import {actionUpdateShopList} from "../../actions/shopList";
 /** component */
 import ShopAuth from './shopauth/ShopAuth';
 import ShopSignIned from './shopauth/ShopSignIned';
@@ -23,7 +24,7 @@ class Shop extends Component{
             shop:{
                 id:this.props.match.params.shopid,
             },
-            isWrongID:'uncheck',
+            isWrongID:false, /** uncheck */
         };
     }
     componentDidMount(){
@@ -39,35 +40,51 @@ class Shop extends Component{
         let auth=this.props.auth;
         let shopid=this.state.shop.id;
         let shopRef=ssrmDB.collection('members').doc(auth.MEMBER_UID).collection('shops').doc(shopid);
-        shopRef.get().then(doc=>{
-            if(doc.exists){
-                let shop=doc.data();
-                shop.id=doc.id;
-                // 尚未登入
-                if(shop.currentUser==="undefined"){
-                    console.log('no user sign in shop yet');
-                    this.props.dispatch(actionShopSignOut());
-                }else{
-                    this.props.dispatch(actionShopSignIn({
-                        user:shop.currentUser,
-                        title:shop.title,
-                        id:shop.id,
+        let userToken=JSON.parse(localStorage.getItem(`SSRM_${shopid}_USERTOKEN`));
+        
+        if(this.props.shop.state==="uncheck"){ // 初次登入
+            shopRef.get().then(doc=>{
+                if(doc.exists){
+                    let shop=doc.data();
+                    shop.id=doc.id;
+                    // 尚未登入，確認是否有token
+                    if(userToken){
+                        shopRef.collection('users').doc(userToken).get()
+                        .then(doc=>{
+                            if(doc.exists){
+                                this.props.dispatch(actionShopSignIn({
+                                    user:{
+                                        name:doc.data().name,
+                                        id:doc.id,
+                                    },
+                                    title:shop.title,
+                                    id:shop.id,
+                                }))
+                                console.log('shop auto login');
+                            }
+                        })
+                        .catch(error=>{
+                            console.error('ERROR\n商家自動登入時發生錯誤')
+                            console.log(error)
+                        })
+                    }else{ // 沒有token..
+                        console.log('no user sign in shop yet');
+                        this.props.dispatch(actionShopSignOut());
+                    }
+                    this.setState(preState=>({
+                        shop:{
+                            ...preState.shop,
+                            title:shop.title,
+                        },
+                        isWrongID:false,
+                    }));
+                }else{ // 店家不存在，錯誤店家代碼
+                    this.setState(preState=>({
+                        isWrongID:true,
                     }))
-                    console.log('shop auto login');
                 }
-                this.setState(preState=>({
-                    shop:{
-                        ...preState.shop,
-                        title:shop.title,
-                    },
-                    isWrongID:false,
-                }));
-            }else{ // 店家不存在，錯誤店家代碼
-                this.setState(preState=>({
-                    isWrongID:true,
-                }))
-            }
-        })
+            })
+        }
     }
     componentDidUpdate(){
 
@@ -75,6 +92,7 @@ class Shop extends Component{
     render(){
         let shop=this.props.shop;
         let isWrongID=this.state.isWrongID;
+        
         if(isWrongID==="uncheck"){
             return <div>shop data loading...</div>
         }else if(isWrongID===true){
@@ -98,5 +116,14 @@ function mapStateToProps({auth, shopList, shop},ownProps){
         shop,
     };
 }
+function mapDispatchToProps(dispatch,ownProps){
+    const updateShopList=(shopList)=>{
+        return dispatch(actionUpdateShopList(shopList));
+    }
+    return {
+        updateShopList,
+        dispatch,
+    }
+}
 
-export default connect(mapStateToProps)(Shop);
+export default connect(mapStateToProps,mapDispatchToProps)(Shop);

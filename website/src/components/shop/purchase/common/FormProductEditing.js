@@ -1,8 +1,8 @@
 import React,{ Component,Fragment } from "react";
-import {randomProductID} from "../../../lib";
-import checkImg from "../../../img/check.png";
-import editImg from "../../../img/editBtn.png";
-import deleteImg from "../../../img/deleteBtn.png";
+import {randomProductID} from "../../../../lib";
+import checkImg from "../../../../img/check.png";
+import editImg from "../../../../img/editBtn.png";
+import deleteImg from "../../../../img/deleteBtn.png";
 
 class FormProductEditing extends Component{
     constructor(props){
@@ -19,6 +19,9 @@ class FormProductEditing extends Component{
             tempNum:''
         }
     }
+    isNotNumber(num){
+        return isNaN(Number(num));
+    }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
         let value=evnt.target.value.trim().toUpperCase();
@@ -29,11 +32,17 @@ class FormProductEditing extends Component{
         });
     }
     addSpec=()=>{
-        if(this.state.tempSize.length===0){
+        let isNotNumber=this.isNotNumber;
+        let size=this.state.tempSize;
+        let num=this.state.tempNum;
+        let color=this.state.tempColor;
+        if(size.length===0){
             alert("請輸入尺寸");
-        }else if(this.state.tempNum.length===0){
+        }else if(num.length===0){
             alert("請輸入件數");
-        }else if(this.state.tempColor.length===0){
+        }else if(isNotNumber(num)){
+            alert("件數並非數值，請確認");
+        }else if(color.length===0){
             alert("請輸入顏色");
         }else{
             let product=Object.assign({},this.state);
@@ -48,9 +57,9 @@ class FormProductEditing extends Component{
             if(!isSame){ /** 如果沒重複 */
                 product.itemList.push({
                     itemID:`${product.id}${product.startAt++}`,
-                    size:product.tempSize,
-                    color:product.tempColor,
-                    num:product.tempNum
+                    size,
+                    color,
+                    num,
                 })
                 this.setState(preState=>({
                     startAt:product.startAt,
@@ -85,23 +94,32 @@ class FormProductEditing extends Component{
         }))
     }
     submitNewProduct=()=>{
-        if(this.state.name.length===0){
+        let name=this.state.name;
+        let cost=this.state.cost;
+        let price=this.state.price;
+        let itemList=this.state.itemList;
+        let isNotNumber=this.isNotNumber;
+        if(name.length===0){
             alert('請輸入產品名稱');
-        }else if(this.state.cost.length===0){
+        }else if(cost.length===0){
             alert('請輸入產品成本');
-        }else if(this.state.price.length===0){
+        }else if(isNotNumber(cost)){
+            alert('成本並非數值，請確認')
+        }else if(price.length===0){
             alert('請輸入售價');
-        }else if(this.state.itemList.length===0){
+        }else if(isNotNumber(price)){
+            alert('售價並非數值，請確認');
+        }else if(itemList.length===0){
             alert('尚未新增任何產品規格，請新增');
         }else{
             if(confirm('確定完成商品編輯？')){
                 let productToSubmit={
                     id:this.state.id,
-                    name:this.state.name,
-                    cost:this.state.cost,
-                    price:this.state.price,
-                    itemList:this.state.itemList,
-                    startAt:this.state.startAt
+                    name:name,
+                    cost:cost,
+                    price:price,
+                    itemList:itemList,
+                    startAt:this.state.startAt,
                 }
                 console.log(productToSubmit);
                 this.props.submitNewProduct(productToSubmit);

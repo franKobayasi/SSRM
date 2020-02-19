@@ -84,20 +84,13 @@ class Dashboard extends Component{
         }
     }
     componentDidMount(){
-        console.log('getting data from DB via mount');
-        (async ()=>{
-            await this.asyncShopListFromFirebase();
-            this.setState(preState=>({
-                isNeedUpdate:false,
-            }));
-        })();
     }
     componentDidUpdate(){
         /** 初始化抓取資料 */
         if(this.state.isNeedUpdate){
-            console.log('getting data from DB via mount');
+            console.log('component update');
             (async ()=>{
-                await this.asyncShopListFromFirebase();
+                await this.props.asyncShopListFromFirebase();
                 this.setState(preState=>({
                     isNeedUpdate:false,
                 }));
@@ -114,23 +107,6 @@ class Dashboard extends Component{
                 [id]:value,
             }
         });
-    }
-    /** functions below handle shoplist */
-    /** this func aysc shopList from firebase to redux store */
-    asyncShopListFromFirebase=()=>{
-        ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').get()
-        .then(snapshot=>{
-            let shopList=[];
-            snapshot.forEach(doc=>{
-                let shop={
-                    id:doc.id,
-                    title:doc.data().title
-                };
-                shopList.push(shop);
-            })
-            /** this is dispatch extends from high level connet method */
-            this.props.updateShopList(shopList);
-        })
     }
     /** show or hide shop create form */
     startShopCreating=()=>{
@@ -267,14 +243,5 @@ function mapStateToProps({auth,shopList},ownProps){
         shopList,
     }
 }
-function mapDispatchToProps(dispatch,ownProps){
-    const updateShopList=(shopList)=>{
-        return dispatch(actionUpdateShopList(shopList));
-    }
-    return {
-        updateShopList,
-        dispatch,
-    }
-}
 
-export default connect(mapStateToProps,mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps)(Dashboard);
