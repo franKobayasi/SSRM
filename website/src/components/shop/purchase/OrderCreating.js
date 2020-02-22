@@ -94,7 +94,7 @@ class OrderCreating extends Component{
                     <div className="informationArea">
                         <div className="basicInfo">
                             <span className="number">{`採購單號 ${currentOrder.id}`}</span>
-                            <Supplier title={currentOrder.supplierTitle} address={currentOrder.supplierAddress} phone={currentOrder.supplierPhone}/>
+                            <Supplier title={currentOrder.supplierTitle} address={currentOrder.supplierAddress} phone={currentOrder.supplierTel}/>
                         </div>
                         <div className="innerOperatingArea">
                             <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
@@ -115,8 +115,8 @@ class OrderCreating extends Component{
                                 <button className="btnForFormLittle cancel" onClick={this.cancelOrder}>取消</button>
                             </div>
                             <div className="totalInfo">
-                                <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
-                                <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
+                                <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
+                                <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
                             </div>
                         </footer>
                     </div>
@@ -130,7 +130,7 @@ class OrderCreating extends Component{
             id:`${randomPurchaseOrderID()}`,
             supplierTitle:'Supplier',
             supplierAddress:'請先完成查詢或新增',
-            supplierPhone:'請先完成查詢或新增',
+            supplierTel:'請先完成查詢或新增',
             products:[],
         };
     }
@@ -180,13 +180,13 @@ class OrderCreating extends Component{
         this.setState(preState=>({
             tempSupplierName:'',
             tempSupplierAddress:'',
-            tempSupplierPhone:'',
+            tempSupplierTel:'',
             onSupplierAdding:false,
             currentOrder:{
                 ...preState.currentOrder,
                 supplierTitle:title,
                 supplierAddress:address,
-                supplierPhone:phone,
+                supplierTel:phone,
             }
         }))
     }
@@ -296,15 +296,17 @@ class OrderCreating extends Component{
         }
     }
     /** compute sum of cost and avanrage profit */
-    computeCostAndProfit=()=>{
+    getStaticData=()=>{
         let products=this.state.currentOrder.products;
         let result={
             sumOfCost:0,
             sumOfPrice:0,
             avgProfit:0,
             sumOfNum:0,
+            nameOfProducts:[]
         };
         for(let product of products){
+            result.nameOfProducts.push(product.name);
             for(let item of product.itemList){
                 result.sumOfNum+=parseInt(item.num);
                 result.sumOfCost+=(product.cost*item.num);
@@ -313,7 +315,7 @@ class OrderCreating extends Component{
         }
         let avgProfit=(result.sumOfPrice-result.sumOfCost)/result.sumOfPrice;
         result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):"..."
-        return result;
+        return result; 
     }
     /** submitOrder */
     submitOrder=()=>{
@@ -322,15 +324,16 @@ class OrderCreating extends Component{
         let currentOrder=this.state.currentOrder
         if(currentOrder.products.length===0){
             alert('尚未新增任何產品，請先新增產品');
-        }else if(currentOrder.supplierPhone==="請先完成查詢或新增"){
+        }else if(currentOrder.supplierTel==="請先完成查詢或新增"){
             alert('尚未填寫供應商，請先填寫供應商');
         }else if(confirm('確定送出採購單？')){
             let order=Object.assign({},currentOrder);
-            let result=this.computeCostAndProfit();
+            let result=this.getStaticData();
             order.avgProfit=result.avgProfit;
             order.sumOfCost=result.sumOfCost;
             order.sumOfNum=result.sumOfNum;
-            order.time=new Date();
+            order.nameOfProducts=result.nameOfProducts;
+            order.time=new Date().valueOf();
             this.props.shop.shopRef.collection('purchases').doc(order.id).set(order)
                 .then(()=>{
                     alert(`採購單: ${order.id} 成功新增！`);

@@ -1,0 +1,166 @@
+/** COLOR */
+$mainColor:#FF6D05;
+$backgroudColor:rgb(200, 200, 200);
+$slightBlack:#333;
+
+$min-height:768px;
+
+.shopMainArea-stock-orderCreating{
+    .informationArea{
+        .basicInfoArea{
+            margin-bottom: 25px;
+            .searchToggle{
+                display: inline-block;
+                vertical-align: middle;
+                border: 1px solid black;
+                border-radius: 3px;
+                margin-left: 25px;
+                overflow: hidden;;
+                span{
+                    display: inline-block;
+                    padding: 3px 15px;
+                }
+                span:last-child{
+                    background-color: $mainColor;
+                    color:white;
+                    width: 75px;
+                    line-height: 25px;
+                    text-align: center;
+                }
+            }
+        }
+        .itemSelector{
+            position: absolute;
+            right: 0;
+            text-align: center;
+            font-size: 14px;
+            width: 775px;
+            height: 95%;
+            color:white;
+            background-color: $slightBlack;
+            border-radius: 5px;
+            padding: 10px;
+            overflow: hidden;
+            transform: translate(770px,0);
+            &>div{
+                display: inline-block;
+                vertical-align: middle;
+            }
+            span,input,label{
+                display: inline-block;
+                vertical-align: middle;
+            }
+            .orderSearchArea{
+                .searchBar{
+                    width: 100%;
+                    text-align: left;
+                    margin-bottom: 10px;
+                    & > span{
+                        margin: 0 10px 5px 5px;
+                        label{
+                            width: 75px;
+                            padding: 5px;
+                        }
+                        input{
+                            width: 150px;
+                        }
+                        .toDate{
+                            width: 20px;
+                        }
+                    }
+                    .searchBtn{
+                        position: relative;
+                        margin-left: 30px;
+                        top:10px
+                    }
+                    .note{
+                        font-size: 14px !important; 
+                    }
+                }
+                .orderSelector{
+                    background-color: white;
+                    color: black;
+                    border-radius: 5px;
+                    padding: 5px;
+                    margin-bottom: 10px;
+                    width:750px;
+                    height: 175px;
+                    overflow-y: scroll;
+                    .olderSummary{
+                        border-radius: 5px;
+                        line-height: 30px;
+                        background-color: $backgroudColor;
+                    }
+                    .active{
+                        background-color: rgba($color: $mainColor, $alpha: 0.6);
+                    }
+                }
+            }
+            .selectedOrderInfo{        
+                background-color: white;
+                color: black;
+                border-radius: 5px;
+                width:750px;
+                height: calc(100% - 320px);
+                padding: 5px;
+                overflow:hidden;
+                .orderInfoHeader{
+                    color:$mainColor;
+                    margin-bottom: 15px;
+                    &>span{
+                        display: inline-block;
+                        vertical-align: middle;
+                        margin-right: 10px;
+                    }
+                }
+                & > div{
+                    margin-bottom: 10px;
+                }
+                .tableSmall{
+                    height: 200px;
+                    .pcs{
+                        margin-right: 15px;
+                    }
+                }
+                button{
+                    margin-top: 20px;
+                }
+            }
+        }
+        .showItemSelector{
+            animation:showItemSelector 1s forwards;
+            @keyframes showItemSelector{
+                from{
+                    transform:translate(775px, 0px);
+                }
+                to{
+                    transform:translate(0px, 0px);
+                }
+            }
+        }
+        .stockProcessArea{
+            width: 100%;
+            height: 100%;
+            &>.table{
+                height: calc(100% - 115px);
+                .scrollArea{
+                    height: calc(100% - 35px);
+                }
+            }
+            .note{
+                margin-left: 25px;
+                font-size: 14px;
+                color: $mainColor !important;
+            }
+            .stockIn{
+                input{
+                    width: 30%;
+                }
+                .pcs{
+                    width: 25%;
+                }
+            }
+        }
+    }
+}
+

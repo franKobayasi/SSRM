@@ -12,12 +12,40 @@ $backgroudColor:rgb(200, 200, 200);
 $slightBlack:#333;
 /** FONT */
 $defaultFontSize:16px;
+$smallFontSize:14px;
+/** Length */
+$min-width:1024px;
+$min-height:768px;
 
+/**
+Guild line
+basic font size: 16px,
+
+
+
+*/
 #root{
     font-size: $defaultFontSize;
     width: 100%;
     height: 100vh;
+    min-width: $min-width;
+    min-height: $min-height;
+    overflow: hidden;
     background-color:  rgb(200, 200, 200);
+    font-size: $defaultFontSize;
+}
+#sideMenu{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 275px;
+    height: 100vh;
+    min-height: $min-height;
+    background-color: $mainColor;
+    z-index: 1;
+}
+body::-webkit-scrollbar {
+    display: none;
 }
 .btn{
     cursor:default;  
@@ -28,7 +56,7 @@ $defaultFontSize:16px;
     color: white;
     width: 75px;
     line-height: 30px;
-    border-radius: 15px;
+    border-radius: 5px;
     border:1px solid white; 
 }
 .btnForFormBig{
@@ -38,19 +66,42 @@ $defaultFontSize:16px;
     line-height: 35px;
     color: white;
     font-size: $defaultFontSize;
-    border-radius: 25px;
+    border-radius: 10px;
     border: $mainColor 1px solid;
+}
+.checkBox{
+    position: relative;
+    display: inline-block;
+    width: 14px !important;
+    height: 14px !important;
+    margin: 0 5px;
+    border: 2px $mainColor double;
+    border-radius: 50%;
+    span{
+        position: absolute;
+        top:2px;
+        left: 2px;
+        display: block !important;
+        width: 10px !important;
+        height: 10px !important;
+        border-radius: 50%;
+        margin: 0 !important;
+    }
+    .active{
+        background-color: $mainColor;
+    }
 }
 /** SHOP COMMON STYLE */
 .shopMainArea{
+    overflow: hidden;
     position: relative;
-    width: 99.5%;
-    margin-left: .5%;
-    height: 100%;
+    top:1%;
+    left:1%;
+    width: 98%;
+    height: 98%;
     z-index: 0;
     background-color: rgba($color: white, $alpha: .5);
-    border: 10px $backgroudColor solid ;
-    border-radius: 25px;
+    border-radius: 5px;
     .operatingArea{
         height: 75px;
         background-color: $slightBlack;
@@ -75,10 +126,11 @@ $defaultFontSize:16px;
     }
     .informationArea{
         position: relative;
-        height: 100%;
+        width: 100%;
+        height: calc(100% - 75px);
         background-color: white;
         padding: 10px;
-        padding-bottom: 75px;
+        overflow:hidden;
         .orderFliter{
             line-height: 50px;
             background-color: rgba($color: $slightBlack, $alpha: .4);
@@ -86,5 +138,95 @@ $defaultFontSize:16px;
             border-radius: 5px;
             color:white;
         }
+        .operatingBtns{
+            float:right;
+            line-height: 75px;
+            & > button{
+                background-color: $mainColor;
+                width: 95px;
+                line-height: 25px;
+                color: white;
+                font-size: $smallFontSize;
+                border-radius: 5px;
+                border: $mainColor 1px solid;
+            }
+        }
+    }
+}
+
+.table{
+    width: 100%;
+    overflow: hidden;
+    .head,.row{
+        margin: 10px 0;
+        text-align: left;
+        span,input{
+            display: inline-block;
+            margin: 0 5px;
+            text-align: center;
+        }
+    }
+    .head{
+        border-bottom: 1px solid black;
+        padding-bottom: 10px;
+    }
+    .orderID,.itemID,.productID{
+        width:175px !important;
+    }
+    .productName,.supplierTitle{
+        width:175px;
+    }
+    .supplierTel, .percentageBar{
+        width: 100px;
+    }
+    .itemSpec{
+        width: 75px
+    }
+    .stockIn{
+        width: 100px;
+    }
+    .defaultStyleBtn{
+        width:25px;
+        margin: 0 10px;
+        vertical-align: middle;
+    }
+    .note_No_item{
+        text-align: center;
+    }
+    .scrollArea{
+        width: 110%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+}
+.tableSmall{
+    width: 100%;
+    .head,.row{
+        margin: 7.5px 0;
+        text-align: left;
+        span,input{
+            display: inline-block;
+            margin: 0 5px;
+            text-align: center;
+        }
+    }
+    .head{
+        border-bottom: 1px solid black;
+        padding-bottom: 7.5px;
+    }
+    .orderID,.itemID,.productID{
+        width:150px !important;
+    }
+    .productName,.supplierTitle{
+        width:150px;
+    }
+    .supplierTel, .percentageBar{
+        width: 75px;
+    }
+    .itemSpec{
+        width: 50px
+    }
+    .stockIn{
+        width: 75px;
     }
 }

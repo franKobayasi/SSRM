@@ -34,7 +34,7 @@ class FormProductEditing extends Component{
     addSpec=()=>{
         let isNotNumber=this.isNotNumber;
         let size=this.state.tempSize;
-        let num=this.state.tempNum;
+        let num=Number(this.state.tempNum);
         let color=this.state.tempColor;
         if(size.length===0){
             alert("請輸入尺寸");
@@ -60,6 +60,7 @@ class FormProductEditing extends Component{
                     size,
                     color,
                     num,
+                    inStock:0
                 })
                 this.setState(preState=>({
                     startAt:product.startAt,
@@ -80,7 +81,11 @@ class FormProductEditing extends Component{
     }
     updateSpec=(target,key,value)=>{
         let itemList=this.state.itemList.concat([]);
-        itemList[target][key]=value.toUpperCase();
+        if(key==='num'){
+            itemList[target][key]=Number(value);
+        }else{
+            itemList[target][key]=value.toUpperCase();
+        }
         this.setState(preState=>({
             itemList:itemList
         }))
@@ -116,8 +121,8 @@ class FormProductEditing extends Component{
                 let productToSubmit={
                     id:this.state.id,
                     name:name,
-                    cost:cost,
-                    price:price,
+                    cost:Number(cost),
+                    price:Number(price),
                     itemList:itemList,
                     startAt:this.state.startAt,
                 }

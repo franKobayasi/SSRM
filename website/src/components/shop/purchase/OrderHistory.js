@@ -81,7 +81,7 @@ class OrderHistory extends Component{
                                             <span>{order.sumOfCost}</span>
                                             <span>{order.sumOfNum}</span>
                                             <span>{order.avgProfit}</span>
-                                            <span>{this.getDateToYMD(order.time.seconds)}</span>
+                                            <span>{this.getDateToYMD(order.time)}</span>
                                             <span className="showPercentage">{this.showPercentage(order)}</span>
                                             <span>
                                             <img onClick={()=>{this.toDetailPage(order.id)}} src={editImg}/>
@@ -125,8 +125,8 @@ class OrderHistory extends Component{
             onSupplierAdding:bool,
         }))
     }
-    getDateToYMD(seconds){
-        let date=new Date(seconds*1000);
+    getDateToYMD(millseconds){
+        let date=new Date(millseconds);
         return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
     }
     showPercentage(order){
