@@ -3,6 +3,7 @@ import React,{Component,Fragment} from 'react';
 import PurchaseOrderFilter from '../common/PurchaseOrderFilter';
 import SelectedOrder from './SelectedOrder';
 import Checkbox from '../common/Checkbox';
+import StockInPercentage from '../common/StockInPercentage';
 
 /**
 Need Props:
@@ -57,6 +58,22 @@ class ItemSelector extends Component{
         )
     }
     
+    getSearchResult=(result)=>{
+        this.setState(preState=>({
+            orderSearchResult:result,
+        }))
+    }
+    selectOrder=(index)=>{
+        let orderSelected=this.state.orderSearchResult[index];
+        let tempItemState={};
+        for(let item of orderSelected.itemList){
+            tempItemState[item.itemID]=false;
+        }
+        this.setState(preState=>({
+            orderSelected,
+            tempItemState,
+        }))
+    }
     /** handle SelectedOrder's item */
     changeItemState=(itemID)=>{
         let tempItemState=Object.assign({},this.state.tempItemState);
@@ -85,75 +102,36 @@ class ItemSelector extends Component{
         }else{
             for(let item of orderSelected.itemList){
                 if(tempItemState[item.itemID]){
+                    delete item.status;
+                    item.operateNum=0;
                     itemList.push(item);
                 }
             }
             if(itemList.length===0){
                 alert('尚未添加任何商品');
+            }else{
+                order.itemList=itemList;
+                order.purchaseID=orderSelected.id;
+                this.props.callback(order);
+                this.setState(preState=>({
+                    isAllSelected:false,
+                    orderSelected:null,
+                    tempItemState:null,
+                }))
             }
-            order.itemList=itemList;
-            order.purchaseID=orderSelected.id;
-            this.props.callback(order);
-            this.setState(preState=>({
-                isAllSelected:false,
-                orderSelected:null,
-                tempItemState:null,
-            }))
         }
-    }
-    getSearchResult=(result)=>{
-        this.setState(preState=>({
-            orderSearchResult:result,
-        }))
-    }
-    selectOrder=(index)=>{
-        let orderSelected=this.transform(this.state.orderSearchResult[index]);
-        let tempItemState={};
-        for(let item of orderSelected.itemList){
-            tempItemState[item.itemID]=false;
-        }
-        this.setState(preState=>({
-            orderSelected,
-            tempItemState,
-        }))
-    }
-    /** 將採購單的格式簡化 */
-    transform=(order)=>{
-        let orderSelected;
-        if(order){
-            orderSelected={};
-            orderSelected.id=order.id;
-            orderSelected.itemList=[];
-            order.products.map((product)=>{
-                for(let item of product.itemList){
-                    item.name=product.name;
-                    orderSelected.itemList.push(item);
-                }
-            })
-        }
-        return orderSelected;
     }
 }
 
 function OlderSummary(props){
+    let order=props.order
     return (
         <div onClick={props.selectOrder} className={`olderSummary btn row ${props.active?'active':''}`}>
-            <span className="orderID">{props.order.id}</span>
-            <span className="supplierTitle">{props.order.supplierTitle}</span>
-            <span className="supplierTel">{props.order.supplierTel}</span>
-            <span className="percentageOfStock">計算中</span>
+            <span className="orderID">{order.id}</span>
+            <span className="supplierTitle">{order.search_supplier[0]}</span>
+            <span className="supplierTel">{order.search_supplier[2]}</span>
+            <span className="percentageOfStock"><StockInPercentage order={order}/></span>
         </div>
-    )
-}
-function showPercentage(order){
-    let number="10%";
-    let style={
-        width:number
-    }
-    return (
-        <span className="showPercentage">
-            <span className="color" style={style}>.</span>{number}
-        </span>
     )
 }
 

@@ -4,7 +4,8 @@ import {roundAfterPointAt} from '../../../lib';
 /** component */
 import SideNav from '../../layout/SideNav';
 import OrderDetail from './OrderDetail';
-import SupplierAddingForm from './common/SupplierAddingForm';
+import Supplier from './common/Supplier';
+import StockInPercentage from '../common/StockInPercentage'
 /** other resource */
 import editImg from '../../../img/editBtn.png';
 import deleteImg from '../../../img/deleteBtn.png';
@@ -41,7 +42,7 @@ class OrderHistory extends Component{
                         {/* 新增供應商 */}
                         {
                             onSupplierAdding?
-                            <SupplierAddingForm shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
+                            <Supplier shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
                         <div className="operatingArea">
                             <div className="currentInfo">
                                 <div>歷史採購單列表</div>
@@ -72,17 +73,17 @@ class OrderHistory extends Component{
                                 </div>
                                 {   
                                     orderList.length===0?
-                                    null:
+                                    <div className="row">目前沒有符合查詢條件的訂單</div>:
                                     orderList.map((order,index)=>{
                                     return (
                                         <div key={index} className="tr">
                                             <span>{order.id}</span>
-                                            <span>{order.supplierTitle}</span>
-                                            <span>{order.sumOfCost}</span>
-                                            <span>{order.sumOfNum}</span>
-                                            <span>{order.avgProfit}</span>
+                                            <span>{order.search_supplier[0]}</span>
+                                            <span>{order.static.sumOfCost}</span>
+                                            <span>{order.static.sumOfNum}</span>
+                                            <span>{order.static.avgProfit}</span>
                                             <span>{this.getDateToYMD(order.time)}</span>
-                                            <span className="showPercentage">{this.showPercentage(order)}</span>
+                                            <StockInPercentage order={order} />
                                             <span>
                                             <img onClick={()=>{this.toDetailPage(order.id)}} src={editImg}/>
                                             <img onClick={()=>{this.deleteHoldOrder(order.id)}} src={deleteImg}/></span>
@@ -97,28 +98,27 @@ class OrderHistory extends Component{
         )
     }
     updateOrdersFromDB=()=>{
-        this.props.shop.shopRef.collection('purchases')
-            .get()
-            .then(snapshot=>{
-                let orderList=[];
-                snapshot.forEach(doc=>{
-                    if(doc.exists){
-                        let order=doc.data();
-                        order.id=doc.id;
-                        orderList.push(order);
-                        this.setState(preState=>({
-                            orderList,
-                            isNeedUpdateFromDB:false,
-                        }))
-                    }else{
-                        console.log('no any purchase history yet')
-                    }
-                })
+        this.props.shop.shopRef.collection('purchases').get()
+        .then(snapshot=>{
+            let orderList=[];
+            snapshot.forEach(doc=>{
+                if(doc.exists){
+                    let order=doc.data();
+                    order.id=doc.id;
+                    orderList.push(order);
+                    this.setState(preState=>({
+                        orderList,
+                        isNeedUpdateFromDB:false,
+                    }))
+                }else{
+                    console.log('no any purchase history yet')
+                }
             })
-            .catch(error=>{
-                console.error("ERROR\n伺服器發生錯誤，目前無法獲取歷史訂單資料，請稍後再試")
-                console.log(error);
-            })
+        })
+        .catch(error=>{
+            console.error("ERROR\n伺服器發生錯誤，目前無法獲取歷史訂單資料，請稍後再試")
+            console.log(error);
+        })
     }
     toggleSupplierAddingForm=(bool)=>{
         this.setState(preState=>({
@@ -127,19 +127,14 @@ class OrderHistory extends Component{
     }
     getDateToYMD(millseconds){
         let date=new Date(millseconds);
-        return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
+        let year=`${date.getFullYear()}`;
+        let month=date.getMonth()<9?`0${date.getMonth()+1}`:`${date.getMonth()+1}`;
+        let day=date.getDate()<10?`0${date.getDate()}`:`${date.getDate()}`;
+        let hour=date.getHours()<10?`0${date.getHours()}`:`${date.getHours()}`;
+        let minute=date.getMinutes()<10?`0${date.getMinutes()}`:`${date.getMinutes()}`;
+        return `${year}/${month}/${day} ${hour}:${minute}`
     }
-    showPercentage(order){
-        let number="10%";
-        let style={
-            width:number
-        }
-        return (
-            <Fragment>
-                <span className="color" style={style}>.</span>{number}
-            </Fragment>
-        )
-    }
+    /** 進貨完成度 */
     toDetailPage=(orderid)=>{
         history().push(`${this.props.shopUrl}/purchase/history/${orderid}`);
     }

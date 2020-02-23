@@ -19,17 +19,16 @@ class OrderCreating extends Component{
             isShowSearchPanel:false,
             currentOrder:'loading',
             localStorageLock:true,
-            reEditOrder:null, /** re edit itemList of particular purchase order which is going to in stock */
         }
     }
     componentDidMount(){
-       let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-stock-newOrder'));
+       let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-stock-stockin-newOrder'));
         let currentOrder;
         /** 設定current order */
         /** 如果有未完成的Order，則不新增新的Order */
         if(!uncompletedNewOrder){
             currentOrder=this.createNewOrder();
-            localStorage.setItem('uncompleted-stock-newOrder',JSON.stringify(currentOrder));       
+            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(currentOrder));       
         }else{
             currentOrder=uncompletedNewOrder;
         }
@@ -40,7 +39,7 @@ class OrderCreating extends Component{
     componentDidUpdate(){
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock){
-            localStorage.setItem('uncompleted-stock-newOrder',JSON.stringify(this.state.currentOrder))
+            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))
@@ -101,7 +100,8 @@ class OrderCreating extends Component{
                                             <span className="itemSpec">{item.num}</span>
                                             <span className="itemSpec">{item.num-item.inStock}</span>
                                             <span className="stockIn">
-                                                <input defaultValue={item.num-item.inStock}></input>
+                                                <input onChange={(evnt)=>{evnt.persist(); this.setOperateNum(evnt,orderIndex,itemIndex)}} 
+                                                value={item.operateNum} ></input>
                                                 <span className="pcs"> Pcs</span>
                                             </span>                                                
                                             <span className="btns">
@@ -116,11 +116,11 @@ class OrderCreating extends Component{
                                 </div>
                             </div>
                             <div className="operatingBtns">
-                                <button>商品入庫</button>
-                                <button>取消操作</button>
+                                <button onClick={this.submitOrder}>商品入庫</button>
+                                <button onClick={this.cancelOrder}>取消操作</button>
                             </div>
                         </div>
-                        <ItemSelector reEditOrder={this.state.reEditOrder} callback={this.addItemList} shopRef={this.props.shop.shopRef} isShow={this.state.isShowSearchPanel}/>
+                        <ItemSelector callback={this.addItemList} shopRef={this.props.shop.shopRef} isShow={this.state.isShowSearchPanel}/>
                     </div>
                 </div>
             </Fragment>
@@ -141,23 +141,13 @@ class OrderCreating extends Component{
         }))
     }
     createNewOrder(){
+        let type=`${this.props.match.params.type}`
         return {
             id:`${randomStockOrderID()}`,
+            type,
             stockInList:[],
+            search_purchaseID:[],
         };
-         /**
-        Current Stock Order {
-            id:
-            以採購單為單位的進貨明細
-            stockInList:[
-                purchaseID:
-                itemList:[]
-                // 有此產品往上加
-                // 無此產品寫入增加數量
-                // 再以結果更新 purchase
-            ]
-        }
-     */
     }
     addItemList=(order)=>{
         let currentOrder=Object.assign({},this.state.currentOrder);
@@ -179,6 +169,7 @@ class OrderCreating extends Component{
             }
         }
         if(!isOrderAlreadyAdd){
+            currentOrder.search_purchaseID.push(order.purchaseID);
             currentOrder.stockInList.push({
                 purchaseID:order.purchaseID,
                 itemList:order.itemList
@@ -196,6 +187,7 @@ class OrderCreating extends Component{
             let currentOrder=Object.assign({},this.state.currentOrder);
             currentOrder.stockInList[orderIndex].itemList.splice(itemIndex,1);
             if(currentOrder.stockInList[orderIndex].itemList.length===0){
+                currentOrder.search_purchaseID.splice(orderIndex,1);
                 currentOrder.stockInList.splice(orderIndex,1);
             }
             this.setState(preState=>({
@@ -204,27 +196,65 @@ class OrderCreating extends Component{
             }))
         }
     }
+    setOperateNum=(evnt,orderIndex,itemIndex)=>{
+        let value=evnt.target.value;
+        let currentOrder=Object.assign({},this.state.currentOrder);
+        let item=currentOrder.stockInList[orderIndex].itemList[itemIndex];
+        if(currentOrder.type==='stockin'){
+            value=value>(item.num-item.inStock)?item.num-item.inStock:value;
+        }else if(currentOrder.type==='return'){
+            value=value>item.inStock?item.inStock:value;
+        }
+        currentOrder.stockInList[orderIndex].itemList[itemIndex].operateNum=value;
+        this.setState(preState=>({
+            currentOrder,
+        }))
+    }
     /**
     新增進貨單到資料庫，同時新增產品庫存到產品collection，最後更新各採購單的狀態
     */
     submitOrder=()=>{
         let shopRef=this.props.shop.shopRef;
         let currentOrder=this.state.currentOrder;
-        /** 新增進貨單到資料庫 */
-        shopRef.collection('stocks').doc(currentOrder.id).set(currentOrder)
-        .then(res=>{
-            console.log(`進貨單登錄成功：\n${res}`)
-            let itemsUploadPromise=[]; /** 新增各產品 */
-            let purchaseUpdatePromise=[]; /** 更新各採購單的狀態 */
-            for(let stockIn of currentOrder.stockInList){
-                // shopRef.collection(purchases).doc(stockIn.purchaseID).
-                /**
-                編寫中....
-                
-                
-                 */
+        let isAllOperateNumKeyIn=true;
+        /** 確認是否已輸入數量 */
+        search:
+        for(let order of currentOrder.stockInList){
+            for(let item of order.itemList){
+                if(item.operateNum===0){
+                    isAllOperateNumKeyIn=false;
+                    break search;
+                }   
             }
-        })
+        }
+        if(isAllOperateNumKeyIn){
+            /** 新增進貨單到資料庫 */
+            currentOrder.time=new Date().valueOf();
+            shopRef.collection('stocks').doc(currentOrder.id).set(currentOrder)
+            .then(res=>{
+                console.log(`進貨單登錄成功：\n${res}`)
+                /** 新增各產品 */
+                for(let stockIn of currentOrder.stockInList){
+                    shopRef.collection('purchases').doc(stockIn.purchaseID).upadte({`producst.${itemID}.inStock`:})
+                }
+                let itemsUploadPromise=[];
+                let purchaseUpdatePromise=[]; /** 更新各採購單的狀態 */
+                for(let stockIn of currentOrder.stockInList){
+                    // shopRef.collection(purchases).doc(stockIn.purchaseID).
+                    /**
+                    編寫中....
+                    search_purchaseID:[],
+                    time:null
+                    
+                    */
+                }
+            })
+        }else{
+            alert('尚有有未輸入進貨數量的商品');
+        }
+    }
+    cancelOrder=()=>{
+
     }
 }
 

@@ -4,9 +4,8 @@ import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../.
 import {createHashHistory as history} from 'history';
 /** component */
 import SideNav from '../../layout/SideNav';
-import Supplier from './common/Suppiler';
 import ContentTable from './common/ContentTable';
-import SupplierAddingForm from './common/SupplierAddingForm';
+import Supplier, {SupplierInfo} from './common/Supplier';
 import FormProductEditing from './common/FormProductEditing';
 
 /**
@@ -19,7 +18,8 @@ class OrderDetail extends Component{
         super(props);
         this.state={
             currentOrder:'loading',
-            unsavedHistoryOrder:'loading',
+            currentProduct:null,
+            unsavedHistoryOrder:null,
             onOrderEditing:false,
             onProductEditing:false,
             onSupplierAdding:false,
@@ -29,29 +29,23 @@ class OrderDetail extends Component{
         }
     }
     componentDidMount(){
-        //尋找是否有此訂單的 unsavedHistoryOrder 並儲存到 state
-            //預備動作
-        //至資料庫查找此訂單的資料並更新到currentOrder;
-            //目的是render提供查看
-        let currentOrder,unsavedHistoryOrder;
+        let currentOrder;
         let shopRef=this.props.shop.shopRef;
-        let search=localStorage.getItem(`History_${this.props.id}`);
-        unsavedHistoryOrder=search?JSON.parse(search):'unfound';
         shopRef.collection('purchases').doc(this.props.id).get()
-            .then(doc=>{
-                if(doc.exists){
-                    currentOrder=doc.data();
-                    this.setState(preState=>({
-                        currentOrder,
-                        unsavedHistoryOrder
-                    }))
-                }
-            })
+        .then(doc=>{
+            if(doc.exists){
+                currentOrder=this.transformStructureCMPT(doc.data());
+                this.setState(preState=>({
+                    currentOrder,
+                }))
+            }
+        })
     }
     componentDidUpdate(){
+        let onOrderEditing=this.state.onOrderEditing;
         console.log('OrderDetail更新')
         /** auto upadte order to localStorage */
-        if(!this.state.localStorageLock){
+        if(!this.state.localStorageLock&&onOrderEditing){
             localStorage.setItem(`History_${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
                 localStorageLock:true,
@@ -59,20 +53,17 @@ class OrderDetail extends Component{
             console.log('update to local');
         }
         if(this.state.currentOrder==='loading'){
-            let currentOrder,unsavedHistoryOrder;
+            let currentOrder;
             let shopRef=this.props.shop.shopRef;
-            let search=localStorage.getItem(`History_${this.props.id}`);
-            unsavedHistoryOrder=search?JSON.parse(search):'unfound';
             shopRef.collection('purchases').doc(this.props.id).get()
-                .then(doc=>{
-                    if(doc.exists){
-                        currentOrder=doc.data();
-                        this.setState(preState=>({
-                            currentOrder,
-                            unsavedHistoryOrder
-                        }))
-                    }
-                })
+            .then(doc=>{
+                if(doc.exists){
+                    currentOrder=this.transformStructureCMPT(doc.data());
+                    this.setState(preState=>({
+                        currentOrder,
+                    }))
+                }
+            })
         }
     }
     render(){
@@ -82,7 +73,6 @@ class OrderDetail extends Component{
         let onOrderEditing=this.state.onOrderEditing;
         let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
         let currentProduct=this.state.currentProduct;
-        
         return (
             orderToRender==="loading"?
             <div>data is loading..</div>:
@@ -98,15 +88,12 @@ class OrderDetail extends Component{
                     </div>
                 </form>:null
                 }
-                { /* 新增供應商 */
-                    onSupplierAdding?
-                    <SupplierAddingForm shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
-                {/* 新增產品表單 */}
-                {onProductEditing?
-                <FormProductEditing product={this.state.currentProduct} 
-                    submitNewProduct={this.submitNewProduct} 
-                    cancelUpdateProduct={this.cancelUpdateProduct}    
-                    />:null}
+                {onSupplierAdding? /* 新增供應商 */
+                <Supplier shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
+                {onProductEditing? /* 新增產品表單 */
+                <FormProductEditing currentProduct={this.state.currentProduct} 
+                    submitProductSpecs={this.submitProductSpecs} 
+                    cancelUpdateProduct={this.cancelUpdateProduct} />:null}
                 <div className="operatingArea">
                     <div className="currentInfo">
                         <div>採購歷史訂單詳細頁面</div>
@@ -124,8 +111,8 @@ class OrderDetail extends Component{
                 </div>
                 <div className="informationArea">
                     <div className="basicInfo">
-                        <span className="number">{`採購單號 ${orderToRender.id}`}</span>
-                        <Supplier title={orderToRender.supplierTitle} address={orderToRender.supplierAddress} phone={orderToRender.supplierPhone}/>
+                        <span className="number">{`採購單號 ${orderToRender.productID}`}</span>
+                        <SupplierInfo title={orderToRender.search_supplier[0]} address={orderToRender.search_supplier[1]} tel={orderToRender.search_supplier[2]}/>
                     </div>
                     {
                         onOrderEditing?
@@ -156,17 +143,93 @@ class OrderDetail extends Component{
                             }
                         </div>
                         <div className="totalInfo">
-                            <span>成本總計</span><span className="sumOfCost">{this.computeCostAndProfit().sumOfCost}</span>
-                            <span>平均利潤</span><span className="avgProfit">{this.computeCostAndProfit().avgProfit}</span>
+                            <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
+                            <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
                         </div>
                     </footer>
                 </div>
             </div>
         )
     }
+    transformStructureCMPT=(orderFRBS)=>{
+        /** direct copy productID,modifyRecord,search_supplier */
+        let currentOrder={
+            id:orderFRBS.id,
+            modifyRecord:orderFRBS.modifyRecord,
+            search_supplier:orderFRBS.search_supplier,
+            time:orderFRBS.time,
+            products:[],
+        }
+        let itemList=orderFRBS.itemList
+        /** 1. 先分組，將產品編號相同的商品分配到同組 */
+        let group={};
+        for(let i=0;i<itemList.length;i++){
+           if(!group[itemList[i].productID]){
+               group[itemList[i].productID]=[];
+           }
+            group[itemList[i].productID].push(itemList[i]);
+        }
+        /** 2. 開始組裝 */
+        for(let key in group){
+            let product={
+                productID:group[key][0].productID,
+                name:group[key][0].name,
+                price:group[key][0].price,
+                cost:group[key][0].cost,
+                startAt:orderFRBS.startAt[key],
+                itemList:[],
+            };
+            for(let item of group[key]){
+                let obj={
+                   itemID:item.itemID,
+                   size:item.size,
+                   color:item.color,
+                   num:item.num,
+                   inStock:item.inStock,
+                   status:item.status,
+                }
+                product.itemList.push(obj);
+            }
+            currentOrder.products.push(product);
+        }
+        return currentOrder;
+    }
+    transformStructureFRBS=(orderCMPT)=>{
+        let startAt={};
+        let itemList=[];
+        let search_productNameAndID=[];
+        for(let product of orderCMPT.products){
+            /** 1. 將每個產品的ID累計數計至order */
+            startAt[product.productID]=product.startAt;
+            /** 2. 將每個產品ID與名稱記錄至搜尋陣列 */
+            search_productNameAndID.push(`${product.productID}`); 
+            search_productNameAndID.push(`${product.name}`);
+            /** 3. 將products拆分為單獨的items */
+            for(let item of product.itemList){
+                let obj=Object.assign({},item,{
+                    productID:product.productID,
+                    name:product.name,
+                    price:product.price,
+                    cost:product.cost,
+                })
+                itemList.push(obj);
+            }
+        }
+        let orderFRBS={
+            id:orderCMPT.id,
+            startAt:startAt, // for firebase structure need 
+            itemList:itemList, // for firebase structure need 
+            search_productNameAndID:search_productNameAndID, // for firebase structure need 
+            search_supplier:orderCMPT.search_supplier,
+            static:this.getStaticData(),
+            modifyRecord:orderCMPT.modifyRecord,
+            time:orderCMPT.time
+        }
+        return orderFRBS;
+    }
     editOrder=()=>{
         let unsavedHistoryOrder=this.state.unsavedHistoryOrder;
-        if(unsavedHistoryOrder==='unfound'){
+        if(!unsavedHistoryOrder){
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
             unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
             this.setState((preState)=>({
@@ -190,17 +253,10 @@ class OrderDetail extends Component{
         });
     }
     /** Supplier */
-    /** show and hide 供應商註冊表單*/
-    toggleSupplierAddingForm=(bool)=>{
-        this.setState(preState=>({
-            onSupplierAdding:bool,
-        }))
-    }
     /** 確認此供應商是否註冊過 */
-    checkSupplier=async(phone)=>{
+    checkSupplier=async(tel)=>{
         let result={};
-        await this.props.shop.shopRef.collection('suppliers')
-        .doc(phone).get()
+        await this.props.shop.shopRef.collection('suppliers').doc(tel).get()
         .then(doc=>{
             if(!doc.exists){
                 result.message='查無供應商資料，請先新增'
@@ -209,35 +265,36 @@ class OrderDetail extends Component{
                 result.supplier={
                     title:doc.data().title,
                     address:doc.data().address,
-                    phone:doc.id
+                    tel:doc.id
                 }
                 return ; 
             }
         })
         .catch(error=>{
-            console.error('ERROR\n查詢確認供應商資料失敗');
+            result.message='ERROR\n查詢確認供應商資料失敗'
+            console.error(`${result.message}`);
             console.log(error);
             return ;
         })
         return result;
     }
-    /** 設定當前供應商 */
-    setCurrentSuppier=(title,address,phone)=>{
+    /** show and hide 供應商註冊表單*/
+    toggleSupplierAddingForm=(bool)=>{
         this.setState(preState=>({
-            tempSupplierName:'',
-            tempSupplierAddress:'',
-            tempSupplierPhone:'',
-            onSupplierAdding:false,
-            localStorageLock:false,
-            currentOrder:{
-                ...preState.currentOrder,
-                supplierTitle:title,
-                supplierAddress:address,
-                supplierPhone:phone,
-            }
+            onSupplierAdding:bool,
         }))
     }
-    /** 輸入供應商 */
+    /** 設定當前供應商 */
+    setCurrentSuppier=(title,address,tel)=>{
+        this.setState(preState=>({
+            currentOrder:{
+                ...preState.currentOrder,
+                search_supplier:[`${title}`,`${address}`,`${tel}`]
+            },
+            localStorageLock:false,
+        }))
+    }
+    /** 輸入供應商 */   
     keyInSupplier=(evnt)=>{
         let target=evnt.target;
         let keyCode=evnt.charCode;
@@ -249,94 +306,85 @@ class OrderDetail extends Component{
                     let supplier=result.supplier;
                     target.value=''; /** 清空查詢 */
                     console.log(supplier)
-                    this.setCurrentSuppier(supplier.title,supplier.address,supplier.phone)
+                    this.setCurrentSuppier(supplier.title,supplier.address,supplier.tel)
                 }else{
                     alert(`${result.message}`)
                 }
             })();
         }
     }
+    /** Product */
     /** show 產品添加表單 */
     startProductAdding=()=>{
         this.setState(preState=>({
             onProductEditing:true,
             currentProduct:{
-                id:`${randomProductID()}`,
+                productID:`${randomProductID()}`,
                 name:'',
                 cost:'',
                 price:'',
                 startAt:1,
                 itemList:[],
             }
+        }))
+    }
+    modifyProduct=(productIndex)=>{
+        let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
+        let currentProduct=unsavedHistoryOrder.products[productIndex];
+        this.setState(preState=>({
+            onProductEditing:true,
+            currentProduct,
          }))
     }
-    modifyProduct=(evnt)=>{
-        let targetProduct=this.state.currentOrder.products.filter(product=>{
-            return product.id===evnt.target.parentNode.id;
-        })
-        if(targetProduct&&typeof targetProduct==="object"){
+    /** delete product */
+    deleteProduct=(productIndex)=>{
+        let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
+        let target=unsavedHistoryOrder.products[productIndex];
+        if(confirm(`確定刪除整筆產品:${target.productID}`)){
+            unsavedHistoryOrder.products.splice(productIndex,1)
             this.setState(preState=>({
-            onProductEditing:true,
-            currentProduct:targetProduct[0],
-         }))
-        }else{
-            console.error('Error\n edit particular exist order fail');
+                localStorageLock:false, /** update to local */
+                unsavedHistoryOrder,
+            }))
         }
     }
     /** submit or canel new product */
-    submitNewProduct=(newProduct)=>{
-        console.log(newProduct);
-        let order=Object.assign({},this.state.unsavedHistoryOrder) //複製 currentOrder
-        let isOldProUpdate=false;
-        /** modify old product */
-        order.products.map((product,index)=>{
-            if(product.id===newProduct.id){
-                order.products[index]=newProduct;
-                isOldProUpdate=true;
+    submitProductSpecs=(productSpecs)=>{
+        let isNewPorduct=true;
+        let productIndex;
+        let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
+        for(let key in unsavedHistoryOrder.products){
+            if(unsavedHistoryOrder.products[key].productID===productSpecs.productID){
+                productIndex=key
+                isNewPorduct=false;
             }
-            return ;
-        })
-        /** new product comming in */
-        if(!isOldProUpdate){
-            order.products.push(newProduct);
+        }
+        if(isNewPorduct){
+            unsavedHistoryOrder.products.push(productSpecs);
+        }else{
+            unsavedHistoryOrder.products[productIndex]=productSpecs
         }
         this.setState(preState=>({
-            unsavedHistoryOrder:order,
+            unsavedHistoryOrder,
             onProductEditing:false,
+            currentProduct:null,
             localStorageLock:false, /** update to local */
         }))
     }
     cancelUpdateProduct=()=>{
         this.setState(preState=>({
-            onProductEditing:false
+            onProductEditing:false,
+            currentProduct:null,
         }))
     }
-    /** delete product */
-    deleteProduct=(evnt)=>{
-        let order=Object.assign({},this.state.unsavedHistoryOrder);
-        let targetProduct=order.products.filter(product=>{
-            return product.id===evnt.target.parentNode.id;
-        })[0];
-        if(targetProduct&&typeof targetProduct==="object"){
-            if(confirm(`確定刪除整筆產品:${targetProduct.id}`)){
-                let index=order.products.indexOf(targetProduct);
-                if(index>=0){
-                    order.products.splice(index,1);
-                    this.setState(preState=>({
-                        unsavedHistoryOrder:order,
-                        localStorageLock:false,
-                    }))
-                }else{
-                    console.error('ERROR\n找不到要刪除的產品')
-                }
-            }
-        }else{
-            console.error('Error\n delete particular exist product fail');
-        }
-    }
     /** compute sum of cost and avanrage profit */
-    computeCostAndProfit=()=>{
-        let products=this.state.currentOrder.products;
+    getStaticData=()=>{
+        let products;
+        if(this.state.onOrderEditing){
+            products=this.state.unsavedHistoryOrder.products;
+        }else{
+            products=this.state.currentOrder.products;
+        }
         let result={
             sumOfCost:0,
             sumOfPrice:0,
@@ -345,19 +393,17 @@ class OrderDetail extends Component{
         };
         for(let product of products){
             for(let item of product.itemList){
-                result.sumOfNum+=parseInt(item.num);
+                result.sumOfNum+=Number(item.num);
                 result.sumOfCost+=(product.cost*item.num);
                 result.sumOfPrice+=(product.price*item.num);
             }
         }
         let avgProfit=(result.sumOfPrice-result.sumOfCost)/result.sumOfPrice;
         result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):"..."
-        return result;
+        return result; 
     }
     /** submitOrder */
     showModifyConfirm=()=>{
-        /** Submit created purchase order to database and clear localStorage */
-        /** Stay at create and show new empty order form */
         this.setState(preState=>({
             showModifyConfirm:true,
             modifyDescription:'',
@@ -369,37 +415,31 @@ class OrderDetail extends Component{
         if(description.length===0){
             alert('請填寫修改原因');
         }else if(confirm('確定修改？')){
-            let order=Object.assign({},this.state.unsavedHistoryOrder);
-            let result=this.computeCostAndProfit();
-            order.avgProfit=result.avgProfit;
-            order.sumOfCost=result.sumOfCost;
-            order.sumOfNum=result.sumOfNum;
-            if(!order.modify){
-                order.modify=[];
-            }
-            order.modify.push({
-                    description:description,
-                    time:new Date(),
-                    user:this.props.shop.user.name,
-                });
-            this.props.shop.shopRef.collection('purchases').doc(order.id).set(order)
-                .then(()=>{
-                    alert(`採購單: ${order.id} 修改成功！`);
-                    this.setState(preState=>({
-                        currentOrder:'loading',
-                        unsavedHistoryOrder:'loading',
-                        showModifyConfirm:false,
-                        onOrderEditing:false,
-                    }))
-                    localStorage.removeItem(`History_${this.props.id}`)
-                    return ;
-                })
-                .catch(error=>{
-                    console.error('Error\n 送出採購單時發生錯誤，無法更新至資料庫');
-                    console.log(error);
-                    return ;
-                })
-            }
+            let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
+            unsavedHistoryOrder.modifyRecord.push({
+                description:description,
+                time:new Date().valueOf(),
+                user:this.props.shop.user.name,
+            });
+            let orderFRBS=this.transformStructureFRBS(unsavedHistoryOrder);
+            this.props.shop.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)
+            .then(()=>{
+                alert(`採購單: ${orderFRBS.id} 更新成功！`);
+                this.setState(preState=>({
+                    currentOrder:'loading',
+                    showModifyConfirm:false,
+                    onOrderEditing:false,
+                    unsavedHistoryOrder:null,
+                }))
+                localStorage.removeItem(`History_${this.props.id}`);
+                return ;
+            })
+            .catch(error=>{
+                console.error('Error\n 送出採購單時發生錯誤，無法更新至資料庫');
+                console.log(error);
+                return ;
+            })
+        }
     }
     cancelSubmit=()=>{
         this.setState(preState=>({
@@ -411,7 +451,9 @@ class OrderDetail extends Component{
         if(confirm('有尚未儲存的修改內容，確定取消修改？')){
             this.setState(preState=>({
                 onOrderEditing:false,
+                unsavedHistoryOrder:null,
             }))
+            localStorage.removeItem(`History_${this.props.id}`);
         }
     }
 }

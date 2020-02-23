@@ -47,7 +47,7 @@ class ShopSignIned extends Component{
                 <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/stock/history/`} render={({history,match,location})=>
                 <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
-                <Route path={`${shopUrl}/stock/new/`} render={({history,match,location})=>
+                <Route path={`${shopUrl}/stock/new/:type`} render={({history,match,location})=>
                 <StockOrderCreating history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/stock/`} render={({history,match,location})=>
                 <StockManager history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>

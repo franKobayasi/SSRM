@@ -45,8 +45,10 @@ exports.shopAuth=functions.https.onRequest(async(req,res)=>{
               if(temp.type==='owner'&&temp.password===userClient.password){
                 resBody={
                   state:'success',
-                  userID:temp.id,
-                  type:temp.type
+                  user:{
+                    id:temp.id,
+                    name:temp.name
+                  }
                 }
                 console.log('owner login')
                 // owner login;
@@ -61,8 +63,10 @@ exports.shopAuth=functions.https.onRequest(async(req,res)=>{
               if(temp.name===userClient.name&&temp.password===userClient.password){
                 resBody={
                   state:'success',
-                  userID:temp.id,
-                  type:temp.type
+                  user:{
+                    id:temp.id,
+                    name:temp.name
+                  }
                 }
                 console.log('owner login')
                 // employee login;

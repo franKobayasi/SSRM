@@ -198,6 +198,27 @@ body::-webkit-scrollbar {
         overflow-y: scroll;
         overflow-x: hidden;
     }
+    .showPercentage{
+        width: 100%;
+        display: inline-block;
+        vertical-align: middle;
+        background-color: gray;
+        line-height: 25px;
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        color:white;
+        .color{
+            margin: 0 !important;
+            display: inline-block;
+            vertical-align: middle;
+            position: absolute;
+            background-color: $mainColor;
+            color: $mainColor;
+            top:0;
+            left:0;
+        }
+    }
 }
 .tableSmall{
     width: 100%;
