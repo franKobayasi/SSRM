@@ -42,7 +42,7 @@ function ContentTable(props){
             order.products.map((product,productIndex)=>(
                 <Fragment key={productIndex}>
                     <div className="row">
-                        <span>{`產品編號：${product.productID}`}</span>
+                        <span className="rowFlag">{`產品編號：${product.productID}`}</span>
                         {mode==="create"?
                         <Operator modifyProduct={()=>{props.modifyProduct(productIndex)}} 
                                     deleteProduct={()=>{props.deleteProduct(productIndex)}}/>:
@@ -72,9 +72,9 @@ function ContentTable(props){
                 </Fragment>))
         }
         {mode==="create"?
-        <div  className="row"><img className="defaultStyleBtn" src={addeBtn} onClick={props.startProductAdding} /></div>:
+        <div  className="productAddBtn"><img className="defaultStyleBtn" src={addeBtn} onClick={props.startProductAdding} /></div>:
         props.onOrderEditing?
-        <div  className="row"><img className="defaultStyleBtn" src={addeBtn} onClick={props.startProductAdding} /></div>:null}
+        <div  className="productAddBtn"><img className="defaultStyleBtn" src={addeBtn} onClick={props.startProductAdding} /></div>:null}
     </div>
     )
 }

@@ -10,7 +10,7 @@ import MemberAuth from '../components/auth/MemberAuth';
 function BeforeSignIned(){
     return (
         <Router> 
-            <Route path="/auth/:id" component={MemberAuth}/>
+            <Route path="/auth/:type" component={MemberAuth}/>
              <Route exact path="/">
                 <Redirect to="/auth/signin"/>
             </Route>

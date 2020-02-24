@@ -102,14 +102,14 @@ class Supplier extends Component{
 
 function SupplierInfo(props){
     return (
-        <Fragment>
+        <span className="supplierInfo">
             <span className="title">供應商：</span>
             <span className="SupplierDetail">{props.title?props.title:'尚未進行查詢輸入'}</span>
             <span className="title">商家電話：</span>
             <span className="SupplierAddress">{props.tel}</span>
             <span className="title">商家地址：</span>
             <span className="SupplierAddress">{props.address}</span>
-        </Fragment>
+        </span>
     )
 }
 

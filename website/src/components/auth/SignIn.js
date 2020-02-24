@@ -1,6 +1,6 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
-import ssrmFirebase,{ssrmDB,getDataFromFireBase} from "../../useFirebase";
+import ssrmFirebase,{ssrmDB} from "../../useFirebase";
 import {actionSignIn} from "../../actions/auth";
 
 class SignIn extends Component{
@@ -26,36 +26,35 @@ class SignIn extends Component{
     handleSubmit(e){
         e.preventDefault();
         ssrmFirebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
-            .then((res)=>{
-                let user=ssrmFirebase.auth().currentUser;
-                if(user){
-                    getDataFromFireBase(null,'members',user.uid,(data)=>{
-                        let memberInfo={
-                            name:data.name,
-                            email:data.email,
-                            uid:user.uid
-                        }
-                        this.props.dispatch(actionSignIn(memberInfo));
-                        console.log('sign in via email and password!');
-                        this.props.history.push('/');
-                    });
-                }else{
-                    console.log('some error is happen...');
+        .then((res)=>{
+            let user=ssrmFirebase.auth().currentUser;
+            console.log(user);
+            if(user){
+                let memberInfo={
+                    name:user.displayName,
+                    email:user.email,
+                    uid:user.uid
                 }
-            })
-            .catch((e)=>{
-                var errorCode = e.code;
-                var errorMessage = e.message;
-                if(errorCode==='auth/invalid-email'){
-                    console.log('ERROR\nsignin fail: EMAIL格式錯誤');
-                }else if(errorCode==='auth/wrong-password'){
-                    console.log('ERROR\nsignin fail: 密碼錯誤');
-                }else if(errorCode==='auth/too-many-requests'){
-                    console.log('ERROR\nsignin fail: 錯誤次數過多，請稍後再試！');
-                }else if(errorCode==='auth/user-not-found'){
-                    console.log('ERROR\nsignin fail: 無此帳號，請確認');
-                }
-            })
+                this.props.dispatch(actionSignIn(memberInfo));
+                console.log('sign in via email and password!');
+                this.props.history.push('/');
+            }else{
+                console.log('some error is happen...');
+            }
+        })
+        .catch((e)=>{
+            var errorCode = e.code;
+            var errorMessage = e.message;
+            if(errorCode==='auth/invalid-email'){
+                console.log('ERROR\nsignin fail: EMAIL格式錯誤');
+            }else if(errorCode==='auth/wrong-password'){
+                console.log('ERROR\nsignin fail: 密碼錯誤');
+            }else if(errorCode==='auth/too-many-requests'){
+                console.log('ERROR\nsignin fail: 錯誤次數過多，請稍後再試！');
+            }else if(errorCode==='auth/user-not-found'){
+                console.log('ERROR\nsignin fail: 無此帳號，請確認');
+            }
+        })
     }
     render(){
         return (

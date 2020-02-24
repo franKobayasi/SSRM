@@ -1,18 +1,14 @@
 $mainColor:#FF6D05;
 $slightBlack:#333;
 
-.shopMainArea{
-    .operatingBtns{
-        & > button{
-            margin-right:15px;
-        }
-    }
+.shopMainArea-purchase-orderCreating,
+.shopMainArea-purchase-orderDetail{
     .modifyConfirm{
         position: absolute;
         top:50%;
         left: 50%;
         transform: translate(-50%,-50%);
-        z-index: 5;
+        z-index: 1;
         background-color: $mainColor;
         padding: 5px 15px;
         border-radius: 15px;
@@ -31,47 +27,6 @@ $slightBlack:#333;
                 background-color: white;
                 border: 1px white solid;
                 margin: 0 10px;
-            }
-        }
-    }
-    .supplierAddingForm{
-        position: absolute;
-        top:50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        z-index: 5;
-        background-color: $mainColor;
-        padding: 15px;
-        border-radius: 15px;
-        width: 250px;
-        height: fit-content;
-        color: white;
-        div{
-            margin: 10px 0;
-        }
-        label,input{
-            display: inline-block;
-            box-sizing: border-box;
-            line-height: 25px;
-        }
-        label{
-            width: 30%;
-        }
-        input{
-            width: 70%;
-            border-radius: 10px;
-            border: 1px solid white;
-            padding: 0 10px;
-        }
-        .buttons{
-            text-align: center;
-            button{
-                display: inline-block;
-                border-radius: 10px;
-                border: 1px solid white;
-                width: 60px;
-                line-height: 25px;
-                margin: 10px 10px 0 ;
             }
         }
     }
@@ -175,102 +130,45 @@ $slightBlack:#333;
         }
     }
     .informationArea{
-        & > *{
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .styleFormLittleBtn{
-            background-color: $mainColor;
-            border-radius: 15px;
-            width: 50px;
-            line-height: 25px;
-            border: 1px solid $mainColor;
-            color: white;
-        }
-        .title{
-           margin:0px 5px 0px 25px;
-        }
-        .basicInfo{
-            width: 70%;
-        }
-        .innerOperatingArea{
-            width: 30%;
-            text-align: right;
-            input{
-                display: inline-block;
-                background-color: white;
+        .orderHeader{
+            &>*{
+                margin: 10px;
                 line-height: 25px;
-                text-align: center;
-                border:1px solid $mainColor;  
             }
-            .moneyType{
-                background:#fafdfe;  
-                height:25px;  
-                width:100px;  
-                line-height:25px;  
-                border:1px solid $mainColor;  
-                border-radius:2px;
+            .orderID{
+                width:fit-content;
             }
-        }
-        .contentTable{
-            width: 100%;
-            height: 80%;
-            margin-top: 25px;
-            span{
-                font-size: 16px;
-                display: inline-block;
-                text-align: center;
-                width: 100px;
-                margin: 0 5px;
-                color: $slightBlack;
-            }
-            .productID, .itemID, .productName{
-                width: 175px;
-            }
-            .itemSpec{
-                width: 75px;
-            }
-            .tableHead{
-                border-width: 0 0 1px 0;
-                border-style: solid;
-                border-color: black;
-                padding-bottom: 5px;
-            }
-            .itemBox{
-                margin: 10px 0;
-            }
-            .addNewProduct{
-                margin:10px auto;
-                background-color: $mainColor;
-                text-align: center;
-                width: 25px;
-                line-height: 25px;
-                border-radius: 50%;
-                font-size: 16px;
-                font-weight: 600;
-                color: white;
-            }
-            .productBox{
-                position: relative;
-                .edit, .delete{
-                    position: absolute;
-                    top: 50%;
-                    right: 15px;
-                    transform: translate(0,-50%);
-                    width: 15px;
+            .supplierInfo{
+                width: fit-content;
+                .title{
+                    margin-left: 15px !important;
                 }
-                .delete{
-                    right:40px;
-                    width: 17px;
+                .title::nth-of-type(1){
+                    margin-left: 0px;
+                }
+            }
+            .orderSetting{
+                width: fit-content;
+                float: right;
+                span,input,select{
+                    text-align: center;
+                    height:25px;
+                    line-height:25px;   
+                }
+                input, .moneyType{
+                    background-color: white;
+                    border:1px solid $mainColor;  
+                    border-radius:5px;
+                }
+                .title{
+                    margin: 0 10px 0 15px !important;
+                }
+                .moneyType{ 
+                    width:100px;
                 }
             }
         }
-        footer{
-            position: absolute;
-            bottom: 5px;
-            left:0;
-            width: 100%;
-            height: 50px;
+        .orderFooter{
             .totalInfo{
                 width: 400px;
                 text-align: center;
@@ -284,134 +182,24 @@ $slightBlack:#333;
                 span:nth-of-type(3){
                     margin-left: 40px;
                 }
-            }
-            .buttons{
-                float:right;
-                text-align: right;
-                width: 300px;
-                margin-right: 20px;
-                button{
-                    margin: 0 10px;
-                }
-            }    
-        };
+            }  
+        }
+        .productAddBtn{
+            margin-top: 15px;
+            text-align: center;
+        }
     }
 }
 
 .shopMainArea-purchase-orderHistory{
-    .supplierAddingForm{
-        position: absolute;
-        top:50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        z-index: 5;
-        background-color: $mainColor;
-        padding: 15px;
-        border-radius: 15px;
-        width: 250px;
-        height: fit-content;
-        color: white;
-        div{
-            margin: 10px 0;
-        }
-        label,input{
-            display: inline-block;
-            box-sizing: border-box;
-            line-height: 25px;
-        }
-        label{
-            width: 30%;
-        }
-        input{
-            width: 70%;
-            border-radius: 10px;
-            border: 1px solid white;
-            padding: 0 10px;
-        }
-        .buttons{
-            text-align: center;
-            button{
-                display: inline-block;
-                border-radius: 10px;
-                border: 1px solid white;
-                width: 60px;
-                line-height: 25px;
-                margin: 10px 10px 0 ;
-            }
-        }
-    }
-    .operatingArea{
-        height: 75px;
-        color: white;
-        background-color: $slightBlack;
-        & > div{
-            display: inline-block;
-            height: 75px;
-            vertical-align: middle;
-        }
-        .currentInfo{
-            margin: 15px;
-        }
-        .operatingBtns{
-            line-height: 75px;
-            float: right;
-        }
-    }
     .informationArea{
-        position: relative;
-        height: 100%;
-        background-color: white;
-        padding: 10px;
-        padding-bottom: 75px;
-        .contentTable{
-            .tr{
-                margin: 5px 0;
-                padding: 5px 0;
-                img{
-                    width: 25px;
-                }
-                .showPercentage{
-                    background-color: gray;
-                    line-height: 25px;
-                    position: relative;
-                    border-radius: 15px;
-                    overflow: hidden;
-                    color:white;
-                    .color{
-                        width: 70%;
-                        margin: 0 !important;
-                        display: inline-block;
-                        position: absolute;
-                        background-color: $mainColor;
-                        color: $mainColor;
-                        top:0;
-                        left:0;
-                    }
-                }
-                span,img{
-                    display: inline-block;
-                    vertical-align: middle;
-                    margin: 0 5px;
-                    text-align: center;
-                }
-                span:nth-of-type(1),
-                span:nth-of-type(2),
-                span:nth-of-type(6),
-                span:nth-of-type(7){
-                    width: 150px;
-                }
-                span:nth-of-type(3),
-                span:nth-of-type(4),
-                span:nth-of-type(5){
-                    width: 100px;
-                }
-                span:nth-of-type(8){
-                    width: 200px;
-                }
+        .table{
+            .tableBtnBox{
+                width:150px;
             }
-            .title{
-                border-bottom: 1px solid black;
-            }   
+            .stockInPercentage{
+                width: 125px;
+            }
         }
     }
 }

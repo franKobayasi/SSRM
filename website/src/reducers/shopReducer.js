@@ -1,17 +1,17 @@
 import {ssrmDB} from "../useFirebase";
 const initialState={
-    // user:'undefined',
-    // id:'undefined',
-    // title:'undefined',
-    // state:'uncheck',
-    /** 測試用 */
-    user:{
-        id:'OgqYTiBjMWhiIDHqhvi0',
-        name:'仲岳',
-    },
-    id:'mAHT8POZz1AhyW2CEXXp',
-    title:'Reborn中正台門市',
-    state:'signIned',
+    user:'undefined',
+    id:'undefined',
+    title:'undefined',
+    state:'uncheck',
+    // /** 測試用 */
+    // user:{
+    //     id:'OgqYTiBjMWhiIDHqhvi0',
+    //     name:'仲岳',
+    // },
+    // id:'mAHT8POZz1AhyW2CEXXp',
+    // title:'Reborn中正台門市',
+    // state:'signIned',
 }
 
 const shopReducer=(preState=initialState,action)=>{

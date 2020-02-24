@@ -16,12 +16,12 @@ $smallFontSize:14px;
 /** Length */
 $min-width:1024px;
 $min-height:768px;
+/** Border-Radius */
+$defaultBR:5px;
 
 /**
 Guild line
 basic font size: 16px,
-
-
 
 */
 #root{
@@ -56,7 +56,7 @@ body::-webkit-scrollbar {
     color: white;
     width: 75px;
     line-height: 30px;
-    border-radius: 5px;
+    border-radius: $defaultBR;
     border:1px solid white; 
 }
 .btnForFormBig{
@@ -66,7 +66,7 @@ body::-webkit-scrollbar {
     line-height: 35px;
     color: white;
     font-size: $defaultFontSize;
-    border-radius: 10px;
+    border-radius: $defaultBR;
     border: $mainColor 1px solid;
 }
 .checkBox{
@@ -102,6 +102,47 @@ body::-webkit-scrollbar {
     z-index: 0;
     background-color: rgba($color: white, $alpha: .5);
     border-radius: 5px;
+    .supplierAddingForm{
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 1;
+        background-color: $mainColor;
+        padding: 15px;
+        border-radius: 15px;
+        width: 250px;
+        height: fit-content;
+        color: white;
+        div{
+            margin: 10px 0;
+        }
+        label,input{
+            display: inline-block;
+            box-sizing: border-box;
+            line-height: 25px;
+        }
+        label{
+            width: 30%;
+        }
+        input{
+            width: 70%;
+            border-radius: 10px;
+            border: 1px solid white;
+            padding: 0 10px;
+        }
+        .buttons{
+            text-align: center;
+            button{
+                display: inline-block;
+                border-radius: 10px;
+                border: 1px solid white;
+                width: 60px;
+                line-height: 25px;
+                margin: 10px 10px 0 ;
+            }
+        }
+    }
     .operatingArea{
         height: 75px;
         background-color: $slightBlack;
@@ -109,6 +150,7 @@ body::-webkit-scrollbar {
             margin: 17.5px 0 0 15px;
             float: left;
             color: white;
+            *{vertical-align: middle;}
         }
         .operatingBtns{
             float:right;
@@ -116,10 +158,11 @@ body::-webkit-scrollbar {
             & > button{
                 background-color: $mainColor;
                 width: 125px;
+                margin: 0 10px;
                 line-height: 35px;
                 color: white;
                 font-size: $defaultFontSize;
-                border-radius: 25px;
+                border-radius: $defaultBR;
                 border: $mainColor 1px solid;
             }
         }
@@ -135,7 +178,7 @@ body::-webkit-scrollbar {
             line-height: 50px;
             background-color: rgba($color: $slightBlack, $alpha: .4);
             width: 100%;
-            border-radius: 5px;
+            border-radius: $defaultBR;
             color:white;
         }
         .operatingBtns{
@@ -147,13 +190,29 @@ body::-webkit-scrollbar {
                 line-height: 25px;
                 color: white;
                 font-size: $smallFontSize;
-                border-radius: 5px;
+                border-radius: $defaultBR;
                 border: $mainColor 1px solid;
             }
         }
+        .orderFooter{
+            position: absolute;
+            bottom: 5px;
+            left:0;
+            width: 100%;
+            height: 50px;
+            .buttons{
+                float:right;
+                text-align: right;
+                width: 300px;
+                margin-right: 20px;
+                button{
+                    margin: 0 10px;
+                }
+            }  
+        }
     }
 }
-
+/** ALL TABLE STYLE */
 .table{
     width: 100%;
     overflow: hidden;
@@ -162,6 +221,7 @@ body::-webkit-scrollbar {
         text-align: left;
         span,input{
             display: inline-block;
+            vertical-align: middle;
             margin: 0 5px;
             text-align: center;
         }
@@ -175,6 +235,9 @@ body::-webkit-scrollbar {
     }
     .productName,.supplierTitle{
         width:175px;
+    }
+    .date{
+        width:150px;
     }
     .supplierTel, .percentageBar{
         width: 100px;
@@ -191,7 +254,14 @@ body::-webkit-scrollbar {
         vertical-align: middle;
     }
     .note_No_item{
+        width: 90%;
+        color: $mainColor;
         text-align: center;
+    }
+    .rowFlag{
+        width: fit-content;
+        color: $mainColor;
+        margin-left: 15px !important;
     }
     .scrollArea{
         width: 110%;
@@ -200,23 +270,31 @@ body::-webkit-scrollbar {
     }
     .showPercentage{
         width: 100%;
+        height: 25px;
         display: inline-block;
         vertical-align: middle;
         background-color: gray;
         line-height: 25px;
         position: relative;
-        border-radius: 15px;
+        border-radius: 20px;
         overflow: hidden;
-        color:white;
-        .color{
+        span{
             margin: 0 !important;
             display: inline-block;
             vertical-align: middle;
             position: absolute;
-            background-color: $mainColor;
-            color: $mainColor;
             top:0;
             left:0;
+        }
+        .color{
+            background-color: $mainColor;
+            height:25px;
+            color: $mainColor;
+        }
+        .text{
+            width: 100%;
+            background-color: transparent;
+            color:white;
         }
     }
 }

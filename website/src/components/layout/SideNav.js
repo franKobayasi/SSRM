@@ -21,7 +21,7 @@ function SideNav(props){
             })
     }
     return (
-        <div id="sideMenu" className={isShopPage?"styleForShopSignIned":null}>
+        <div id="sideMenu" className={`${isShopPage?"styleForShopSignIned":''}`}>
             <div id="website-logo"><img/>SSRM</div>
             <div className="member-name">{`Hi,  ${user.MEMBER_NAME}`}</div>
             <ul className="navBar">

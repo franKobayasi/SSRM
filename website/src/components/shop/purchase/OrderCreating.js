@@ -84,24 +84,24 @@ class OrderCreating extends Component{
                         </div>
                     </div>
                     <div className="informationArea">
-                        <div className="basicInfo">
-                            <span className="number">{`採購單號 ${currentOrder.id}`}</span>
+                        <div className="orderHeader">
+                            <span className="orderID">{`採購單號 ${currentOrder.id}`}</span>
                             <SupplierInfo title={currentOrder.search_supplier[0]} address={currentOrder.search_supplier[1]} tel={currentOrder.search_supplier[2]}/>
-                        </div>
-                        <div className="innerOperatingArea">
-                            <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                            <span className="title">進貨幣別</span>
-                            <select className="moneyType">
-                                <option value="TWD">{`台幣`}</option>
-                                <option value="WON">{`韓元`}</option>
-                                <option value="USD">{`美金`}</option>
-                                <option value="CNY">{`人民幣`}</option>
-                                <option value="JPY">{`日幣`}</option>
-                            </select>
+                            <div className="orderSetting">
+                                <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
+                                <span className="title">進貨幣別</span>
+                                <select className="moneyType">
+                                    <option value="TWD">{`台幣`}</option>
+                                    <option value="WON">{`韓元`}</option>
+                                    <option value="USD">{`美金`}</option>
+                                    <option value="CNY">{`人民幣`}</option>
+                                    <option value="JPY">{`日幣`}</option>
+                                </select>
+                            </div>
                         </div>
                         <ContentTable mode="create" order={currentOrder} modifyProduct={this.modifyProduct} 
                         deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
-                        <footer>
+                        <div className="orderFooter">
                             <div className="buttons">
                                 <button className="btnForFormLittle finish" onClick={this.submitOrder}>完成</button>
                                 <button className="btnForFormLittle cancel" onClick={this.cancelOrder}>取消</button>
@@ -110,7 +110,7 @@ class OrderCreating extends Component{
                                 <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
                                 <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
                             </div>
-                        </footer>
+                        </div>
                     </div>
                 </div>
                 }

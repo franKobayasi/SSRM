@@ -1,6 +1,7 @@
 import React,{ Component,Fragment } from 'react';
 import {randomStockOrderID, roundAfterPointAt} from '../../../lib';
 import {createHashHistory as history} from 'history';
+import {ssrmDB} from '../../../useFirebase';
 /** component */
 import SideNav from '../../layout/SideNav';
 import ItemSelector from './ItemSelector'
@@ -46,7 +47,6 @@ class OrderCreating extends Component{
             console.log('update to local');
         }
     }
-   
     render(){
         let currentOrder=this.state.currentOrder;
         return (
@@ -56,7 +56,7 @@ class OrderCreating extends Component{
                     <div className="operatingArea">
                         <div className="currentInfo">
                             <div>進貨單登錄</div>
-                            <div>使用者：<span>{`${this.props.shop.user.name}`}</span></div>
+                            <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
                         </div>
                         <div className="operatingBtns">
                             <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/stock/history`)}}>歷史進貨單</button>
@@ -88,7 +88,7 @@ class OrderCreating extends Component{
                                 currentOrder.stockInList.map((order,orderIndex)=>(
                                 <div key={orderIndex} className="table">
                                     <div className="row">
-                                        <span className="note">{`採購單號：${order.purchaseID}`}</span>
+                                        <span className="rowFlag">{`採購單號：${order.purchaseID}`}</span>
                                     </div>
                                     {
                                     order.itemList.map((item,itemIndex)=>(
@@ -115,12 +115,14 @@ class OrderCreating extends Component{
                                 }
                                 </div>
                             </div>
-                            <div className="operatingBtns">
-                                <button onClick={this.submitOrder}>商品入庫</button>
-                                <button onClick={this.cancelOrder}>取消操作</button>
+                            <div className="orderFooter">
+                                <div className="buttons">
+                                    <button className="btnForFormLittle" onClick={this.submitOrder}>商品入庫</button>
+                                    <button className="btnForFormLittle" onClick={this.cancelOrder}>取消操作</button>
+                                </div>
                             </div>
                         </div>
-                        <ItemSelector callback={this.addItemList} shopRef={this.props.shop.shopRef} isShow={this.state.isShowSearchPanel}/>
+                        <ItemSelector orderType={currentOrder.type} callback={this.addItemList} shopRef={this.props.shop.shopRef} isShow={this.state.isShowSearchPanel}/>
                     </div>
                 </div>
             </Fragment>
@@ -172,7 +174,8 @@ class OrderCreating extends Component{
             currentOrder.search_purchaseID.push(order.purchaseID);
             currentOrder.stockInList.push({
                 purchaseID:order.purchaseID,
-                itemList:order.itemList
+                itemList:order.itemList,
+                updateTimes:order.updateTimes,
             });
         }else{
             currentOrder.stockInList[targetIndex].itemList=currentOrder.stockInList[targetIndex].itemList.concat(order.itemList);
@@ -201,9 +204,15 @@ class OrderCreating extends Component{
         let currentOrder=Object.assign({},this.state.currentOrder);
         let item=currentOrder.stockInList[orderIndex].itemList[itemIndex];
         if(currentOrder.type==='stockin'){
-            value=value>(item.num-item.inStock)?item.num-item.inStock:value;
+            value=Number(value>(item.num-item.inStock)?item.num-item.inStock:value);
+            if(String(Number(value))==="NaN"){
+                value=item.num-item.inStock;
+            }
         }else if(currentOrder.type==='return'){
-            value=value>item.inStock?item.inStock:value;
+            value=Number(value>item.inStock?item.inStock:value);
+            if(String(Number(value))==="NaN"){
+                value=item.inStock;
+            }
         }
         currentOrder.stockInList[orderIndex].itemList[itemIndex].operateNum=value;
         this.setState(preState=>({
@@ -213,10 +222,11 @@ class OrderCreating extends Component{
     /**
     新增進貨單到資料庫，同時新增產品庫存到產品collection，最後更新各採購單的狀態
     */
-    submitOrder=()=>{
+    submitOrder=async()=>{
         let shopRef=this.props.shop.shopRef;
         let currentOrder=this.state.currentOrder;
         let isAllOperateNumKeyIn=true;
+        let changedOrder=[];
         /** 確認是否已輸入數量 */
         search:
         for(let order of currentOrder.stockInList){
@@ -227,34 +237,122 @@ class OrderCreating extends Component{
                 }   
             }
         }
-        if(isAllOperateNumKeyIn){
-            /** 新增進貨單到資料庫 */
-            currentOrder.time=new Date().valueOf();
-            shopRef.collection('stocks').doc(currentOrder.id).set(currentOrder)
-            .then(res=>{
-                console.log(`進貨單登錄成功：\n${res}`)
-                /** 新增各產品 */
-                for(let stockIn of currentOrder.stockInList){
-                    shopRef.collection('purchases').doc(stockIn.purchaseID).upadte({`producst.${itemID}.inStock`:})
+        // check 是否有採購單更動
+        let checkAll=[];
+        for(let order of currentOrder.stockInList){
+            let check=shopRef.collection('purchases').doc(order.purchaseID).get()
+            .then(doc=>{
+                let orderData=doc.data();
+                if(order.updateTimes!=orderData.updateTimes){
+                    changedOrder.push(order.id);
                 }
-                let itemsUploadPromise=[];
-                let purchaseUpdatePromise=[]; /** 更新各採購單的狀態 */
-                for(let stockIn of currentOrder.stockInList){
-                    // shopRef.collection(purchases).doc(stockIn.purchaseID).
-                    /**
-                    編寫中....
-                    search_purchaseID:[],
-                    time:null
-                    
-                    */
-                }
+                console.log(changedOrder);
             })
+            checkAll.push(check);
+        }
+        await Promise.all(checkAll);
+        if(changedOrder.length>0){
+            let order=Object.assign({},currentOrder);
+            order.stockInList=order.stockInList.filter(stockIn=>{
+                console.log(changedOrder);
+                return !changedOrder.includes(stockIn.purchaseID)
+            })
+            console.log(order);
+            this.setState(preState=>({
+                currentOrder:order,
+                localStorageLock:false,
+            }))
+            console.log(`移除已發生變更的採購單，請重新查詢`);
+            return ;
+        }
+        if(isAllOperateNumKeyIn){
+            currentOrder.time=new Date().valueOf();
+            console.log(currentOrder);
+            /** 進貨作業 */
+            if(currentOrder.type==='stockin'){    
+                let transaction=ssrmDB.runTransaction(t=>{
+                    let allUpdate=[];
+                    for(let stockIn of currentOrder.stockInList){
+                    /** 更新此進貨單所需更新的採購單資料 */
+                        let purchaseOrderUpdate=t.get(shopRef.collection('purchases').doc(stockIn.purchaseID))
+                        .then(doc=>{
+                            let TPO=doc.data();/** Target Purchase Order */
+                            TPO.itemList=TPO.itemList.map(itemTPO=>{
+                                for(let item of stockIn.itemList){
+                                    if(item.itemID===itemTPO.itemID){
+                                        /** 更新 inStock Num */
+                                        itemTPO.inStock+=item.operateNum;
+                                        if(itemTPO.inStock===itemTPO.num){
+                                            itemTPO.status='finish';
+                                        }else if(itemTPO.inStock===0){
+                                            itemTPO.status='purchase';
+                                        }else{
+                                            itemTPO.status='stocking';
+                                        }
+                                    }
+                                }
+                                return itemTPO;
+                            })
+                            TPO.updateTimes+=1;
+                            t.set(shopRef.collection('purchases').doc(stockIn.purchaseID),TPO);
+                        })
+                        allUpdate.push(purchaseOrderUpdate);
+                        for(let item of stockIn.itemList){
+                            /** 更新產品庫存數量 */
+                            let productsUpdate=t.get(shopRef.collection('products').doc(item.itemID))
+                            .then(doc=>{
+                                let itemData;
+                                if(doc.exists){
+                                    itemData=doc.data();
+                                    itemData.stocks+=item.operateNum;
+                                }else{
+                                    itemData={
+                                        productID:item.productID,
+                                        itemID:item.itemID,
+                                        name:item.name,
+                                        price:item.price,
+                                        cost:item.cost,
+                                        stocks:item.operateNum,
+                                        size:item.size,
+                                        color:item.color,
+                                        purchaseID:stockIn.purchaseID,
+                                        time:currentOrder.time,
+                                    }
+                                }
+                                t.set(shopRef.collection('products').doc(item.itemID),itemData);
+                            })
+                            allUpdate.push(productsUpdate);
+                        }
+                    }
+                    return Promise.all(allUpdate);
+                })
+                .then(result=>{
+                    /** 新增進貨單到資料庫 */
+                    shopRef.collection('stocks').doc(currentOrder.id).set(currentOrder);
+                    alert('進貨作業成功完成！');
+                    /** 清空currentOrder */
+                    this.setState(preState=>({
+                        currentOrder:this.createNewOrder(),
+                        localStorageLock:false,
+                    }))
+                })
+                .catch(error=>{
+                    console.error(`進貨作業失敗！\n${error}`);
+                })
+            }else{
+
+            }
         }else{
             alert('尚有有未輸入進貨數量的商品');
         }
     }
     cancelOrder=()=>{
-
+        if(confirm('尚有未送出的資料，確定取消？')){
+            this.setState(preState=>({
+                currentOrder:this.createNewOrder(),
+                localStorageLock:false,
+            }))
+        }
     }
 }
 

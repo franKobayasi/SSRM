@@ -78,7 +78,7 @@ class ShopAuth extends Component{
         return (
             <Fragment>
                 <div id="shop-login-panel">
-                <div className="shopLogo">{shop.title[0]}</div>
+                <div className="shopLogo">{shop.title?shop.title[0]:'無'}</div>
                 <span className="shopName">{shop.title}</span><br/>
                 {this.state.isMaster?
                 <span className="masterLabel" >Welcome! Master</span>:

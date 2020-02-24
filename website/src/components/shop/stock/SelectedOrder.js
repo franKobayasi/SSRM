@@ -38,11 +38,13 @@ class SelectedOrder extends Component{
                     </div>
                 {   
                     orderSelected?
+                    orderSelected.itemList.length===0?
+                    <div className="note_No_item">此訂單無尚未完成進貨的商品</div>:
                     orderSelected.itemList.map((item,index)=>(
                         <ItemInfo  key={index} item={item} isActive={this.props.tempItemState[`${item.itemID}`]} 
                         updateItemList={()=>{this.props.changeItemState(item.itemID);}}/>
                     )):
-                    <div>沒有搜尋到任何符合條件的訂單</div>
+                    <div className="note_No_item">沒有搜尋到任何符合條件的訂單</div>
                 }
                 </div>
                 <button className="btnForFormLittle" onClick={this.props.callback}>批次添加</button>

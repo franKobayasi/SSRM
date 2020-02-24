@@ -5,7 +5,7 @@ import {roundAfterPointAt} from '../../../lib';
 import SideNav from '../../layout/SideNav';
 import OrderDetail from './OrderDetail';
 import Supplier from './common/Supplier';
-import StockInPercentage from '../common/StockInPercentage'
+import ShowPercentage from '../common/ShowPercentage'
 /** other resource */
 import editImg from '../../../img/editBtn.png';
 import deleteImg from '../../../img/deleteBtn.png';
@@ -60,33 +60,34 @@ class OrderHistory extends Component{
                             <div className="filterBlock">
                                 <div></div>
                             </div>
-                            <div className="contentTable">
-                                <div className="title tr">
-                                    <span>訂單編號</span>
-                                    <span>供應商</span>
-                                    <span>成本總計</span>
-                                    <span>件數總計</span>
-                                    <span>平均利潤</span>
-                                    <span>採購日期</span>
-                                    <span>到貨進度</span>
-                                    <span>操作</span>
+                            <div className="table">
+                                <div className="head">
+                                    <span className="orderID">訂單編號</span>
+                                    <span className="supplierTitle">供應商</span>
+                                    <span className="itemSpec">成本總計</span>
+                                    <span className="itemSpec">件數總計</span>
+                                    <span className="itemSpec">平均利潤</span>
+                                    <span className="date">採購日期</span>
+                                    <span className="stockInPercentage">到貨進度</span>
+                                    <span className="tableBtnBox">操作</span>
                                 </div>
                                 {   
                                     orderList.length===0?
                                     <div className="row">目前沒有符合查詢條件的訂單</div>:
                                     orderList.map((order,index)=>{
                                     return (
-                                        <div key={index} className="tr">
-                                            <span>{order.id}</span>
-                                            <span>{order.search_supplier[0]}</span>
-                                            <span>{order.static.sumOfCost}</span>
-                                            <span>{order.static.sumOfNum}</span>
-                                            <span>{order.static.avgProfit}</span>
-                                            <span>{this.getDateToYMD(order.time)}</span>
-                                            <StockInPercentage order={order} />
-                                            <span>
-                                            <img onClick={()=>{this.toDetailPage(order.id)}} src={editImg}/>
-                                            <img onClick={()=>{this.deleteHoldOrder(order.id)}} src={deleteImg}/></span>
+                                        <div key={index} className="row">
+                                            <span className="orderID">{order.id}</span>
+                                            <span className="supplierTitle">{order.search_supplier[0]}</span>
+                                            <span className="itemSpec">{order.static.sumOfCost}</span>
+                                            <span className="itemSpec">{order.static.sumOfNum}</span>
+                                            <span className="itemSpec">{order.static.avgProfit}</span>
+                                            <span className="date">{this.getDateToYMD(order.time)}</span>
+                                            <span className="stockInPercentage"><ShowPercentage order={order} /></span>
+                                            <span className="tableBtnBox">
+                                                <img className="defaultStyleBtn" onClick={()=>{this.toDetailPage(order.id)}} src={editImg}/>
+                                                <img className="defaultStyleBtn" onClick={()=>{this.deleteHoldOrder(order.id)}} src={deleteImg}/>
+                                            </span>
                                         </div>
                                     )
                                 })}

@@ -3,7 +3,7 @@ import React,{Component,Fragment} from 'react';
 import PurchaseOrderFilter from '../common/PurchaseOrderFilter';
 import SelectedOrder from './SelectedOrder';
 import Checkbox from '../common/Checkbox';
-import StockInPercentage from '../common/StockInPercentage';
+import ShowPercentage from '../common/ShowPercentage';
 
 /**
 Need Props:
@@ -64,7 +64,14 @@ class ItemSelector extends Component{
         }))
     }
     selectOrder=(index)=>{
-        let orderSelected=this.state.orderSearchResult[index];
+        /** 讓已經完成進貨的商品的不要被選到 */
+        let orderSearchResult=this.state.orderSearchResult;
+        let orderSelected=Object.assign({},orderSearchResult[index])
+        if(this.props.orderType==='stockin'){
+           orderSelected.itemList=orderSelected.itemList.filter(item=>{
+               return item.status!='finish';
+           });
+        }
         let tempItemState={};
         for(let item of orderSelected.itemList){
             tempItemState[item.itemID]=false;
@@ -112,6 +119,7 @@ class ItemSelector extends Component{
             }else{
                 order.itemList=itemList;
                 order.purchaseID=orderSelected.id;
+                order.updateTimes=orderSelected.updateTimes;
                 this.props.callback(order);
                 this.setState(preState=>({
                     isAllSelected:false,
@@ -130,7 +138,7 @@ function OlderSummary(props){
             <span className="orderID">{order.id}</span>
             <span className="supplierTitle">{order.search_supplier[0]}</span>
             <span className="supplierTel">{order.search_supplier[2]}</span>
-            <span className="percentageOfStock"><StockInPercentage order={order}/></span>
+            <span className="percentageOfStock"><ShowPercentage order={order}/></span>
         </div>
     )
 }
