@@ -97,7 +97,7 @@ class OrderDetail extends Component{
                 <div className="operatingArea">
                     <div className="currentInfo">
                         <div>採購歷史訂單詳細頁面</div>
-                        <div>使用者：<span>{`${this.props.shop.user.name}`}</span></div>
+                        <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
                     </div>
                     <div className="operatingBtns">
                         <button className="btnForFormBig" onClick={()=>{

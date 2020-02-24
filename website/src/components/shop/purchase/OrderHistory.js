@@ -46,7 +46,7 @@ class OrderHistory extends Component{
                         <div className="operatingArea">
                             <div className="currentInfo">
                                 <div>歷史採購單列表</div>
-                                <div>使用者：<span>{`${this.props.shop.user.name}`}</span></div>
+                                <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
                             </div>
                             <div className="operatingBtns">
                                 <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/new`)}}>新增訂單</button>

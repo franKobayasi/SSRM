@@ -12,7 +12,8 @@ import {ssrmDB} from '../../../useFirebase';
 /** Component */
 import PurchaseOrderHistory from '../purchase/OrderHistory';
 import PurchaseOrderCreating from '../purchase/OrderCreating';
-import StockOrderCreating from '../stock/OrderCreating';
+import StockInOrder from '../stock/StockInOrder';
+import StockReturnOrder from '../stock/StockReturnOrder';
 import StockOrderHistory from '../stock/OrderHistory';
 import StockManager from '../stock/StockManager';
 
@@ -47,8 +48,10 @@ class ShopSignIned extends Component{
                 <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/stock/history/`} render={({history,match,location})=>
                 <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
-                <Route path={`${shopUrl}/stock/new/:type`} render={({history,match,location})=>
-                <StockOrderCreating history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+                <Route path={`${shopUrl}/stock/new/stockin`} render={({history,match,location})=>
+                <StockInOrder history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+                <Route path={`${shopUrl}/stock/new/return`} render={({history,match,location})=>
+                <StockReturnOrder history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/stock/`} render={({history,match,location})=>
                 <StockManager history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
            

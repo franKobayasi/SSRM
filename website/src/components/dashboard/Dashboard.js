@@ -214,8 +214,8 @@ class Dashboard extends Component{
                 <div id="dashboard-main">
                     { /** handle shopList */
                         shopList!=='undefined'&&shopList.length>=1?
-                        shopList.map((shop,id)=>{
-                            return <ShopSummary toShop={this.toShop(shop.id)} key={id} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>}):
+                        shopList.map((shop,index)=>{
+                            return <ShopSummary toShop={this.toShop(shop.id)} key={index} title={shop.title} shopID={shop.id} login={shop.login} deleteShop={this.deleteShop} updateShopInfo={this.updateShopInfo}/>}):
                             shopList==='undefined'?
                             <div>shop loading...</div>:
                             <div className="noShopsMsg">尚未建立任何商家</div>

@@ -12,10 +12,9 @@ import deleteBtn from '../../../img/deleteBtn.png';
 This Component for create hold new order.
 Now can't pass history order into this component.
  */
-class OrderCreating extends Component{
+class StockInOrder extends Component{
     constructor(props){
         super(props);
-        
         this.state={
             isShowSearchPanel:false,
             currentOrder:'loading',
@@ -23,13 +22,12 @@ class OrderCreating extends Component{
         }
     }
     componentDidMount(){
-       let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-stock-stockin-newOrder'));
+        let uncompletedNewOrder;
         let currentOrder;
-        /** 設定current order */
-        /** 如果有未完成的Order，則不新增新的Order */
+        uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-stock-stockin-newOrder'));
         if(!uncompletedNewOrder){
             currentOrder=this.createNewOrder();
-            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(currentOrder));       
+            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(currentOrder));
         }else{
             currentOrder=uncompletedNewOrder;
         }
@@ -59,7 +57,7 @@ class OrderCreating extends Component{
                             <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
                         </div>
                         <div className="operatingBtns">
-                            <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/stock/history`)}}>歷史進貨單</button>
+                            <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/stock/history`)}}>歷史進退貨單</button>
                             <button className="btnForFormBig">庫存查詢</button>
                         </div>
                     </div>
@@ -143,12 +141,11 @@ class OrderCreating extends Component{
         }))
     }
     createNewOrder(){
-        let type=`${this.props.match.params.type}`
         return {
             id:`${randomStockOrderID()}`,
-            type,
             stockInList:[],
             search_purchaseID:[],
+            type:"stockin",
         };
     }
     addItemList=(order)=>{
@@ -203,16 +200,9 @@ class OrderCreating extends Component{
         let value=evnt.target.value;
         let currentOrder=Object.assign({},this.state.currentOrder);
         let item=currentOrder.stockInList[orderIndex].itemList[itemIndex];
-        if(currentOrder.type==='stockin'){
-            value=Number(value>(item.num-item.inStock)?item.num-item.inStock:value);
-            if(String(Number(value))==="NaN"){
-                value=item.num-item.inStock;
-            }
-        }else if(currentOrder.type==='return'){
-            value=Number(value>item.inStock?item.inStock:value);
-            if(String(Number(value))==="NaN"){
-                value=item.inStock;
-            }
+        value=Number(value>(item.num-item.inStock)?item.num-item.inStock:value);
+        if(String(Number(value))==="NaN"){
+            value=item.num-item.inStock;
         }
         currentOrder.stockInList[orderIndex].itemList[itemIndex].operateNum=value;
         this.setState(preState=>({
@@ -269,79 +259,75 @@ class OrderCreating extends Component{
             currentOrder.time=new Date().valueOf();
             console.log(currentOrder);
             /** 進貨作業 */
-            if(currentOrder.type==='stockin'){    
-                let transaction=ssrmDB.runTransaction(t=>{
-                    let allUpdate=[];
-                    for(let stockIn of currentOrder.stockInList){
+            let transaction=ssrmDB.runTransaction(t=>{
+                let allUpdate=[];
+                for(let stockIn of currentOrder.stockInList){
                     /** 更新此進貨單所需更新的採購單資料 */
-                        let purchaseOrderUpdate=t.get(shopRef.collection('purchases').doc(stockIn.purchaseID))
-                        .then(doc=>{
-                            let TPO=doc.data();/** Target Purchase Order */
-                            TPO.itemList=TPO.itemList.map(itemTPO=>{
-                                for(let item of stockIn.itemList){
-                                    if(item.itemID===itemTPO.itemID){
-                                        /** 更新 inStock Num */
-                                        itemTPO.inStock+=item.operateNum;
-                                        if(itemTPO.inStock===itemTPO.num){
-                                            itemTPO.status='finish';
-                                        }else if(itemTPO.inStock===0){
-                                            itemTPO.status='purchase';
-                                        }else{
-                                            itemTPO.status='stocking';
-                                        }
+                    let purchaseOrderUpdate=t.get(shopRef.collection('purchases').doc(stockIn.purchaseID))
+                    .then(doc=>{
+                        let TPO=doc.data();/** Target Purchase Order */
+                        TPO.itemList=TPO.itemList.map(itemTPO=>{
+                            for(let item of stockIn.itemList){
+                                if(item.itemID===itemTPO.itemID){
+                                    /** 更新 inStock Num */
+                                    itemTPO.inStock+=item.operateNum;
+                                    if(itemTPO.inStock===itemTPO.num){
+                                        itemTPO.status='finish';
+                                    }else if(itemTPO.inStock===0){
+                                        itemTPO.status='purchase';
+                                    }else{
+                                        itemTPO.status='stocking';
                                     }
                                 }
-                                return itemTPO;
-                            })
-                            TPO.updateTimes+=1;
-                            t.set(shopRef.collection('purchases').doc(stockIn.purchaseID),TPO);
+                            }
+                            return itemTPO;
                         })
-                        allUpdate.push(purchaseOrderUpdate);
-                        for(let item of stockIn.itemList){
-                            /** 更新產品庫存數量 */
-                            let productsUpdate=t.get(shopRef.collection('products').doc(item.itemID))
-                            .then(doc=>{
-                                let itemData;
-                                if(doc.exists){
-                                    itemData=doc.data();
-                                    itemData.stocks+=item.operateNum;
-                                }else{
-                                    itemData={
-                                        productID:item.productID,
-                                        itemID:item.itemID,
-                                        name:item.name,
-                                        price:item.price,
-                                        cost:item.cost,
-                                        stocks:item.operateNum,
-                                        size:item.size,
-                                        color:item.color,
-                                        purchaseID:stockIn.purchaseID,
-                                        time:currentOrder.time,
-                                    }
+                        TPO.updateTimes+=1;
+                        t.set(shopRef.collection('purchases').doc(stockIn.purchaseID),TPO);
+                    })
+                    allUpdate.push(purchaseOrderUpdate);
+                    for(let item of stockIn.itemList){
+                        /** 更新產品庫存數量 */
+                        let productsUpdate=t.get(shopRef.collection('products').doc(item.itemID))
+                        .then(doc=>{
+                            let itemData;
+                            if(doc.exists){
+                                itemData=doc.data();
+                                itemData.stocks+=item.operateNum;
+                            }else{
+                                itemData={
+                                    productID:item.productID,
+                                    itemID:item.itemID,
+                                    name:item.name,
+                                    price:item.price,
+                                    cost:item.cost,
+                                    stocks:item.operateNum,
+                                    size:item.size,
+                                    color:item.color,
+                                    purchaseID:stockIn.purchaseID,
+                                    time:currentOrder.time,
                                 }
-                                t.set(shopRef.collection('products').doc(item.itemID),itemData);
-                            })
-                            allUpdate.push(productsUpdate);
-                        }
+                            }
+                            t.set(shopRef.collection('products').doc(item.itemID),itemData);
+                        })
+                        allUpdate.push(productsUpdate);
                     }
-                    return Promise.all(allUpdate);
-                })
-                .then(result=>{
-                    /** 新增進貨單到資料庫 */
-                    shopRef.collection('stocks').doc(currentOrder.id).set(currentOrder);
-                    alert('進貨作業成功完成！');
-                    /** 清空currentOrder */
-                    this.setState(preState=>({
-                        currentOrder:this.createNewOrder(),
-                        localStorageLock:false,
-                    }))
-                })
-                .catch(error=>{
-                    console.error(`進貨作業失敗！\n${error}`);
-                })
-            }else{
-
-            }
+                }
+                return Promise.all(allUpdate);
+            })
+            .then(result=>{
+                /** 新增進貨單到資料庫 */
+                shopRef.collection('stocks').doc(currentOrder.id).set(currentOrder);
+                alert('進貨作業成功完成！');
+                /** 清空currentOrder */
+                this.setState(preState=>({
+                    currentOrder:this.createNewOrder(),
+                    localStorageLock:false,
+                }))
+            })
+            .catch(error=>{
+                console.error(`進貨作業失敗！\n${error}`);
+            })
         }else{
             alert('尚有有未輸入進貨數量的商品');
         }
@@ -356,4 +342,4 @@ class OrderCreating extends Component{
     }
 }
 
-export default OrderCreating;
+export default StockInOrder;
