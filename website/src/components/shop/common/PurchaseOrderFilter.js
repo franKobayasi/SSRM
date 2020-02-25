@@ -90,16 +90,16 @@ shopRef(firebase database)
                 purchaseRef=purchaseRef.where('id','==',`${searchOrderID}`);
             }
             if(isSearchNeedSupplierName){
-                console.log('1');
-                purchaseRef=purchaseRef.where('supplierTitle','==',`${searchBySupplierName}`)
+                console.log('1');                
+                purchaseRef=purchaseRef.where('search_supplier','array-contains',`${searchBySupplierName}`)
             }
             if(isSearchNeedSupplierTel){
-                console.log('2');
-                purchaseRef=purchaseRef.where('supplierTel','==',`${searchBySupplierName}`)
+                console.log('2');                
+                purchaseRef=purchaseRef.where('search_supplier','array-contains',`${searchBySupplierTel}`)
             }
             if(isSearchNeedProductName){
                 console.log('3');
-                purchaseRef=purchaseRef.where('nameOfProducts','array-contains',`${searchByProductName}`)
+                purchaseRef=purchaseRef.where('search_productNameAndID','array-contains',`${searchByProductName}`)
             }
             if(isSearchNeedDateArea){
                 let from=this.state.searchByDateFrom?this.state.searchByDateFrom:this.state.defaultSearchByDateFrom
@@ -108,15 +108,11 @@ shopRef(firebase database)
                 console.log(from,to);
             }
             purchaseRef.get().then(snapshut=>{
-                if(snapshut.empty){
-                    console.log('it\'s empty')
-                }else{
-                    let orderSearchResult=[];
-                    snapshut.forEach(doc=>{
-                        orderSearchResult.push(doc.data());
-                    })
-                    this.props.callback(orderSearchResult);
-                }
+                let orderSearchResult=[];
+                snapshut.forEach(doc=>{
+                    orderSearchResult.push(doc.data());
+                })
+                this.props.callback(orderSearchResult);
             })
         }
     }

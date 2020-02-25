@@ -36,6 +36,19 @@ function randomProductID(){
     return `I${year}${month}${makerandomletter(3)}${randomusefloor(1,9999)}`;
 }
 
+/** Date */
+function getDateToYMD(millseconds,needHM){
+    let date=new Date(millseconds);
+    let year=`${date.getFullYear()}`;
+    let month=date.getMonth()<9?`0${date.getMonth()+1}`:`${date.getMonth()+1}`;
+    let day=date.getDate()<10?`0${date.getDate()}`:`${date.getDate()}`;
+    let hour=date.getHours()<10?`0${date.getHours()}`:`${date.getHours()}`;
+    let minute=date.getMinutes()<10?`0${date.getMinutes()}`:`${date.getMinutes()}`;
+    if(needHM)
+      return `${year}-${month}-${day} ${hour}:${minute}`;
+    return `${year}-${month}-${day}`;
+}
+
 /** Math round 取整數 */
 function roundAfterPointAt(value,target){ 
   return Math.round(value*Math.pow(10,target))/Math.pow(10,target)
@@ -67,4 +80,4 @@ function setRequestHeaders(req, headers){
   }
 }
 
-export {randomProductID, randomPurchaseOrderID, randomCheckOutOrderID, randomStockOrderID, roundAfterPointAt, ajax};
+export {randomProductID, randomPurchaseOrderID, randomCheckOutOrderID, randomStockOrderID, roundAfterPointAt, getDateToYMD, ajax};

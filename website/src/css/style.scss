@@ -52,6 +52,7 @@ body::-webkit-scrollbar {
 }
 .btnForFormLittle{
     cursor:default;
+    text-align: center;
     background-color: $mainColor;
     color: white;
     width: 75px;
@@ -245,7 +246,7 @@ body::-webkit-scrollbar {
     .itemSpec{
         width: 75px
     }
-    .stockIn{
+    .stockIn, .return{
         width: 100px;
     }
     .defaultStyleBtn{
@@ -254,7 +255,6 @@ body::-webkit-scrollbar {
         vertical-align: middle;
     }
     .note_No_item{
-        width: 90%;
         color: $mainColor;
         text-align: center;
     }
@@ -264,7 +264,7 @@ body::-webkit-scrollbar {
         margin-left: 15px !important;
     }
     .scrollArea{
-        width: 110%;
+        width: 100%;
         overflow-y: scroll;
         overflow-x: hidden;
     }

@@ -160,7 +160,7 @@ $min-height:768px;
                 font-size: 14px;
                 color: $mainColor !important;
             }
-            .stockIn{
+            .stockIn, .return{
                 input{
                     width: 30%;
                 }
@@ -171,4 +171,52 @@ $min-height:768px;
         }
     }
 }
-
+.shopMainArea-stock-orderHistory{
+    .informationArea{
+        &>div{
+            display: inline-block;
+            vertical-align: middle;
+            height: 100%;
+            margin: 10px 20px;
+        }
+        .orderSearch{
+            width: 450px;
+            .filter{
+                position: relative;
+                &>span{
+                    margin-bottom: 10px;
+                    label{
+                        margin: 0 5px;
+                    }
+                    .fromDate, .toDate{
+                        width:fit-content;
+                    }
+                }
+                .searchBtn{
+                    position: absolute;
+                    cursor:default;
+                    right: 15px;
+                    background-color: $mainColor;
+                    width: 75px;
+                    line-height: 20px;
+                    color: white;
+                    font-size: 14px;
+                    border-radius: 5px;
+                    border: $mainColor 1px solid;
+                }
+            }
+        }
+        .orderDetail{
+            margin-top: 0px;
+            padding-left: 20px;
+            border-left: 1px solid $slightBlack;
+            .basicInfo{
+                margin-bottom: 10px;
+                .type, .buildDate{
+                    margin: 0 10px;
+                    width: fit-content;
+                }
+            }
+        }
+    }
+}

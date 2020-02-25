@@ -77,8 +77,8 @@ class StockReturnOrder extends Component{
                                     <span className="itemSpec">尺寸</span>
                                     <span className="itemSpec">顏色</span>
                                     <span className="itemSpec">總採購</span>
-                                    <span className="itemSpec">未入庫</span>
-                                    <span className="stockIn">本次入庫</span>
+                                    <span className="itemSpec">已入庫</span>
+                                    <span className="return">本次退回</span>
                                 </div>
                                 <div className="scrollArea">
                                 {   
@@ -96,8 +96,8 @@ class StockReturnOrder extends Component{
                                             <span className="itemSpec">{item.size}</span>
                                             <span className="itemSpec">{item.color}</span>
                                             <span className="itemSpec">{item.num}</span>
-                                            <span className="itemSpec">{item.num-item.inStock}</span>
-                                            <span className="stockIn">
+                                            <span className="itemSpec">{item.inStock}</span>
+                                            <span className="return">
                                                 <input onChange={(evnt)=>{evnt.persist(); this.setOperateNum(evnt,orderIndex,itemIndex)}} 
                                                 value={item.operateNum} ></input>
                                                 <span className="pcs"> Pcs</span>
@@ -115,7 +115,7 @@ class StockReturnOrder extends Component{
                             </div>
                             <div className="orderFooter">
                                 <div className="buttons">
-                                    <button className="btnForFormLittle" onClick={this.submitOrder}>商品入庫</button>
+                                    <button className="btnForFormLittle" onClick={this.submitOrder}>商品退庫</button>
                                     <button className="btnForFormLittle" onClick={this.cancelOrder}>取消操作</button>
                                 </div>
                             </div>

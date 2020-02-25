@@ -90,7 +90,7 @@ class Dashboard extends Component{
         if(this.state.isNeedUpdate){
             console.log('component update');
             (async ()=>{
-                await this.props.asyncShopListFromFirebase();
+                await this.asyncShopListFromFirebase();
                 this.setState(preState=>({
                     isNeedUpdate:false,
                 }));
@@ -206,6 +206,24 @@ class Dashboard extends Component{
                 history().push(`/shop/${id}`);
         }
     }
+    asyncShopListFromFirebase=()=>{
+        ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').get()
+        .then(snapshot=>{
+            let shopList=[];
+            if(snapshot.empty){
+                console.log(`ShopList is Empty, ${this.props.auth.MEMBER_UID}`)
+            }
+            snapshot.forEach(doc=>{
+                let shop={
+                    id:doc.id,
+                    title:doc.data().title
+                };
+                shopList.push(shop);
+            })
+            /** this is dispatch extends from high level connet method */
+            this.props.updateShopList(shopList);
+        })
+    }
     render(){
         let shopList=this.props.shopList;
         return (
@@ -243,5 +261,14 @@ function mapStateToProps({auth,shopList},ownProps){
         shopList,
     }
 }
+function mapDispatchToProps(dispatch,ownProps){
+    const updateShopList=(shopList)=>{
+        return dispatch(actionUpdateShopList(shopList));
+    }
+    return {
+        updateShopList,
+        dispatch,
+    }
+}
 
-export default connect(mapStateToProps)(Dashboard);
+export default connect(mapStateToProps,mapDispatchToProps)(Dashboard);

@@ -45,10 +45,12 @@ class ItemSelector extends Component{
                         </div>
                         {   
                             orderSearchResult?
+                            orderSearchResult.length===0?
+                            <div className="note_No_item">沒有搜尋到任何符合條件的訂單</div>:
                             orderSearchResult.map((order,index)=>(
                                 <OlderSummary active={orderSelected?orderSelected.id===order.id?true:false:false} key={index} order={order} selectOrder={()=>{this.selectOrder(index)}}/>
                             )):
-                            <div>沒有搜尋到任何符合條件的訂單</div>
+                            <div className="note_No_item">沒有搜尋到任何符合條件的訂單</div>
                         }
                     </div>
                 </div>

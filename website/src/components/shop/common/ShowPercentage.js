@@ -8,7 +8,6 @@ function ShowPercentage(props) {
         sumOfInStock+=item.inStock;
     }
     let number=sumOfInStock===0?0:roundAfterPointAt((sumOfInStock)/order.static.sumOfNum,2);
-    console.log(number);
     let style={
         width:number===1?'100%':`${number*100}%`
     }
