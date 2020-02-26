@@ -17,7 +17,6 @@ import {actionUpdateShopList} from "../actions/shopList";
 import MemberAuth from '../components/auth/MemberAuth';
 import Dashboard from '../components/dashboard/Dashboard.js';
 import Shop from '../components/shop/Shop.js';
-import Stock from '../components/shop/Stock';
 
 /** enter the app */
 class AfterSignIned extends Component{

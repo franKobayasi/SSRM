@@ -1,0 +1,61 @@
+/** COLOR */
+$mainColor:#FF6D05;
+$backgroudColor:rgb(200, 200, 200);
+$slightBlack:#333;
+/** FONT */
+$defaultFontSize:16px;
+$smallFontSize:14px;
+/** Length */
+$min-width:1024px;
+$min-height:768px;
+/** Border-Radius */
+$defaultBR:5px;
+
+.pageShopCheckOut{
+    .informationArea{
+        &>*{
+            display: inline-block;
+            vertical-align: middle;
+            height: 100%;
+        }
+        .main{ 
+            width: 100%;
+            .header{
+                &>div{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .keyInArea{
+                    float: right;
+                    line-height: 37px;
+                    span, input{
+                        line-height: 25px;
+                        border: none;
+                    }
+                    span{
+                        margin:0 10px;
+                        background-color: $slightBlack;
+                    }
+                    input{
+                        background-color: transparent;
+                        text-align: center;
+                        color: white;
+                    }
+                }
+            }
+            .shoppingCart{
+                margin-top: 25px;
+                height: calc(100% - 50px);
+                .footer{
+                    &>div{
+                        text-align: right;
+                        .static{
+                            width: calc(33% - 25px);
+                            text-align: left;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

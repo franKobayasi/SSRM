@@ -19,6 +19,7 @@ import addeBtn from "../../../../img/addBtn.png";
 function ContentTable(props){
     let mode=props.mode;
     let order=props.order;
+    console.log(props);
     return (
     <div className="table">
         <div className="head">

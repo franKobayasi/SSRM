@@ -11,11 +11,12 @@ import {
 import {ssrmDB} from '../../../useFirebase';
 /** Component */
 import PurchaseOrderHistory from '../purchase/OrderHistory';
-import PurchaseOrderCreating from '../purchase/OrderCreating';
+import PurchaseCreating from '../purchase/PurchaseCreating';
 import StockInOrder from '../stock/StockInOrder';
 import StockReturnOrder from '../stock/StockReturnOrder';
 import StockOrderHistory from '../stock/OrderHistory';
 import StockManager from '../stock/StockManager';
+import Checkout from '../checkout/Checkout';
 
 /**
     This Component should provide ShopRef and other common data which children component need.
@@ -37,13 +38,14 @@ class ShopSignIned extends Component{
         <Router> 
             <Switch>
                 {/* <Route path="/shop/:shopid/order/checkout" component={Checkout}/>  */}
-                {/* <Route path="/shop/:shopid/order/history" component={Checkout}/>  */}
+                <Route path={`${shopUrl}/checkout/new`} render={({history,match,location})=>
+                <Checkout history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/purchase/history/:orderid`} render={({history,match,location})=>
                 <PurchaseOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/purchase/history/`} render={({history,match,location})=>
                 <PurchaseOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/purchase/new/`} render={({history,match,location})=>
-                <PurchaseOrderCreating history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
+                <PurchaseCreating history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/stock/history/:orderid`} render={({history,match,location})=>
                 <StockOrderHistory history={history} match={match} location={location} shopUrl={shopUrl} shop={shop}/>}/>
                 <Route path={`${shopUrl}/stock/history/`} render={({history,match,location})=>

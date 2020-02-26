@@ -19,7 +19,7 @@ firebase的採購單資料格式與在本Component內的不同，需要作轉換
 
 */
 
-class OrderCreating extends Component{
+class PurchaseCreating extends Component{
     constructor(props){
         super(props);
         this.state={
@@ -35,7 +35,7 @@ class OrderCreating extends Component{
         let currentOrder;
         /** 設定current order */
         if(!uncompletedNewOrder){
-            currentOrder=this.createNewOrder();
+            currentOrder=this.createPurchaseOrder();
             localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder));       
         }else{
             currentOrder=uncompletedNewOrder; /** 如果有未完成的Order，則不新增新的Order */
@@ -86,7 +86,7 @@ class OrderCreating extends Component{
                     <div className="informationArea">
                         <div className="orderHeader">
                             <span className="orderID">{`採購單號 ${currentOrder.id}`}</span>
-                            <SupplierInfo title={currentOrder.search_supplier[0]} address={currentOrder.search_supplier[1]} tel={currentOrder.search_supplier[2]}/>
+                            <SupplierInfo supplier={currentOrder.search_supplier} />
                             <div className="orderSetting">
                                 <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
                                 <span className="title">進貨幣別</span>
@@ -117,7 +117,7 @@ class OrderCreating extends Component{
             </Fragment>
         )
     }
-    createNewOrder(){
+    createPurchaseOrder(){
         return {
             id:`${randomPurchaseOrderID()}`, /** purchase id */
             products:[], /** products go to be purchase  */
@@ -267,15 +267,17 @@ class OrderCreating extends Component{
             avgProfit:0,
             sumOfNum:0,
         };
-        for(let product of products){
-            for(let item of product.itemList){
-                result.sumOfNum+=Number(item.num);
-                result.sumOfCost+=(product.cost*item.num);
-                result.sumOfPrice+=(product.price*item.num);
+        if(products){
+            for(let product of products){
+                for(let item of product.itemList){
+                    result.sumOfNum+=Number(item.num);
+                    result.sumOfCost+=(product.cost*item.num);
+                    result.sumOfPrice+=(product.price*item.num);
+                }
             }
+            let avgProfit=(result.sumOfPrice-result.sumOfCost)/result.sumOfPrice;
+            result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):"..."
         }
-        let avgProfit=(result.sumOfPrice-result.sumOfCost)/result.sumOfPrice;
-        result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):"..."
         return result; 
     }
     transformStructureFRBS=(orderCMPT)=>{
@@ -327,7 +329,7 @@ class OrderCreating extends Component{
             .then(()=>{
                 alert(`採購單: ${orderFRBS.id} 成功新增！`);
                 this.setState(preState=>({
-                    currentOrder:this.createNewOrder(),
+                    currentOrder:this.createPurchaseOrder(),
                     localStorageLock:false,
                 }))
                 return ;
@@ -343,11 +345,11 @@ class OrderCreating extends Component{
     cancelOrder=()=>{
         if(confirm('確定取消新增此訂單？')){
             this.setState(preState=>({
-                currentOrder:this.createNewOrder(),
+                currentOrder:this.createPurchaseOrder(),
                 localStorageLock:false,
             }))
         }
     }
 }
 
-export default OrderCreating;
+export default PurchaseCreating;

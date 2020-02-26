@@ -5,6 +5,7 @@
 @import './dashboard.scss';
 @import './purchase.scss';
 @import './stock.scss';
+@import './checkout.scss';
 
 /** COLOR */
 $mainColor:#FF6D05;
@@ -62,6 +63,7 @@ body::-webkit-scrollbar {
 }
 .btnForFormBig{
     cursor:default;
+    text-align: center;
     background-color: $mainColor;
     width: 100px;
     line-height: 35px;
@@ -216,20 +218,28 @@ body::-webkit-scrollbar {
 /** ALL TABLE STYLE */
 .table{
     width: 100%;
+    position: relative;
     overflow: hidden;
     .head,.row{
         margin: 10px 0;
         text-align: left;
-        span,input{
+        span,input,label{
             display: inline-block;
             vertical-align: middle;
             margin: 0 5px;
-            text-align: center;
+            text-align: center;            
         }
     }
     .head{
         border-bottom: 1px solid black;
         padding-bottom: 10px;
+    }
+    .footer{
+        width: 100%;
+        border-top: 1px solid black;
+        padding: 5px 25px;
+        position: absolute;
+        bottom: 0px;
     }
     .orderID,.itemID,.productID{
         width:175px !important;
@@ -244,7 +254,12 @@ body::-webkit-scrollbar {
         width: 100px;
     }
     .itemSpec{
-        width: 75px
+        span{
+            width: 75px;
+        }
+    }
+    .money{
+        width: 125px;
     }
     .stockIn, .return{
         width: 100px;
@@ -328,4 +343,49 @@ body::-webkit-scrollbar {
     .stockIn{
         width: 75px;
     }
+}
+
+.customerEditForm{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 1;
+    background-color: $mainColor;
+    padding: 15px;
+    border-radius: 15px;
+    width: 250px;
+    height: fit-content;
+    color: white;
+    div{
+        margin: 10px 0;
+    }
+    label,input{
+        display: inline-block;
+        box-sizing: border-box;
+        line-height: 25px;
+    }
+    label{
+        width: 30%;
+    }
+    input{
+        width: 70%;
+        border-radius: 10px;
+        border: 1px solid white;
+        padding: 0 10px;
+    }
+}
+
+.customerDetail{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 1;
+    background-color: $mainColor;
+    padding: 15px;
+    border-radius: 15px;
+    width: 250px;
+    height: fit-content;
+    color: white;
 }
