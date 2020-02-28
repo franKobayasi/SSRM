@@ -29,7 +29,7 @@ function SideNav(props){
                 <li><NavLink to="/dashboard/setting">基本設定</NavLink></li>
             </ul>
             {
-                props.shop.state==="signIned"?
+                props.shop.state==="signIned"? 
                 <ul className="navBar">
                     <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/checkout/new`}>結帳台</NavLink></li>
                     <li><NavLink activeClassName="active" to={`/shop/${props.shop.id}/purchase/new`}>採購單登錄</NavLink></li>

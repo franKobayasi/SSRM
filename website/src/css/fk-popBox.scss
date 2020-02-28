@@ -1,0 +1,66 @@
+@import './fk-variables.scss';
+
+$popBoxWidth:500px;
+
+.fk-popBox-form{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 1;
+    border-radius: $defaultBR;
+    overflow: hidden;
+    width: $popBoxWidth;
+    height: fit-content;
+    border: .5px solid black;
+    .fk-popBox-title{
+        width: 100%;
+        height: 30px; // bar height
+        font-size: $smallFS;
+        line-height: 30px;
+        text-align: left;
+        padding-left: 15px;
+        background-color: $slightBlack;
+        color: white;
+    }
+    .fk-popBox-content{
+        min-height: 150px;
+        padding: 15px;
+        background-color: $grayWhite;
+        color:black;
+        .fk-popBox-content-center{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .fk-popBox-content-btns{
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            button{
+                cursor:default;
+                width: 75px;
+                color:black;
+                line-height: 25px;
+                text-align: center;
+                border-radius: $defaultBR;
+                border: none;
+                margin: 15px;
+            }
+            .cancel{
+                background-color:transparent;
+                border:none; 
+                &:hover{
+                    color:$slightBlack;
+                    background-color: white;
+                    border-radius: $defaultBR;
+                }
+            }
+            .submit{
+                color: white;
+                background-color: $mainColor;
+            }
+        }
+    }
+}

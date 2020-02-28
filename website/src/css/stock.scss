@@ -1,9 +1,4 @@
-/** COLOR */
-$mainColor:#FF6D05;
-$backgroudColor:rgb(200, 200, 200);
-$slightBlack:#333;
-
-$min-height:768px;
+@import './fk-variables.scss';
 
 .shopMainArea-stock-orderCreating{
     .informationArea{
@@ -91,7 +86,7 @@ $min-height:768px;
                     .olderSummary{
                         border-radius: 5px;
                         line-height: 30px;
-                        background-color: $backgroudColor;
+                        background-color: $slightGray;
                     }
                     .active{
                         background-color: rgba($color: $mainColor, $alpha: 0.6);

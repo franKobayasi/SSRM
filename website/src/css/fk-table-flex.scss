@@ -1,0 +1,86 @@
+.fk-table-flex--LH25px{
+    $defaultLH:35px; // default style's line hight
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    span,input,label,select{
+    // all inline element with same line height and height and with no border
+        // line-height: $defaultLH;
+        // height:$defaultLH;
+        border: none;
+        text-align: center;
+    }
+    .fk-table-row{
+    // table row : setting row height and row left and right edge padding
+    // all row cell no matter is span or input text-align center and with horizen margin, over flow hide
+        line-height: $defaultLH;
+        padding: 0 15px;
+        &>*{ 
+            margin: 0 10px;
+            overflow: hidden;
+            text-align: center;
+        }
+    }
+    .fk-table-header{
+        border-bottom: 1px solid black;
+    }
+    .fk-table-footer{
+        border-top: 1px solid black;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+    .fk-table-cell-175px{
+        width:175px !important;
+    }
+    .fk-table-cell-150px{
+        width:150px;
+    }
+    .fk-table-cell-125px{
+        width: 125px;
+    }
+    .fk-table-cell-100px{
+        width: 100px;
+    }
+    .fk-table-cell-75px{
+        width: 75px;
+    }
+    .fk-table-cell-50px{
+        width: 50px;
+    }
+    .fk-table-floatR{
+        float: right;
+    }
+    .fk-table-highlighter{
+        color: $mainColor;
+        text-align: center;
+    }
+    .fk-table-scrollArea{
+        width: calc(100% + 15px);
+        padding-right: 15px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .fk-table-percentage{
+        background-color: gray;
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        span{
+            margin: 0 !important;
+            position: absolute;
+            top:0;
+            left:0;
+        }
+        .color{
+            background-color: $mainColor;
+            color: $mainColor;
+        }
+        .text{
+            width: 100%;
+            background-color: transparent;
+            color:white;
+        }
+    }
+}

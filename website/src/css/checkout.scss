@@ -1,24 +1,9 @@
-/** COLOR */
-$mainColor:#FF6D05;
-$backgroudColor:rgb(200, 200, 200);
-$slightBlack:#333;
-/** FONT */
-$defaultFontSize:16px;
-$smallFontSize:14px;
-/** Length */
-$min-width:1024px;
-$min-height:768px;
-/** Border-Radius */
-$defaultBR:5px;
+@import './fk-variables.scss';
 
-.pageShopCheckOut{
+.app-checkout-new{
     .informationArea{
-        &>*{
-            display: inline-block;
-            vertical-align: middle;
-            height: 100%;
-        }
         .main{ 
+            height: 100%;
             width: 100%;
             .header{
                 &>div{
@@ -43,18 +28,48 @@ $defaultBR:5px;
                     }
                 }
             }
-            .shoppingCart{
+            .fk-table-flex--LH25px{
                 margin-top: 25px;
-                height: calc(100% - 50px);
-                .footer{
+                height: calc(100% - 75px);
+                .fk-table-footer{
+                    width: 800px;
                     &>div{
                         text-align: right;
                         .static{
-                            width: calc(33% - 25px);
-                            text-align: left;
+                            width: calc(33% - 20px);
+                            text-align: right;
                         }
                     }
                 }
+            }
+        }
+        .orderActionBtns{
+            position: absolute;
+            bottom:15px;
+            right: 15px;
+            button{
+                margin: 0 10px;
+            }
+        }
+    }
+    .formSubmitBooking{
+        .content{
+            width: fit-content;
+            .deposit{
+                *{
+                    line-height: 20px;
+                }
+                label{
+                    margin-right: 15px;
+                }
+                input{
+                    width: 125px;
+                    text-align: center;
+                }
+            }
+            .remindMsg{
+                margin-top: 10px;
+                color: $mainColor;
             }
         }
     }

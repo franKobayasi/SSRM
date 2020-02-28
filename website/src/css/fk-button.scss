@@ -1,0 +1,27 @@
+@import './fk-variables.scss';
+
+.fx-btn-little-nobg{
+    width: fit-content;
+    line-height: 25px;
+    padding: 0 15px;
+    color:$mainColor;
+    text-align: center;
+    cursor:default;
+    background-color:transparent;
+    border:none; 
+    &:hover{
+        color:white;
+        background-color: $mainColor;
+        border-radius: $defaultBR;
+    }
+}
+.fx-btn-little{
+    cursor:default;
+    text-align: center;
+    background-color: $mainColor;
+    color: white;
+    width: 75px;
+    line-height: 30px;
+    border-radius: $defaultBR;
+    border:1px solid white; 
+}
