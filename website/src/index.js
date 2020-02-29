@@ -8,7 +8,7 @@ import ssrmReducers from './reducers/index.js';
 import App from './containers/App';
 
 /** css file improt */
-import './css/style.scss';
+import './css/index.scss';
 
 /** redux store setting */
 const initialState={};

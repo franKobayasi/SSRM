@@ -14,7 +14,7 @@ import {ssrmDB} from "../useFirebase";
 /** action creator */
 import {actionUpdateShopList} from "../actions/shopList";
 /** component */
-import MemberAuth from '../components/auth/MemberAuth';
+import Auth from '../components/auth/Auth';
 import Dashboard from '../components/dashboard/Dashboard.js';
 import Shop from '../components/shop/Shop.js';
 
@@ -36,7 +36,7 @@ class AfterSignIned extends Component{
             <Router> 
                 <Switch>
                     {/* <Route path="/test" render={()=><Purchase />} /> */}
-                    <Route path="/auth/:type" component={MemberAuth}/> 
+                    <Route path="/auth/:type" component={Auth}/> 
                     <Route path="/shop/:shopid" component={Shop}/>
                     <Route exact path="/dashboard/setting" render={()=><Dashboard />}/>
                     <Route path="/dashboard" render={()=><Dashboard asyncShopListFromFirebase={this.asyncShopListFromFirebase} />}/>

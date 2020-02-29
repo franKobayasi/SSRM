@@ -1,20 +1,37 @@
 @import './fk-variables.scss';
 
-.fx-btn-little-nobg{
+$defaultBtnLH:25px;
+
+.fx-btn, .fx-btn--nobg, .fx-btn--white{
     width: fit-content;
-    line-height: 25px;
-    padding: 0 15px;
-    color:$mainColor;
+    padding: 0 10px;
+    line-height: $defaultBtnLH;
     text-align: center;
     cursor:default;
+    border-radius: $defaultBR;
+    font-size: $smallFS;
+}
+
+.fx-btn--nobg{
+    color:$mainColor;
     background-color:transparent;
-    border:none; 
+    border:none;
     &:hover{
         color:white;
         background-color: $mainColor;
-        border-radius: $defaultBR;
     }
 }
+
+.fx-btn--white{
+    color: black;
+    background-color: white;
+    border: .5px solid black;
+    &:hover{
+        color: white;
+        background-color: black;
+    }
+}
+
 .fx-btn-little{
     cursor:default;
     text-align: center;

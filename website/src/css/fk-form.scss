@@ -1,0 +1,50 @@
+@import './fk-variables.scss';
+
+$formDefaultLH:35px;
+
+.fk-form, .fk-form-white{
+    margin: 0 auto;
+    position: relative;
+    padding: 15px;
+    border-radius: $defaultBR;
+    & > .fk-form-row{
+        line-height: $formDefaultLH;
+        text-align: left;
+        margin: 0 auto;
+        & > span{
+            margin-right: 10px;
+            padding: 0 5px;
+            width: 75px;
+        }
+        & > input{
+            width: 175px;
+            padding: 0 5px;
+            line-height: 20px;
+        }
+    }
+    & > .fk-form-remindMsg{
+        padding: 0 5px;
+        font-size: $smallFS;
+        line-height: $formDefaultLH;
+        height: $formDefaultLH;
+        color: $mainColor;
+    }
+    .fk-form-actionBtns{
+        width: fit-content;
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        & > *{
+            margin: 0 10px;
+        }
+    }
+}
+
+.fk-form-white{
+    background-color: rgba($color: white, $alpha: .75);
+    .fk-form-row{
+        & > input{
+            border: .25px solid $slightGray;
+        }
+    }
+}

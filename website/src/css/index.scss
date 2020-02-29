@@ -1,8 +1,12 @@
+/** Styles */
 @import './reset.scss';
-@import 'fk-variables.scss';
-@import 'fk-table-flex.scss';
-@import 'fk-button';
-@import 'fk-popBox.scss';
+@import './fk-variables.scss';
+@import './fk-table-flex.scss';
+@import './fk-button';
+@import './fk-popBox.scss';
+@import './fk-form.scss';
+/** Pages */
+@import './app-auth.scss';
 @import './sideNav.scss';
 @import './memberLogin.css';
 @import './shopAuth.scss';
@@ -11,9 +15,6 @@
 @import './stock.scss';
 @import './checkout.scss';
 
-/** COLOR */
-$backgroudColor:rgb(200, 200, 200);
-
 #root{
     font-size: $defaultFS;
     width: 100%;
@@ -21,8 +22,9 @@ $backgroudColor:rgb(200, 200, 200);
     min-width: $min-width;
     min-height: $min-height;
     overflow: hidden;
-    background-color:  rgb(200, 200, 200);
+    background-color:  $grayWhite;
 }
+
 #sideMenu{
     position: relative;
     display: inline-block;

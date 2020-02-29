@@ -5,14 +5,14 @@ import {
     Route,
     Redirect
 } from 'react-router-dom';
-import MemberAuth from '../components/auth/MemberAuth';
+import Auth from '../components/auth/Auth';
 
 function BeforeSignIned(){
     return (
         <Router> 
-            <Route path="/auth/:type" component={MemberAuth}/>
-             <Route exact path="/">
-                <Redirect to="/auth/signin"/>
+            <Route path="/auth" component={Auth}/>
+            <Route exact path="/">
+                <Redirect to="/auth"/>
             </Route>
         </Router> 
     )

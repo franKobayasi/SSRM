@@ -1,8 +1,7 @@
 import React,{Component,Fragment} from "react";
-import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
 import {createHashHistory as history} from 'history';
-import ssrmFirebase,{ssrmDB,getDataFromFireBase} from "../../useFirebase";
+import {ssrmDB} from "../../useFirebase";
 import SideNav from "../layout/SideNav";
 import {actionUpdateShopList} from "../../actions/shopList";
 
