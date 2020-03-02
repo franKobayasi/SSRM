@@ -8,14 +8,16 @@
 /** Pages */
 @import './app-auth.scss';
 @import './sideNav.scss';
-@import './memberLogin.css';
 @import './shopAuth.scss';
 @import './dashboard.scss';
 @import './purchase.scss';
 @import './stock.scss';
 @import './checkout.scss';
 
+@import './app-sideNav.scss';
+
 #root{
+    position: relative;
     font-size: $defaultFS;
     width: 100%;
     height: 100vh;

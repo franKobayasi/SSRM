@@ -325,6 +325,7 @@ class PurchaseCreating extends Component{
             alert('尚未填寫供應商，請先填寫供應商');
         }else if(confirm('確定送出採購單？')){
             let orderFRBS=this.transformStructureFRBS(currentOrder);
+            orderFRBS.updateTimes=0;
             this.props.shop.shopRef.collection('purchases').doc(currentOrder.id).set(orderFRBS)
             .then(()=>{
                 alert(`採購單: ${orderFRBS.id} 成功新增！`);

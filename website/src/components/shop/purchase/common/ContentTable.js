@@ -21,23 +21,23 @@ function ContentTable(props){
     let order=props.order;
     console.log(props);
     return (
-    <div className="table">
-        <div className="head">
-            <span className="itemID">商品牌號</span>
-            <span className="productName">商品名稱</span>
-            <span className="itemSpec">尺寸</span>
-            <span className="itemSpec">顏色</span>
+    <div className="fk-table-flex--LH25px table">
+        <div className="fk-table-header fk-table-row">
+            <span className="fk-table-cell-175px">商品牌號</span>
+            <span className="fk-table-cell-150px">商品名稱</span>
+            <span className="fk-table-cell-50px">尺寸</span>
+            <span className="fk-table-cell-50px">顏色</span>
             {mode==="create"?
-            <span className="itemSpec">件數</span>:
+            <span className="fk-table-cell-50px">件數</span>:
             <Fragment>
-                <span className="itemSpec">採購件數</span>
-                <span className="itemSpec">入庫件數</span>
-                <span className="itemSpec">狀態</span>
+                <span className="fk-table-cell-50px">採購件數</span>
+                <span className="fk-table-cell-50px">入庫件數</span>
+                <span className="fk-table-cell-50px">狀態</span>
             </Fragment>}
-            <span className="itemSpec">進貨單價</span>
-            <span className="itemSpec">成本小計</span>
-            <span className="itemSpec">商品標價</span>
-            <span className="itemSpec">單項利潤</span>
+            <span className="fk-table-cell-100px">進貨單價</span>
+            <span className="fk-table-cell-100px">成本小計</span>
+            <span className="fk-table-cell-100px">商品標價</span>
+            <span className="fk-table-cell-100px">單項利潤</span>
         </div>
         {
             order.products.map((product,productIndex)=>(
@@ -52,22 +52,22 @@ function ContentTable(props){
                                     deleteProduct={()=>{props.deleteProduct(productIndex)}}/>:null}
                     </div>
                     {product.itemList.map((item,itemIndex)=>(
-                        <div key={itemIndex} className="row">
-                            <span className="itemID">{item.itemID}</span>
-                            <span className="productName">{product.name}</span>
-                            <span className="itemSpec">{item.size}</span>
-                            <span className="itemSpec">{item.color}</span>
+                        <div key={itemIndex} className="fk-table-row">
+                            <span className="fk-table-cell-175px">{item.itemID}</span>
+                            <span className="fk-table-cell-150px">{product.name}</span>
+                            <span className="fk-table-cell-50px">{item.size}</span>
+                            <span className="fk-table-cell-50px">{item.color}</span>
                             {mode==="create"?
-                            <span className="itemSpec">{item.num}</span>:
+                            <span className="fk-table-cell-50px">{item.num}</span>:
                             <Fragment>
-                                <span className="itemSpec">{item.num}</span>
-                                <span className="itemSpec">{item.inStock}</span>
-                                <span className="itemSpec">{item.status}</span>
+                                <span className="fk-table-cell-50px">{item.num}</span>
+                                <span className="fk-table-cell-50px">{item.inStock}</span>
+                                <span className="fk-table-cell-50px">{item.status}</span>
                             </Fragment>}
-                            <span className="itemSpec">{product.cost}</span>
-                            <span className="itemSpec">{`${item.num*product.cost}`}</span>
-                            <span className="itemSpec">{product.price}</span>
-                            <span className="itemSpec">{`${roundAfterPointAt(((product.price-product.cost)/product.price),2)}`}</span>
+                            <span className="fk-table-cell-100px">{product.cost}</span>
+                            <span className="fk-table-cell-100px">{`${item.num*product.cost}`}</span>
+                            <span className="fk-table-cell-100px">{product.price}</span>
+                            <span className="fk-table-cell-100px">{`${roundAfterPointAt(((product.price-product.cost)/product.price),2)}`}</span>
                         </div>
                     ))}
                 </Fragment>))

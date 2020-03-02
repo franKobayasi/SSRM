@@ -60,30 +60,30 @@ class OrderHistory extends Component{
                             <div className="filterBlock">
                                 <div></div>
                             </div>
-                            <div className="table">
-                                <div className="head">
-                                    <span className="orderID">訂單編號</span>
-                                    <span className="supplierTitle">供應商</span>
-                                    <span className="itemSpec">成本總計</span>
-                                    <span className="itemSpec">件數總計</span>
-                                    <span className="itemSpec">平均利潤</span>
-                                    <span className="date">採購日期</span>
-                                    <span className="stockInPercentage">到貨進度</span>
+                            <div className="table fk-table-flex--LH25px">
+                                <div className="fk-table-header fk-table-row row">
+                                    <span className="fk-table-cell-175px">訂單編號</span>
+                                    <span className="fk-table-cell-100px">供應商</span>
+                                    <span className="fk-table-cell-100px">成本總計</span>
+                                    <span className="fk-table-cell-75px">件數總計</span>
+                                    <span className="fk-table-cell-100px">平均利潤</span>
+                                    <span className="fk-table-cell-125px">採購日期</span>
+                                    <span className="fk-table-cell-125px">到貨進度</span>
                                     <span className="tableBtnBox">操作</span>
                                 </div>
                                 {   
                                     orderList.length===0?
-                                    <div className="row">目前沒有符合查詢條件的訂單</div>:
+                                    <div className="fk-table-row row">目前沒有符合查詢條件的訂單</div>:
                                     orderList.map((order,index)=>{
                                     return (
-                                        <div key={index} className="row">
-                                            <span className="orderID">{order.id}</span>
-                                            <span className="supplierTitle">{order.search_supplier[0]}</span>
-                                            <span className="itemSpec">{order.static.sumOfCost}</span>
-                                            <span className="itemSpec">{order.static.sumOfNum}</span>
-                                            <span className="itemSpec">{order.static.avgProfit}</span>
-                                            <span className="date">{this.getDateToYMD(order.time)}</span>
-                                            <span className="stockInPercentage"><ShowPercentage order={order} /></span>
+                                        <div key={index} className="fk-table-row row">
+                                            <span className="fk-table-cell-175px">{order.id}</span>
+                                            <span className="fk-table-cell-100px">{order.search_supplier[0]}</span>
+                                            <span className="fk-table-cell-100px">{order.static.sumOfCost}</span>
+                                            <span className="fk-table-cell-75px">{order.static.sumOfNum}</span>
+                                            <span className="fk-table-cell-100px">{order.static.avgProfit}</span>
+                                            <span className="fk-table-cell-125px">{this.getDateToYMD(order.time)}</span>
+                                            <span className="fk-table-cell-125px"><ShowPercentage order={order} /></span>
                                             <span className="tableBtnBox">
                                                 <img className="defaultStyleBtn" onClick={()=>{this.toDetailPage(order.id)}} src={editImg}/>
                                                 <img className="defaultStyleBtn" onClick={()=>{this.deleteHoldOrder(order.id)}} src={deleteImg}/>

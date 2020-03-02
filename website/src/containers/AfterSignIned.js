@@ -36,7 +36,7 @@ class AfterSignIned extends Component{
             <Router> 
                 <Switch>
                     {/* <Route path="/test" render={()=><Purchase />} /> */}
-                    <Route path="/auth/:type" component={Auth}/> 
+                    <Route path="/auth" component={Auth}/> 
                     <Route path="/shop/:shopid" component={Shop}/>
                     <Route exact path="/dashboard/setting" render={()=><Dashboard />}/>
                     <Route path="/dashboard" render={()=><Dashboard asyncShopListFromFirebase={this.asyncShopListFromFirebase} />}/>

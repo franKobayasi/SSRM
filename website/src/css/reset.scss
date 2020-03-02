@@ -3,7 +3,8 @@ html,body,div,ol,ul,h1,h2,h3,h4,h5,h6,span,input,label,select{
     padding: 0;    
     box-sizing: border-box;
 }
-span,input,label,select,img,button{
+span,input,label,select,img,button,a{
     display: inline-block;
     vertical-align: middle;
+    box-sizing: border-box;
 }

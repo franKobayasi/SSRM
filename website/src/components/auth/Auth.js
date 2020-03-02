@@ -87,8 +87,8 @@ class Auth extends Component{
                 displayName:user.displayName,
                 uid:user.uid,
             }
-            props.dispatch(actionSignIn(memberInfo));
-            props.history.push('/');
+            this.props.dispatch(actionSignIn(memberInfo));
+            this.props.history.push('/');
             console.log('sign in via facebook')
         })
         .catch(function(error) {

@@ -11,7 +11,7 @@ function SideNav(props){
     const signOut=(evnt)=>{
         ssrmFirebase.auth().signOut()
             .then((res)=>{
-                console.log('logout!');
+                console.log('logout!'); 
                 props.dispatch(actionSignOut());
                 history().push('/');
             })

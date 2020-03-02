@@ -4,6 +4,7 @@ import {createHashHistory as history} from 'history';
 import {ssrmDB} from "../../useFirebase";
 import SideNav from "../layout/SideNav";
 import {actionUpdateShopList} from "../../actions/shopList";
+import AppSideNav from "../common/AppSideNav.js";
 
 class ShopSummary extends Component{
     constructor(props){
@@ -227,7 +228,7 @@ class Dashboard extends Component{
         let shopList=this.props.shopList;
         return (
             <Fragment>
-                <SideNav />
+                <AppSideNav />
                 <div id="dashboard-main">
                     { /** handle shopList */
                         shopList!=='undefined'&&shopList.length>=1?

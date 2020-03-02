@@ -1,0 +1,88 @@
+@import './fk-variables.scss';
+
+#app-sideNav-meunBtn{
+    width: 30px;
+    height: 30px;
+    border-radius: $defaultBR;
+    background-color: $slightBlack;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    padding: 0 5px;
+    & > div{
+        width: 17.5;
+        height: 5px;
+        border-radius: 2.5px;
+        margin: calc(15px * 0.25) auto;
+        background-color: white;
+    }
+    &:hover{
+        background-color: $slightGray;
+    }
+}
+#app-sideNav{
+    width: 200px;
+    height: 100%;
+    background-color: $slightBlack;
+    position: absolute;
+    overflow: hidden;
+    .app-sideNav-main{
+        margin-top: 50px;
+        & > li{
+            a{
+                height: 35px;
+                width: 100%;
+                line-height: 35px;
+                overflow: hidden;
+                padding-left: 15px;
+                width: 100%;
+                color: white;
+                font-weight: 400;
+                list-style-type: none;
+                text-decoration: none;
+            }
+            a.active, a:hover{
+                background-color:$slightGray;
+            }
+            a:hover{
+                color: $mainColor;
+            }
+        }
+    }
+    .app-sideNav-footer{
+        position: absolute;
+        bottom: 20px;
+        left: 15px;
+        li{
+            color: white;
+            list-style-type: none;
+        }
+        #app-sideNav-signOutBtn{
+            margin-bottom: 20px;
+            cursor: default;
+            &:hover{
+                color: $mainColor;
+            }
+        }
+        .copyRight{
+            font-size: $smallFS;
+            line-height: 20px;
+        }
+    }
+}
+.app-sideNav-hide{
+    transform: translateX(-160px);
+    &:hover{
+        animation-name:showSideNav;
+        animation-duration:1s;
+        animation-fill-mode: forwards;
+    }
+    @keyframes showSideNav{
+        from{
+            transform:translateX(-160px);
+        }
+        to{
+            transform:translateX(0px);
+        }
+    }
+}
