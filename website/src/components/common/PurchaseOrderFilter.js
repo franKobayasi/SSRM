@@ -1,4 +1,5 @@
 import React,{Component, Fragment} from 'react';
+import {getDateToYMD} from '../../lib';
 import Checkbox from './Checkbox';
 
 
@@ -13,8 +14,8 @@ shopRef(firebase database)
  class PurchaseOrderFilter extends Component{
     constructor(props){
         super(props);
-        let to=new Date().valueOf();
-        let from=new Date(to-(24*60*60*1000*14)).valueOf();
+        let to=getDateToYMD(new Date().valueOf());
+        let from=getDateToYMD(new Date(new Date().valueOf()-(24*60*60*1000*14)).valueOf());
         this.state={
             isSearchNeedOrderID:false,
             isSearchNeedSupplierName:false,
@@ -34,23 +35,35 @@ shopRef(firebase database)
     render(){
         let options=this.state.options;
         return (
-            <div className="searchBar">
-                <span><Checkbox value={this.state.isSearchNeedOrderID} onClick={()=>{this.setState(preState=>({isSearchNeedOrderID:!preState.isSearchNeedOrderID}))}} /><label>採購單號</label>
-                <input onChange={this.handleChange}  id="searchOrderID" /></span>
-                <span><Checkbox value={this.state.isSearchNeedSupplierName} onClick={()=>{this.setState(preState=>({isSearchNeedSupplierName:!preState.isSearchNeedSupplierName}))}} /><label>供應商名稱</label>
-                <input onChange={this.handleChange}  id="searchBySupplierName" /></span>
-                <span><Checkbox value={this.state.isSearchNeedSupplierTel} onClick={()=>{this.setState(preState=>({isSearchNeedSupplierTel:!preState.isSearchNeedSupplierTel}))}} /><label>供應商電話</label>
-                <input onChange={this.handleChange}  id="searchBySupplierTel" /></span>
-                <span><Checkbox value={this.state.isSearchNeedProductName} onClick={()=>{this.setState(preState=>({isSearchNeedProductName:!preState.isSearchNeedProductName}))}} /><label>產品名稱</label>
-                <input onChange={this.handleChange}  id="searchByProductName" /></span>
-                <span>
-                    <Checkbox value={this.state.isSearchNeedDateArea} onClick={()=>{this.setState(preState=>({isSearchNeedDateArea:!preState.isSearchNeedDateArea}))}} /><label>日期區間從</label>
-                    <input onChange={this.handleChange} type='date' id="searchByDateFrom" defaultValue={this.state.defaultSearchByDateFrom}/>
-                    <label className="toDate">至</label>
-                    <input onChange={this.handleChange}  type='date' id="searchByDateTo" defaultValue={this.state.defaultSearchByDateTo} />
+            <div className="app-filter">
+                <span className="app-filter-option">
+                    <Checkbox value={this.state.isSearchNeedOrderID} onClick={()=>{this.setState(preState=>({isSearchNeedOrderID:!preState.isSearchNeedOrderID}))}} />
+                    <label>採購單號</label>
+                    <input onChange={this.handleChange}  id="searchOrderID" />
                 </span>
-                <button className="btnForFormLittle searchBtn" onClick={this.searchPurchaseOrder}>查詢</button>
-                <div className="note">（系統默認搜尋過去15天內的採購單，如需尋找特定時段，請設定日期區間）</div>
+                <span className="app-filter-option">
+                    <Checkbox value={this.state.isSearchNeedSupplierName} onClick={()=>{this.setState(preState=>({isSearchNeedSupplierName:!preState.isSearchNeedSupplierName}))}} />
+                    <label>供應商名稱</label>
+                    <input onChange={this.handleChange}  id="searchBySupplierName" />
+                </span>
+                <span className="app-filter-option">
+                    <Checkbox value={this.state.isSearchNeedSupplierTel} onClick={()=>{this.setState(preState=>({isSearchNeedSupplierTel:!preState.isSearchNeedSupplierTel}))}} />
+                    <label>供應商電話</label>
+                    <input onChange={this.handleChange}  id="searchBySupplierTel" />
+                </span>
+                <span className="app-filter-option">
+                    <Checkbox value={this.state.isSearchNeedProductName} onClick={()=>{this.setState(preState=>({isSearchNeedProductName:!preState.isSearchNeedProductName}))}} />
+                    <label>產品名稱</label>
+                    <input onChange={this.handleChange}  id="searchByProductName" />
+                </span>
+                <span className="app-filter-option">
+                    <Checkbox value={this.state.isSearchNeedDateArea} onClick={()=>{this.setState(preState=>({isSearchNeedDateArea:!preState.isSearchNeedDateArea}))}} />
+                    <label>日期區間從</label>
+                    <input className="date" onChange={this.handleChange} type='date' id="searchByDateFrom" defaultValue={this.state.defaultSearchByDateFrom}/>
+                    <label>至</label>
+                    <input className="date" onChange={this.handleChange}  type='date' id="searchByDateTo" defaultValue={this.state.defaultSearchByDateTo} />
+                </span>
+                <button className="app-filter-actionBtn fx-btn--25LH-mainColor" onClick={this.searchPurchaseOrder}>查詢</button>
             </div>
         )
     }

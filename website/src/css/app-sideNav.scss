@@ -43,10 +43,10 @@
                 list-style-type: none;
                 text-decoration: none;
             }
-            a.active, a:hover{
+            a:hover{
                 background-color:$slightGray;
             }
-            a:hover{
+            a.active{
                 color: $mainColor;
             }
         }

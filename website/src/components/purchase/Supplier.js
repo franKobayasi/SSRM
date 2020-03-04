@@ -133,7 +133,7 @@ class FormSupplierEntry extends Component{
         }
     }
     /** 確認此供應商是否註冊過 */
-    checkSupplier=async (tel)=>{
+    checkSupplier=async(tel)=>{
         let result={};
         await this.props.shopRef.collection('suppliers').doc(tel).get()
         .then(doc=>{
@@ -191,6 +191,9 @@ class Supplier extends Component{
                             <label>商家地址</label>
                             <span className="SupplierAddress">{supplier[1]?supplier[1]:null}</span>
                         </div>
+                        <div className="fk-popBox-content-btns">
+                            <button onClick={this.toggleShowDetail} className="fx-btn--25LH-mainColor">關閉</button>
+                        </div>
                     </div>
                 </div>:null
             }
@@ -198,7 +201,7 @@ class Supplier extends Component{
         )
     }
     toggleShowDetail=()=>{
-        if(this.props.supplier){
+        if(this.props.supplier[0]){
             this.setState(preState=>({
                 isShowDetail:!preState.isShowDetail,
             }))

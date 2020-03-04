@@ -1,19 +1,19 @@
 import React,{ Component,Fragment } from 'react';
-import {ssrmDB} from '../../../useFirebase';
-import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../../lib';
+import {ssrmDB} from '../../useFirebase';
+import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../lib';
 import {createHashHistory as history} from 'history';
 /** component */
-import SideNav from '../../layout/SideNav';
-import ContentTable from './common/ContentTable';
-import Supplier, {SupplierInfo} from './common/Supplier';
-import FormProductEditing from './common/FormProductEditing';
+import AppSideNav from '../common/AppSideNav';
+import ContentTable from './ContentTable';
+import Supplier, {FormSupplierEntry} from './Supplier';
+import FormProductEditing from './FormProductEditing';
 
 /**
 This Component for view and edit history order.
 Need to pass history order into this component.
 
  */
-class OrderDetail extends Component{
+class PurchaseDetail extends Component{
     constructor(props){
         super(props);
         this.state={
@@ -30,7 +30,7 @@ class OrderDetail extends Component{
     }
     componentDidMount(){
         let currentOrder;
-        let shopRef=this.props.shop.shopRef;
+        let shopRef=this.props.shopRef;
         shopRef.collection('purchases').doc(this.props.id).get()
         .then(doc=>{
             if(doc.exists){
@@ -458,4 +458,4 @@ class OrderDetail extends Component{
     }
 }
 
-export default OrderDetail;
+export default PurchaseDetail;

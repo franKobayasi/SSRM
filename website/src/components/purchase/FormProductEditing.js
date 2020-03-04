@@ -17,11 +17,12 @@ class FormProductEditing extends Component{
             itemList:CP.itemList,
             tempSize:'',
             tempColor:'',
-            tempNum:''
+            tempNum:'',
+            isNameRight:CP?true:false,
+            isCostRight:CP?true:false,
+            isPriceRight:CP?true:false,
+            remindMsg:'提示訊息',
         }
-    }
-    componentDidMount(){
-
     }
     render(){
         let CP=this.state;
@@ -47,47 +48,56 @@ class FormProductEditing extends Component{
                                 <label>商品標價</label>
                                 <input id="price" onChange={this.handleChange} defaultValue={CP.price} />
                             </div>
+                            <div className="fk-form-remindMsg">{this.state.remindMsg}</div>
                         </div>
                         <div className="specAddingArea">
                             <label>尺寸</label><input id="tempSize" onChange={this.handleChange} value={CP.tempSize}/>
                             <label>顏色</label><input id="tempColor" onChange={this.handleChange} value={CP.tempColor}/>
                             <label>件數</label><input id="tempNum" onChange={this.handleChange}  value={CP.tempNum}/>
-                            <img className="fx-btn--Img-25px" src={checkImg} onClick={this.addSpec} />
+                            <div className="fx-btn--Img-25px" >
+                                <img src={checkImg} onClick={this.addSpec} />
+                            </div>
                         </div>
                         <div className="productSpecArea">
                             {CP.itemList.length===0?
-                            <div>請添加商品</div>:
+                            <div className="productSpecArea-noSpecHighLight">請添加商品</div>:
                             CP.itemList.map((item,itemIndex)=>(
                                 item.isEdit?
-                                <div key={itemIndex}> {/** 如果在編輯狀態 */}
-                                    <div className="editBlock">
-                                        <span>尺寸</span>
+                                <div className="productSpecArea-row" key={itemIndex}> {/** 如果在編輯狀態 */}
+                                    <span className="productSpecArea-row-info">
+                                        <label>尺寸</label>
                                         <input onChange={(evnt)=>{this.updateSpec(itemIndex,'size',evnt.target.value)}} defaultValue={item.size}/>
-                                        <span>顏色</span>
+                                        <label>顏色</label>
                                         <input onChange={(evnt)=>{this.updateSpec(itemIndex,'color',evnt.target.value)}} defaultValue={item.color} />
-                                        <span>件數</span>
+                                        <label>件數</label>
                                         <input onChange={(evnt)=>{this.updateSpec(itemIndex,'num',evnt.target.value)}} defaultValue={item.num} />
-                                    </div>
-                                    <div className="fx-btn--Img-25px">
-                                        <img src={checkImg} onClick={()=>{this.checkOutEditSpec(itemIndex)}} />
-                                    </div>
+                                    </span>
+                                    <span className="productSpecArea-row-btns">
+                                        <div className="fx-btn--Img-25px">
+                                            <img src={checkImg} onClick={()=>{this.checkOutEditSpec(itemIndex)}} />
+                                        </div>
+                                    </span>
                                 </div>:
-                                <div key={itemIndex}> {/** 如果不是在編輯狀態 */}
-                                    <div className="infoBlock">
-                                        <span>尺寸：{item.size}</span><span>顏色：{item.color}</span><span>件數：{item.num}</span>
-                                    </div>
-                                    <div className="fx-btn--Img-25px">
-                                        <img src={editImg} onClick={()=>{this.checkOutEditSpec(itemIndex)}} />
-                                    </div>
-                                    <div className="fx-btn--Img-25px">
-                                        <img src={deleteImg} className="fx-btn--Img-25px" onClick={()=>{this.removeSpec(itemIndex)}} />
-                                    </div>
+                                <div className="productSpecArea-row" key={itemIndex}> {/** 如果不是在編輯狀態 */}
+                                    <span className="productSpecArea-row-info">
+                                        <label>尺寸</label><span>{item.size}</span>
+                                        <label>顏色</label><span>{item.color}</span>
+                                        <label>件數</label><span>{item.num}</span>
+                                    </span>
+                                    <span className="productSpecArea-row-btns">
+                                        <div className="fx-btn--Img-25px">
+                                            <img src={editImg} onClick={()=>{this.checkOutEditSpec(itemIndex)}} />
+                                        </div>
+                                        <div className="fx-btn--Img-25px">
+                                            <img src={deleteImg} onClick={()=>{this.removeSpec(itemIndex)}} />
+                                        </div>
+                                    </span>
                                 </div>
                             ))}
                         </div>
-                        <div className="formBtnArea">
-                            <button className="btnForFormLittle" onClick={this.submitProductSpecs}>完成</button>
-                            <button className="btnForFormLittle" onClick={this.props.cancelUpdateProduct} >取消</button>
+                        <div className="fk-popBox-content-btns">
+                            <button className="fx-btn--25LH-mainColor" onClick={this.submitProductSpecs}>完成</button>
+                            <button className="fx-btn--25LH-mainColor" onClick={this.props.cancelUpdateProduct} >取消</button>
                         </div>
                     </div>
                 </div>
@@ -99,10 +109,46 @@ class FormProductEditing extends Component{
     }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
-        let value=evnt.target.value.trim().toUpperCase();
+        let value=evnt.target.value;
+        let msg='OK';
+        if(id==='name'){
+            let isNameRight=false;
+            value=value.trim().toUpperCase();
+            if(value.length===0){
+                msg="請輸入商品名稱";
+            }else{
+                isNameRight=true;
+            }
+            this.setState(preState=>({
+                isNameRight,
+            }))
+        }
+        if(id==='price'){
+            let isPriceRight=false;
+            if(this.isNotNumber(value)){
+                msg="價格輸入錯誤，請輸入正確的數值";
+            }else{
+                isPriceRight=true;
+            }
+            this.setState(preState=>({
+                isPriceRight,
+            }))
+        }
+        if(id==='cost'){
+            let isCostRight=false;
+            if(this.isNotNumber(value)){
+                msg="成本輸入錯誤，請輸入正確的數值";
+            }else{
+                isCostRight=true;
+            }
+            this.setState(preState=>({
+                isCostRight,
+            }))
+        }
         this.setState((preState)=>{
             return {
                 [id]:value,
+                remindMsg:msg,
             }
         });
     }
@@ -176,32 +222,26 @@ class FormProductEditing extends Component{
         let name=this.state.name;
         let cost=this.state.cost;
         let price=this.state.price;
+        let isNameRight=this.state.isNameRight;
+        let isCostRight=this.state.isCostRight;
+        let isPriceRight=this.state.isPriceRight;
         let itemList=this.state.itemList;
-        let isNotNumber=this.isNotNumber;
-        if(name.length===0){
-            alert('請輸入產品名稱');
-        }else if(cost.length===0){
-            alert('請輸入產品成本');
-        }else if(isNotNumber(cost)){
-            alert('成本並非數值，請確認')
-        }else if(price.length===0){
-            alert('請輸入售價');
-        }else if(isNotNumber(price)){
-            alert('售價並非數值，請確認');
-        }else if(itemList.length===0){
-            alert('尚未新增任何產品規格，請新增');
-        }else{
-            if(confirm('確定完成商品編輯？')){
-                let productSpecs={ 
-                    productID:this.state.productID,
-                    name,
-                    cost:Number(cost),
-                    price:Number(price),
-                    itemList,
-                    startAt:this.state.startAt,
-                }
-                this.props.submitProductSpecs(productSpecs);
+        if(!isNameRight){
+            alert('產品名稱尚未輸入');
+        }else if(!isCostRight){
+            alert('產品成本未輸入或格式錯誤');
+        }else if(!isPriceRight){
+            alert('產品價格未輸入或格式錯誤');
+        }else if(confirm('確定完成商品編輯？')){
+            let productSpecs={ 
+                productID:this.state.productID,
+                name,
+                cost:Number(cost),
+                price:Number(price),
+                itemList,
+                startAt:this.state.startAt,
             }
+            this.props.submitProductSpecs(productSpecs);
         }
     }
 }

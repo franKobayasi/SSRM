@@ -17,6 +17,7 @@ import {actionShopCreate} from "../actions/shop";
 /** component */
 import Auth from '../components/auth/Auth';
 import Dashboard from '../components/dashboard/Dashboard.js';
+import PurchaseHistory from '../components/purchase/PurchaseHistory';
 import PurchaseCreating from '../components/purchase/PurchaseCreating';
 import Guide from '../components/common/Guide';
 
@@ -42,7 +43,8 @@ class AfterSignIned extends Component{
                     {/* <Route path="/test" render={()=><Purchase />} /> */}
                     <Route path="/auth" component={Auth}/> 
                     <Route path="/dashboard" render={()=><Dashboard shop={shop} shopRef={shopRef}/>}/>
-                    <Route path="/purchase/new" render={()=><PurchaseCreating auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/purchase/new" render={(history)=><PurchaseCreating history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/purchase/history" render={(history)=><PurchaseHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/">
                         <Redirect to="/dashboard"/>
                     </Route>

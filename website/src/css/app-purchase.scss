@@ -2,44 +2,43 @@ $mainColor:#FF6D05;
 $slightBlack:#333;
 
 .app-purchase-create,
-.app-purchase-order,
-.app-purchase-history{
+.app-purchase-order{
     .formProductEdit{
         .productSpecArea{
             height: 200px;
-            padding: 10px 0;
             box-sizing: border-box;
             overflow: auto;
-            & > div{
-                margin: 10px;
+            & > .productSpecArea-row{
+                background-color: white;
+                border-radius: $defaultBR;
+                margin: 10px 0;
                 text-align: center;
-                input,span{
-                    display: inline-block;
-                    vertical-align: middle;
-                }
-                span{
-                    margin: 0 20px;
-                }
-                input{
-                    width: 35px;
-                    padding: 0 10px;
-                    border: gray 1px solid;
-                    border-width: 0 0 1px 0;
-                    text-align: center;
-                }
-                .editBlock, .infoBlock{
-                    display: inline-block;
-                    vertical-align: middle;
+                .productSpecArea-row-info{
                     width: 350px;
+                    & > label, & > span, & > input{
+                        width: 50px;
+                        text-align: center;
+                    }
+                    & > input{
+                        background-color: white;
+                        border: 1px solid $mainColor;
+                        border-width: 0 0 1px 0;
+                    }
                 }
-                .editBlock{
-                    width: 400px;
+                .productSpecArea-row-btns{
+                    width: 100px;
                 }
+            }
+            .productSpecArea-noSpecHighLight{
+                text-align: center;
+                color: $mainColor;
+                margin: 10px 0;
             }
         } // end productSpecArea
         .specAddingArea{
             text-align: center;
             padding: 10px 10px 15px;
+            line-height: 25px;
             input,label{
                 margin: 0 10px;
                 text-align: center;
@@ -54,11 +53,6 @@ $slightBlack:#333;
         }
     }
     .orderContent{
-        padding: 15px;
-        margin: 5px 15px;
-        background-color: white;
-        height: calc(100% - 70px);
-        border-radius: $defaultBR;
         .orderContent-header{
             overflow: hidden;
             line-height: 35px;
@@ -66,6 +60,11 @@ $slightBlack:#333;
             .orderID, .app-supplier-showDetailBtn {
                 width:fit-content;
                 margin-right: 10px;
+            }
+            .orderID{
+                & > label{
+                    margin-right: 10px;
+                }
             }
             .orderContent-supplier-search,
             .orderContent-moneyType-select{
@@ -83,6 +82,7 @@ $slightBlack:#333;
             .orderContent-supplier-search{
                 & > input{
                     width: 150px;
+                    margin-right: 10px;
                 }
             }
             .orderContent-moneyType-select{
@@ -95,8 +95,10 @@ $slightBlack:#333;
         .orderContent-main{
             height: calc(100% - 80px);
             .productAddBtn{
-                line-height: 35px;
-                text-align: center;
+                margin-top: 10px;
+                position: relative;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
         .orderContent-footer{
@@ -130,7 +132,6 @@ $slightBlack:#333;
         }
     }
 }
-
 .app-purchase-order{
     .modifyConfirm{
         position: absolute;
@@ -160,15 +161,22 @@ $slightBlack:#333;
         }
     }
 }
-
 .app-purchase-history{
-    .informationArea{
-        .table{
-            .tableBtnBox{
-                width:150px;
+    .orderList{
+        .orderList-filter{
+            height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            .app-filter-actionBtn{
+                margin-top: 5px;
             }
-            .stockInPercentage{
-                width: 125px;
+        }
+        .orderList-table{
+            height: calc(100% - 45px);
+            width: 100%;
+            .fk-table-scrollArea{
+                height: calc(100% - 40px);
             }
         }
     }

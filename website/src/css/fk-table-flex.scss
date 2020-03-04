@@ -2,15 +2,19 @@
 $tableDefaultLH:35px; // default style's line hight
 
 .fk-table, .fk-table--black{
-    width: fit-content;
+    width: 100%;
+    overflow: hidden;
     .fk-table-row, .fk-table-header, .fk-table-footer, .fk-table-highlighter{
-        width: fit-content;
+        width: 100%;
         // table row : setting row height and row left and right edge padding
         // all row cell no matter is span or input text-align center and with horizen margin, over flow hide
         line-height: $tableDefaultLH;
+        height: calc($tableDefaultLH + 10px);
         padding: 0 15px;
         &>*{ 
             margin: 0 10px;
+            text-overflow : ellipsis;
+            white-space : nowrap;
             overflow: hidden;
             text-align: center;
         }
@@ -34,7 +38,6 @@ $tableDefaultLH:35px; // default style's line hight
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 100%;
     }
     .fk-table-cell-175px{
         width:175px !important;
@@ -62,36 +65,29 @@ $tableDefaultLH:35px; // default style's line hight
         width: 100%;
         text-align: center;
     }
+    .fk-table-LH0{
+        line-height: 0 !important;
+    }
     .fk-table-scrollArea{
         width: calc(100% + 15px);
         padding-right: 15px;
         overflow-y: auto;
         overflow-x: hidden;
     }
-    .fk-table-percentage{
-        background-color: gray;
-        position: relative;
-        border-radius: 20px;
-        overflow: hidden;
-        span{
-            margin: 0 !important;
-            position: absolute;
-            top:0;
-            left:0;
-        }
-        .color{
-            background-color: $mainColor;
-            color: $mainColor;
-        }
-        .text{
-            width: 100%;
-            background-color: transparent;
-            color:white;
-        }
-    }
 }
 
 .fk-table--black{
     border-radius: $defaultBR;
     border: 1px solid black;
+    background-color: rgba($color: black, $alpha: .1);
+    .fk-table-header{
+        background-color: black;
+        color: white;
+    }
+    .fk-table-row:nth-of-type(2n+1){
+        background-color: rgba($color: white, $alpha: .5);
+    }
+    .fk-table-row:nth-of-type(2n){
+        background-color: rgba($color: white, $alpha: 1.0);
+    }
 }

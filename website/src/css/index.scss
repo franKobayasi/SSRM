@@ -83,6 +83,34 @@
             }
         }
     }
+    .app-pageMainArea-main{
+        padding: 15px;
+        margin: 5px 15px;
+        width: calc(100% - 30px);
+        background-color: white;
+        height: calc(100% - 70px);
+        border-radius: $defaultBR;
+    }
+}
+/** Filter */
+.app-filter{
+    .app-filter-option{
+        margin: 0 5px;
+        line-height: 25px;
+        & > label{
+            padding: 0 5px;
+        }
+        & > input{
+            width: 100px;
+            padding: 0 5px;
+        }
+        & > .date{
+            width: 150px;
+        }
+    }
+    .app-filter-actionBtn{
+        float: right;
+    }
 }
 /** Toggle Style */
 .app-toggle, .app-toggle-active{
@@ -113,6 +141,59 @@
     background-color: $slightBlack;
     .app-toggle-ball{
         float: right;
+    }
+}
+/** Checkbox */
+.app-checkbox{
+    width: 15px;
+    height: 15px;
+    position: relative;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid black ;
+    margin: 0 5px;
+    box-sizing: content-box;
+    .app-checkbox-inner,
+    .app-checkbox-inner-active{
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-55%,-45%);
+        border-radius: 50%;
+        border: none;
+    }
+    .app-checkbox-inner-active{
+        background-color: $mainColor;
+    }
+    
+}
+/** Percentage */
+.app-percentage{
+    background-color: gray;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 100%;
+    height: 25px;
+    span{
+        margin: 0 !important;
+        position: absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height: 25px;
+    }
+    .color{
+        background-color: $mainColor;
+        color: $mainColor;
+    }
+    .text{
+        width: 100%;
+        line-height: 25px;
+        background-color: transparent;
+        color:white;
     }
 }
 /** Supplier */

@@ -51,17 +51,20 @@ class PurchaseCreating extends Component{
                     <div className="app-pageMainArea-header">
                         <div className="location">當前位置：採購單登錄</div>
                         <div className="operatingBtns">
-                            <button className="fx-btn--mainColor" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button>
+                            <button className="fx-btn--mainColor" onClick={()=>{history().push(`/purchase/history`)}}>歷史訂單</button>
                             <button className="fx-btn--mainColor">庫存查詢</button>
                             <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSupplierEntry(true)}}>新增供應商</button>
                         </div>
                     </div>
-                    <div className="orderContent">
+                    <div className="app-pageMainArea-main orderContent">
                         <div className="orderContent-header">
-                            <span className="orderID">{`採購單號 ${currentOrder.id}`}</span>
+                            <span className="orderID">
+                                <label>採購單號</label>
+                                <span>{currentOrder.id}</span>
+                            </span>
                             <span className="orderContent-supplier-search">
-                                <Supplier supplier={currentOrder.search_supplier} />
                                 <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
+                                <Supplier supplier={currentOrder.search_supplier}/>
                             </span>
                             <span className="orderContent-moneyType-select">                            
                                 <label className="title">進貨幣別</label>
@@ -136,7 +139,7 @@ class PurchaseCreating extends Component{
     /** 確認此供應商是否註冊過 */
     checkSupplier=async(tel)=>{
         let result={};
-        await this.props.shop.shopRef.collection('suppliers').doc(tel).get()
+        await this.props.shopRef.collection('suppliers').doc(tel).get()
         .then(doc=>{
             if(!doc.exists){
                 result.message='查無供應商資料，請先新增'
@@ -275,7 +278,7 @@ class PurchaseCreating extends Component{
                 }
             }
             let avgProfit=(result.sumOfPrice-result.sumOfCost)/result.sumOfPrice;
-            result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):"..."
+            result.avgProfit=avgProfit?roundAfterPointAt(avgProfit,2):0
         }
         return result; 
     }
@@ -325,7 +328,7 @@ class PurchaseCreating extends Component{
         }else if(confirm('確定送出採購單？')){
             let orderFRBS=this.transformStructureFRBS(currentOrder);
             orderFRBS.updateTimes=0;
-            this.props.shop.shopRef.collection('purchases').doc(currentOrder.id).set(orderFRBS)
+            this.props.shopRef.collection('purchases').doc(currentOrder.id).set(orderFRBS)
             .then(()=>{
                 alert(`採購單: ${orderFRBS.id} 成功新增！`);
                 this.setState(preState=>({

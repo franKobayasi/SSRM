@@ -74,11 +74,11 @@ function ContentTable(props){
         }
         {
             mode==="create"?
-            <div  className="fx-btn--Img-25px">
+            <div  className="fx-btn--Img-25px productAddBtn">
                 <img src={addeBtn} onClick={props.startProductAdding} />
             </div>:
             props.onOrderEditing?
-            <div  className="fx-btn--Img-25px">
+            <div  className="fx-btn--Img-25px productAddBtn">
                 <img src={addeBtn} onClick={props.startProductAdding} />
             </div>:
             null
