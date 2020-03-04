@@ -1,17 +1,35 @@
 @import './fk-variables.scss';
 
-$defaultBtnLH:25px;
+$defaultBtnLH:30px;
+$littleBtnLH:25px;
 
-.fx-btn, .fx-btn--nobg, .fx-btn--white{
+/** common setting */ 
+.fx-btn, .fx-btn--nobg, .fx-btn--white, .fx-btn--mainColor,
+.fx-btn--25LH, .fx-btn--25LH-nobg, .fx-btn--25LH-white, .fx-btn--25LH-mainColor{
     width: fit-content;
     padding: 0 10px;
-    line-height: $defaultBtnLH;
     text-align: center;
     cursor:default;
     border-radius: $defaultBR;
     font-size: $smallFS;
 }
-
+/** LH setting */
+.fx-btn, .fx-btn--nobg, .fx-btn--white, .fx-btn--mainColor{
+    line-height: $defaultBtnLH; // 30px
+}
+.fx-btn--25LH, .fx-btn--25LH-nobg, .fx-btn--25LH-white, .fx-btn--25LH-mainColor{
+    line-height: $littleBtnLH; // 30px
+}
+/** STYLE setting */
+.fx-btn--onlyText{
+    color:white;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    &:hover{
+        color:$mainColor;
+    }
+}
 .fx-btn--nobg{
     color:$mainColor;
     background-color:transparent;
@@ -21,7 +39,6 @@ $defaultBtnLH:25px;
         background-color: $mainColor;
     }
 }
-
 .fx-btn--white{
     color: black;
     background-color: white;
@@ -31,14 +48,42 @@ $defaultBtnLH:25px;
         background-color: black;
     }
 }
-
-.fx-btn-little{
-    cursor:default;
-    text-align: center;
-    background-color: $mainColor;
+.fx-btn--mainColor, .fx-btn--25LH-mainColor{
     color: white;
-    width: 75px;
+    background-color: $mainColor;
+    border: .5px solid $mainColor;
+    &:hover{
+        color: $mainColor;
+        background-color: white;
+    }
+}
+.fx-btn--Img-25px{
+    height: 30px;
     line-height: 30px;
-    border-radius: $defaultBR;
-    border:1px solid white; 
+    width: 30px;
+    overflow: hidden;
+    text-align: center;
+    & > img{
+        width: 20px;
+    }
+    &:hover{
+        & > img{
+            width: 25px;
+        }
+    }
+}
+.fx-btn--Img-30px{
+    height: 35px;
+    line-height: 35px;
+    width: 35px;
+    overflow: hidden;
+    text-align: center;
+    & > img{
+        width: 25px;
+    }
+    &:hover{
+        & > img{
+            width: 30px;
+        }
+    }
 }

@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 import ssrmFirebase from "../../useFirebase";
 import {actionSignOut} from "../../actions/auth";
+import {actionShopSignOut} from "../../actions/shop";
 import {createHashHistory as history} from 'history';
 
 class AppSideNav extends Component{
@@ -21,6 +22,7 @@ class AppSideNav extends Component{
         ssrmFirebase.auth().signOut()
         .then((res)=>{
             this.props.dispatch(actionSignOut());
+            this.props.dispatch(actionShopSignOut());
             history().push('/');
         })
         .catch((error)=>{

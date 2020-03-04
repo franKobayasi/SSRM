@@ -12,24 +12,28 @@ import {
 /** firebase */
 import {ssrmDB} from "../useFirebase";
 /** action creator */
-import {actionUpdateShopList} from "../actions/shopList";
+import {actionShopSignIn} from "../actions/shop";
+import {actionShopCreate} from "../actions/shop";
 /** component */
 import Auth from '../components/auth/Auth';
 import Dashboard from '../components/dashboard/Dashboard.js';
-import Shop from '../components/shop/Shop.js';
+import PurchaseCreating from '../components/purchase/PurchaseCreating';
+import Guide from '../components/common/Guide';
 
 /** enter the app */
 class AfterSignIned extends Component{
     constructor(props){
         super(props);
-
     }
     componentDidMount(){
-        this.asyncShopListFromFirebase();
+        this.initialShop();
     }
     render(){
-        if(this.props.shopList==="undefined"){
-            console.log('shopList is undefined');
+        let shop=this.props.shop;
+        let auth=this.props.auth;
+        let shopRef=ssrmDB.collection('shops').doc(auth.MEMBER_UID);
+        if(shop.status==='loading'){
+            console.log('shop is loading');
             return <div>loading..</div>
         }
         return (
@@ -37,9 +41,8 @@ class AfterSignIned extends Component{
                 <Switch>
                     {/* <Route path="/test" render={()=><Purchase />} /> */}
                     <Route path="/auth" component={Auth}/> 
-                    <Route path="/shop/:shopid" component={Shop}/>
-                    <Route exact path="/dashboard/setting" render={()=><Dashboard />}/>
-                    <Route path="/dashboard" render={()=><Dashboard asyncShopListFromFirebase={this.asyncShopListFromFirebase} />}/>
+                    <Route path="/dashboard" render={()=><Dashboard shop={shop} shopRef={shopRef}/>}/>
+                    <Route path="/purchase/new" render={()=><PurchaseCreating auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/">
                         <Redirect to="/dashboard"/>
                     </Route>
@@ -47,40 +50,30 @@ class AfterSignIned extends Component{
             </Router>
         )
     }
-    /** functions below handle shoplist */
-    /** this func aysc shopList from firebase to redux store */
-    asyncShopListFromFirebase=()=>{
-        ssrmDB.collection('members').doc(this.props.auth.MEMBER_UID).collection('shops').get()
-        .then(snapshot=>{
-            let shopList=[];
-            if(snapshot.empty){
-                console.log(`ShopList is Empty, ${this.props.auth.MEMBER_UID}`)
+    /** this func get shop info from firebase to redux store */
+    initialShop=()=>{
+        let uid=this.props.auth.MEMBER_UID;
+        let dispatch=this.props.dispatch;
+        ssrmDB.collection('shops').doc(uid).get()
+        .then(doc=>{
+            if(doc.exists){
+                let shop=doc.data();
+                dispatch(actionShopSignIn(shop));
+            }else{
+                dispatch(actionShopCreate());
             }
-            snapshot.forEach(doc=>{
-                let shop={
-                    id:doc.id,
-                    title:doc.data().title
-                };
-                shopList.push(shop);
-            })
-            /** this is dispatch extends from high level connet method */
-            this.props.updateShopList(shopList);
         })
     }
 }
 
-function mapStateToProps({auth, shopList},ownProps){
+function mapStateToProps({auth,shop}){
     return {
         auth,
-        shopList,
+        shop,
     };
 }
-function mapDispatchToProps(dispatch,ownProps){
-    const updateShopList=(shopList)=>{
-        return dispatch(actionUpdateShopList(shopList));
-    }
+function mapDispatchToProps(dispatch){
     return {
-        updateShopList,
         dispatch,
     }
 }

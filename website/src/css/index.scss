@@ -9,13 +9,17 @@
 @import './app-auth.scss';
 @import './sideNav.scss';
 @import './shopAuth.scss';
-@import './dashboard.scss';
-@import './purchase.scss';
+
+
 @import './stock.scss';
 @import './checkout.scss';
 
 @import './app-sideNav.scss';
+@import './app-guide.scss';
+@import './app-dashboard.scss';
+@import './app-purchase.scss';
 
+/** Basic Layout */
 #root{
     position: relative;
     font-size: $defaultFS;
@@ -26,358 +30,96 @@
     overflow: hidden;
     background-color:  $grayWhite;
 }
-
-#sideMenu{
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-    width: 275px;
-    height: 100vh;
-    min-height: $min-height;
-    background-color: $mainColor;
-    z-index: 1;
+.app-blackCover{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba($color: $slightBlack, $alpha: .75);
 }
-body::-webkit-scrollbar {
-    display: none;
-}
-.btn{
-    cursor:default;  
-}
-.btnForFormLittle{
-    cursor:default;
-    text-align: center;
-    background-color: $mainColor;
-    color: white;
-    width: 75px;
-    line-height: 30px;
-    border-radius: $defaultBR;
-    border:1px solid white; 
-}
-.btnForFormBig{
-    cursor:default;
-    text-align: center;
-    background-color: $mainColor;
-    width: 100px;
-    line-height: 35px;
-    color: white;
-    font-size: $defaultFS;
-    border-radius: $defaultBR;
-    border: $mainColor 1px solid;
-}
-.checkBox{
-    position: relative;
-    display: inline-block;
-    width: 14px !important;
-    height: 14px !important;
-    margin: 0 5px;
-    border: 2px $mainColor double;
-    border-radius: 50%;
-    span{
-        position: absolute;
-        top:2px;
-        left: 2px;
-        display: block !important;
-        width: 10px !important;
-        height: 10px !important;
-        border-radius: 50%;
-        margin: 0 !important;
-    }
-    .active{
-        background-color: $mainColor;
-    }
-}
-/** SHOP COMMON STYLE */
-.shopMainArea{
+.app-headerBar{
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background-color: $slightGray;
+    color:white;
     overflow: hidden;
-    position: relative;
-    top:1%;
-    left:1%;
-    width: 98%;
-    height: 98%;
-    z-index: 0;
-    background-color: rgba($color: white, $alpha: .5);
-    border-radius: 5px;
-    .supplierAddingForm{
-        position: absolute;
-        top:50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        z-index: 1;
-        background-color: $mainColor;
-        padding: 15px;
-        border-radius: 15px;
-        width: 250px;
-        height: fit-content;
-        color: white;
-        div{
-            margin: 10px 0;
+    .app-headerBar-shopTitle{
+        float: left;
+        margin-left: 65px;
+    }
+    .app-headerBar-operateArea{
+        float: right;
+        margin-right: 15px;
+        #appShowGuideBtn{
+            margin-right: 15px;
         }
-        label,input{
-            display: inline-block;
-            box-sizing: border-box;
-            line-height: 25px;
-        }
-        label{
-            width: 30%;
-        }
-        input{
-            width: 70%;
-            border-radius: 10px;
-            border: 1px solid white;
-            padding: 0 10px;
-        }
-        .buttons{
-            text-align: center;
-            button{
-                display: inline-block;
-                border-radius: 10px;
-                border: 1px solid white;
-                width: 60px;
-                line-height: 25px;
-                margin: 10px 10px 0 ;
+        #appModeToggle{
+            position: relative;
+            top:-1px;
+            label{
+                margin-right: 10px;
             }
         }
     }
-    .operatingArea{
-        height: 75px;
-        background-color: $slightBlack;
-        .currentInfo{
-            margin: 17.5px 0 0 15px;
+}
+.app-pageMainArea{
+    width: 100%;
+    padding-left: 40px;
+    height: calc(100% - 50px); 
+    background-color: $grayWhite;
+    .app-pageMainArea-header{
+        height: 50px;
+        line-height: 50px;
+        width: 100%;
+        padding: 0 15px;
+        & > .location{
             float: left;
-            color: white;
-            *{vertical-align: middle;}
         }
-        .operatingBtns{
-            float:right;
-            line-height: 75px;
+        & > .operatingBtns{
+            float: right;
             & > button{
-                background-color: $mainColor;
-                width: 125px;
-                margin: 0 10px;
-                line-height: 35px;
-                color: white;
-                font-size: $defaultFS;
-                border-radius: $defaultBR;
-                border: $mainColor 1px solid;
+                margin-left: 10px;
             }
         }
     }
-    .informationArea{
-        position: relative;
-        width: 100%;
-        height: calc(100% - 75px);
-        background-color: white;
-        padding: 10px;
-        overflow:hidden;
-        .orderFliter{
-            line-height: 50px;
-            background-color: rgba($color: $slightBlack, $alpha: .4);
-            width: 100%;
-            border-radius: $defaultBR;
-            color:white;
-        }
-        .operatingBtns{
-            float:right;
-            line-height: 75px;
-            & > button{
-                background-color: $mainColor;
-                width: 95px;
-                line-height: 25px;
-                color: white;
-                font-size: $smallFS;
-                border-radius: $defaultBR;
-                border: $mainColor 1px solid;
-            }
-        }
-        .orderFooter{
-            position: absolute;
-            bottom: 5px;
-            left:0;
-            width: 100%;
-            height: 50px;
-            .buttons{
-                float:right;
-                text-align: right;
-                width: 300px;
-                margin-right: 20px;
-                button{
-                    margin: 0 10px;
-                }
-            }  
-        }
+}
+/** Toggle Style */
+.app-toggle, .app-toggle-active{
+    width: 50px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 10px;
+    border: none;
+    .app-toggle-ball{
+        width: 15px;
+        height: 15px;
+        margin: 2.5px 5px;
+        border-radius: 50%;
+        background-color: $mainColor;
+        border: none;
+        transition-duration: 1s;
     }
 }
-/** ALL TABLE STYLE */
-.table{
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    .head,.row{
-        margin: 10px 0;
-        text-align: left;
-        span,input,label{
-            display: inline-block;
-            vertical-align: middle;
-            margin: 0 5px;
-            text-align: center;            
-        }
-    }
-    .head{
-        border-bottom: 1px solid black;
-        padding-bottom: 10px;
-    }
-    .footer{
-        width: 100%;
-        border-top: 1px solid black;
-        padding: 5px 25px;
-        position: absolute;
-        bottom: 0px;
-    }
-    .orderID,.itemID,.productID{
-        width:175px !important;
-    }
-    .productName,.supplierTitle{
-        width:175px;
-    }
-    .date{
-        width:150px;
-    }
-    .supplierTel, .percentageBar{
-        width: 100px;
-    }
-    .itemSpec{
-        span{
-            width: 75px;
-        }
-    }
-    .money{
-        width: 125px;
-    }
-    .stockIn, .return{
-        width: 100px;
-    }
-    .defaultStyleBtn{
-        width:25px;
-        margin: 0 10px;
-        vertical-align: middle;
-    }
-    .note_No_item{
-        color: $mainColor;
-        text-align: center;
-    }
-    .rowFlag{
-        width: fit-content;
-        color: $mainColor;
-        margin-left: 15px !important;
-    }
-    .scrollArea{
-        width: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-    .showPercentage{
-        width: 100%;
-        height: 25px;
-        display: inline-block;
-        vertical-align: middle;
-        background-color: gray;
-        line-height: 25px;
-        position: relative;
-        border-radius: 20px;
-        overflow: hidden;
-        span{
-            margin: 0 !important;
-            display: inline-block;
-            vertical-align: middle;
-            position: absolute;
-            top:0;
-            left:0;
-        }
-        .color{
-            background-color: $mainColor;
-            height:25px;
-            color: $mainColor;
-        }
-        .text{
-            width: 100%;
-            background-color: transparent;
-            color:white;
-        }
+.app-toggle{
+    text-align: left;
+    background-color: white;
+    .app-toggle-ball{
+        float: left;
     }
 }
-.tableSmall{
-    width: 100%;
-    .head,.row{
-        margin: 7.5px 0;
-        text-align: left;
-        span,input{
-            display: inline-block;
-            margin: 0 5px;
-            text-align: center;
+.app-toggle-active{
+    text-align: right;
+    background-color: $slightBlack;
+    .app-toggle-ball{
+        float: right;
+    }
+}
+/** Supplier */
+.app-supplier-entryForm{
+    .fk-form{
+        .fk-form-row{
+            line-height: 35px !important;
         }
     }
-    .head{
-        border-bottom: 1px solid black;
-        padding-bottom: 7.5px;
-    }
-    .orderID,.itemID,.productID{
-        width:150px !important;
-    }
-    .productName,.supplierTitle{
-        width:150px;
-    }
-    .supplierTel, .percentageBar{
-        width: 75px;
-    }
-    .itemSpec{
-        width: 50px
-    }
-    .stockIn{
-        width: 75px;
-    }
-}
-
-.customerEditForm{
-    position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    z-index: 1;
-    background-color: $mainColor;
-    padding: 15px;
-    border-radius: 15px;
-    width: 250px;
-    height: fit-content;
-    color: white;
-    div{
-        margin: 10px 0;
-    }
-    label,input{
-        display: inline-block;
-        box-sizing: border-box;
-        line-height: 25px;
-    }
-    label{
-        width: 30%;
-    }
-    input{
-        width: 70%;
-        border-radius: 10px;
-        border: 1px solid white;
-        padding: 0 10px;
-    }
-}
-
-.customerDetail{
-    position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    z-index: 1;
-    background-color: $mainColor;
-    padding: 15px;
-    border-radius: 15px;
-    width: 250px;
-    height: fit-content;
-    color: white;
 }

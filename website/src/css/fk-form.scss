@@ -1,25 +1,43 @@
 @import './fk-variables.scss';
 
-$formDefaultLH:35px;
+$formDefaultLH:30px;
 
-.fk-form, .fk-form-white{
+.fk-form, .fk-form--white{
     margin: 0 auto;
     position: relative;
-    padding: 15px;
-    border-radius: $defaultBR;
+    padding: 10px;
     & > .fk-form-row{
         line-height: $formDefaultLH;
         text-align: left;
         margin: 0 auto;
-        & > span{
+        .highlight{
+            color: $mainColor;
+        }
+        & > label{
             margin-right: 10px;
             padding: 0 5px;
-            width: 75px;
+            min-width: 75px;
         }
-        & > input{
-            width: 175px;
+        & > input, & > span{
+            min-width: 175px;
             padding: 0 5px;
             line-height: 20px;
+            /** input LH */
+        }
+        .fk-form-cell-100px{
+            width: 100px;
+        }
+        .fk-form-cell-125px{
+            width: 125px;
+        }
+        .fk-form-cell-150px{
+            width: 150px;
+        }
+        .fk-form-cell-175px{
+            width: 175px;
+        }
+        .fk-form-cell-200px{
+            width: 200px;
         }
     }
     & > .fk-form-remindMsg{
@@ -40,9 +58,19 @@ $formDefaultLH:35px;
     }
 }
 
-.fk-form-white{
-    background-color: rgba($color: white, $alpha: .75);
+.fk-form{
     .fk-form-row{
+        color: black;
+        & > input{
+            border: .25px solid white;
+            background-color: white;
+        }
+    }
+}
+
+.fk-form--black{
+    .fk-form-row{
+        color: white;
         & > input{
             border: .25px solid $slightGray;
         }

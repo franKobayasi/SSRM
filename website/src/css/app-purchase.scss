@@ -1,0 +1,175 @@
+$mainColor:#FF6D05;
+$slightBlack:#333;
+
+.app-purchase-create,
+.app-purchase-order,
+.app-purchase-history{
+    .formProductEdit{
+        .productSpecArea{
+            height: 200px;
+            padding: 10px 0;
+            box-sizing: border-box;
+            overflow: auto;
+            & > div{
+                margin: 10px;
+                text-align: center;
+                input,span{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                span{
+                    margin: 0 20px;
+                }
+                input{
+                    width: 35px;
+                    padding: 0 10px;
+                    border: gray 1px solid;
+                    border-width: 0 0 1px 0;
+                    text-align: center;
+                }
+                .editBlock, .infoBlock{
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 350px;
+                }
+                .editBlock{
+                    width: 400px;
+                }
+            }
+        } // end productSpecArea
+        .specAddingArea{
+            text-align: center;
+            padding: 10px 10px 15px;
+            input,label{
+                margin: 0 10px;
+                text-align: center;
+            }
+            input{
+                width: 50px;
+                border: 1px solid $mainColor;
+            }
+            .fx-btn--Img-25px{
+                float: right;
+            }
+        }
+    }
+    .orderContent{
+        padding: 15px;
+        margin: 5px 15px;
+        background-color: white;
+        height: calc(100% - 70px);
+        border-radius: $defaultBR;
+        .orderContent-header{
+            overflow: hidden;
+            line-height: 35px;
+            height: 40px;
+            .orderID, .app-supplier-showDetailBtn {
+                width:fit-content;
+                margin-right: 10px;
+            }
+            .orderContent-supplier-search,
+            .orderContent-moneyType-select{
+                margin-left: 10px;
+                & > input, & > select{
+                    line-height: 25px;
+                    height: 25px;
+                    padding: 0 5px;
+                    background-color: white;
+                    border:1px solid $mainColor;  
+                    border-radius:5px;
+                    text-align: center;
+                }
+            }
+            .orderContent-supplier-search{
+                & > input{
+                    width: 150px;
+                }
+            }
+            .orderContent-moneyType-select{
+                float: right;
+                & > label{
+                    margin-right: 10px;
+                }
+            }
+        }
+        .orderContent-main{
+            height: calc(100% - 80px);
+            .productAddBtn{
+                line-height: 35px;
+                text-align: center;
+            }
+        }
+        .orderContent-footer{
+            overflow: hidden;
+            line-height: 35px;
+            height: 40px;
+            & > div{
+                display: inline-block;
+                vertical-align: middle;
+            }
+            .staticInfo{
+                width: 400px;
+                text-align: center;
+                padding: 10px;
+                border-top: 1px solid $mainColor;
+                color: $mainColor;
+                margin-left: 200px;
+                span:nth-of-type(2n){
+                    margin-left: 20px;
+                }
+                span:nth-of-type(3){
+                    margin-left: 40px;
+                }
+            }
+            .actionBtns{
+                float: right;
+                button{
+                    margin: 0 10px;
+                }
+            } 
+        }
+    }
+}
+
+.app-purchase-order{
+    .modifyConfirm{
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 1;
+        background-color: $mainColor;
+        padding: 5px 15px;
+        border-radius: 15px;
+        color: white;
+        div{
+            margin: 5px 0;
+        }
+        textarea{
+            width: 300px;
+            height:150px;
+        }
+        .btns{
+            text-align: right;
+            button{
+                border-radius: 5px;
+                background-color: white;
+                border: 1px white solid;
+                margin: 0 10px;
+            }
+        }
+    }
+}
+
+.app-purchase-history{
+    .informationArea{
+        .table{
+            .tableBtnBox{
+                width:150px;
+            }
+            .stockInPercentage{
+                width: 125px;
+            }
+        }
+    }
+}

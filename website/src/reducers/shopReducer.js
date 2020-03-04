@@ -1,17 +1,11 @@
 import {ssrmDB} from "../useFirebase";
 const initialState={
-    user:'undefined',
-    id:'undefined',
-    title:'undefined',
-    state:'uncheck',
-    // /** 測試用 */
-    // user:{
-    //     id:'OgqYTiBjMWhiIDHqhvi0',
-    //     name:'仲岳',
-    // },
-    // id:'mAHT8POZz1AhyW2CEXXp',
-    // title:'Reborn中正台門市',
-    // state:'signIned',
+    status:'loading',
+    title:'',
+    address:'',
+    tel:'',
+    time:'',
+    onCheckoutMode:false,
 }
 
 const shopReducer=(preState=initialState,action)=>{
@@ -20,30 +14,33 @@ const shopReducer=(preState=initialState,action)=>{
     }
     switch(action.type){
         case 'SHOP_SIGN_IN':
-            console.log(action);
             return Object.assign({},preState,{
-                user:action.user,
-                id:action.id,
+                status:'ready',
                 title:action.title,
-                state:'signIned',
+                address:action.address,
+                tel:action.tel,
+                time:action.time,
             })
             break;
         case 'SHOP_SIGN_OUT':
             return Object.assign({},preState,{
-                user:'undefined',
-                id:'undefined',
-                title:'undefined',
-                state:'signOuted',
+                status:'loading',
+                title:'',
+                address:'',
+                tel:'',
+                time:'',
             })
             break;
-        case 'CHANGE_TO_SIGN_OUT_STATE':
+        case 'SHOP_CREATE':
             return Object.assign({},preState,{
-                user:'undefined',
-                id:'undefined',
-                title:'undefined',
-                state:'uncheck',
+                status:'create',
             })
-            break;  
+            break;
+        case 'TOGGLE_MODE':
+            return Object.assign({},preState,{
+                onCheckoutMode:!preState.onCheckoutMode,
+            })
+            break;
         default:
             return preState
             break;

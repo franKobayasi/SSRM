@@ -1,25 +1,30 @@
-.fk-table-flex--LH25px{
-    $defaultLH:35px; // default style's line hight
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-    span,input,label,select{
-    // all inline element with same line height and height and with no border
-        // line-height: $defaultLH;
-        // height:$defaultLH;
-        border: none;
-        text-align: center;
-    }
-    .fk-table-row{
-    // table row : setting row height and row left and right edge padding
-    // all row cell no matter is span or input text-align center and with horizen margin, over flow hide
-        line-height: $defaultLH;
+@import './fk-variables.scss';
+$tableDefaultLH:35px; // default style's line hight
+
+.fk-table, .fk-table--black{
+    width: fit-content;
+    .fk-table-row, .fk-table-header, .fk-table-footer, .fk-table-highlighter{
+        width: fit-content;
+        // table row : setting row height and row left and right edge padding
+        // all row cell no matter is span or input text-align center and with horizen margin, over flow hide
+        line-height: $tableDefaultLH;
         padding: 0 15px;
         &>*{ 
             margin: 0 10px;
             overflow: hidden;
             text-align: center;
         }
+        .flag{
+            text-align: center;
+            color: $mainColor;
+        }
+    }
+    span,input,label,select{
+        // all inline element with same line height and height and with no border
+        // line-height: $defaultLH;
+        // height:$defaultLH;
+        border: none;
+        text-align: center;
     }
     .fk-table-header{
         border-bottom: 1px solid black;
@@ -54,6 +59,7 @@
     }
     .fk-table-highlighter{
         color: $mainColor;
+        width: 100%;
         text-align: center;
     }
     .fk-table-scrollArea{
@@ -83,4 +89,9 @@
             color:white;
         }
     }
+}
+
+.fk-table--black{
+    border-radius: $defaultBR;
+    border: 1px solid black;
 }

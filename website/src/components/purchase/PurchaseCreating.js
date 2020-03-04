@@ -1,17 +1,16 @@
 import React,{ Component,Fragment } from 'react';
-import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../../lib';
+import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../lib';
 import {createHashHistory as history} from 'history';
 /** component */
-import SideNav from '../../layout/SideNav';
-import ContentTable from './common/ContentTable';
-import Supplier, {SupplierInfo} from "./common/Supplier";
-import FormProductEditing from './common/FormProductEditing';
+import AppSideNav from '../common/AppSideNav';
+import AppHeaderBar from '../common/AppHeaderBar';
+import ContentTable from './ContentTable';
+import Supplier, {FormSupplierEntry} from "./Supplier";
+import FormProductEditing from './FormProductEditing';
 
 /**
 This Component for creating new purchase order.
 Need Props:
-shop(all shop come from redux store pass down by shop Compnent)
-shopUrl(shop prefix url locaiton)
 route props(history, location and params)
 
 為了能快速查詢與修改firebase資料，同時又受限於資料合適在本Component內流動的格式，
@@ -26,9 +25,72 @@ class PurchaseCreating extends Component{
             currentOrder:'loading', /** waiting get order data from local storage */
             localStorageLock:true,  /** use for auto save to localStorage */
             onProductEditing:false, /** product item adding form */
-            onSupplierAdding:false, /** supplier adding form */
+            onSupplierEntry:false, /** supplier adding form */
             currentProduct:null /** current editing product */
         }
+    }
+    render(){
+        let onProductEditing=this.state.onProductEditing;
+        let onSupplierEntry=this.state.onSupplierEntry;
+        let currentOrder=this.state.currentOrder;
+        let currentProduct=this.state.currentProduct;
+        return (
+            <Fragment>
+                <AppSideNav />
+                <AppHeaderBar />
+                {
+                currentOrder==='loading'?
+                <div>【 ORDER LOADING COMPONENT 】</div>: /** order data loading */
+                <div className="app-pageMainArea app-purchase-create"> {/** current order */}
+                    {onSupplierEntry? /* 新增供應商 */
+                    <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleFormSupplierEntry} />:null}
+                    {onProductEditing? /* 新增產品表單 */
+                    <FormProductEditing currentProduct={this.state.currentProduct} 
+                    submitProductSpecs={this.submitProductSpecs} 
+                    cancelUpdateProduct={this.cancelUpdateProduct} />:null}
+                    <div className="app-pageMainArea-header">
+                        <div className="location">當前位置：採購單登錄</div>
+                        <div className="operatingBtns">
+                            <button className="fx-btn--mainColor" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button>
+                            <button className="fx-btn--mainColor">庫存查詢</button>
+                            <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSupplierEntry(true)}}>新增供應商</button>
+                        </div>
+                    </div>
+                    <div className="orderContent">
+                        <div className="orderContent-header">
+                            <span className="orderID">{`採購單號 ${currentOrder.id}`}</span>
+                            <span className="orderContent-supplier-search">
+                                <Supplier supplier={currentOrder.search_supplier} />
+                                <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
+                            </span>
+                            <span className="orderContent-moneyType-select">                            
+                                <label className="title">進貨幣別</label>
+                                <select>
+                                    <option value="TWD">{`台幣`}</option>
+                                    <option value="WON">{`韓元`}</option>
+                                    <option value="USD">{`美金`}</option>
+                                    <option value="CNY">{`人民幣`}</option>
+                                    <option value="JPY">{`日幣`}</option>
+                                </select>
+                            </span>
+                        </div>
+                        <ContentTable mode="create" order={currentOrder} modifyProduct={this.modifyProduct} 
+                        deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
+                        <div className="orderContent-footer">
+                            <div className="staticInfo">
+                                <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
+                                <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
+                            </div>
+                            <div className="actionBtns">
+                                <button className="fx-btn--25LH-mainColor" onClick={this.submitOrder}>完成</button>
+                                <button className="fx-btn--25LH-mainColor" onClick={this.cancelOrder}>取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </Fragment>
+        )
     }
     componentDidMount(){
         let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-purchase-newOrder'));
@@ -53,69 +115,6 @@ class PurchaseCreating extends Component{
             }))
             console.log('update to local');
         }
-    }
-    render(){
-        let onProductEditing=this.state.onProductEditing;
-        let onSupplierAdding=this.state.onSupplierAdding;
-        let currentOrder=this.state.currentOrder;
-        let currentProduct=this.state.currentProduct;
-        return (
-            <Fragment>
-                <SideNav />
-                {
-                currentOrder==='loading'?
-                <div>【 ORDER LOADING COMPONENT 】</div>: /** order data loading */
-                <div className="shopMainArea shopMainArea-purchase-orderCreating"> {/** current order */}
-                    {onSupplierAdding? /* 新增供應商 */
-                    <Supplier shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
-                    {onProductEditing? /* 新增產品表單 */
-                    <FormProductEditing currentProduct={this.state.currentProduct} 
-                    submitProductSpecs={this.submitProductSpecs} 
-                    cancelUpdateProduct={this.cancelUpdateProduct} />:null}
-                    <div className="operatingArea">
-                        <div className="currentInfo">
-                            <div>採購單登錄</div>
-                            <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
-                        </div>
-                        <div className="operatingBtns">
-                            <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button>
-                            <button className="btnForFormBig">庫存查詢</button>
-                            <button className="btnForFormBig" onClick={()=>{this.toggleSupplierAddingForm(true)}}>新增供應商</button>
-                        </div>
-                    </div>
-                    <div className="informationArea">
-                        <div className="orderHeader">
-                            <span className="orderID">{`採購單號 ${currentOrder.id}`}</span>
-                            <SupplierInfo supplier={currentOrder.search_supplier} />
-                            <div className="orderSetting">
-                                <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                                <span className="title">進貨幣別</span>
-                                <select className="moneyType">
-                                    <option value="TWD">{`台幣`}</option>
-                                    <option value="WON">{`韓元`}</option>
-                                    <option value="USD">{`美金`}</option>
-                                    <option value="CNY">{`人民幣`}</option>
-                                    <option value="JPY">{`日幣`}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <ContentTable mode="create" order={currentOrder} modifyProduct={this.modifyProduct} 
-                        deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
-                        <div className="orderFooter">
-                            <div className="buttons">
-                                <button className="btnForFormLittle finish" onClick={this.submitOrder}>完成</button>
-                                <button className="btnForFormLittle cancel" onClick={this.cancelOrder}>取消</button>
-                            </div>
-                            <div className="totalInfo">
-                                <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
-                                <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                }
-            </Fragment>
-        )
     }
     createPurchaseOrder(){
         return {
@@ -160,9 +159,9 @@ class PurchaseCreating extends Component{
         return result;
     }
     /** show and hide 供應商註冊表單*/
-    toggleSupplierAddingForm=(bool)=>{
+    toggleFormSupplierEntry=(bool)=>{
         this.setState(preState=>({
-            onSupplierAdding:bool,
+            onSupplierEntry:bool,
         }))
     }
     /** 設定當前供應商 */

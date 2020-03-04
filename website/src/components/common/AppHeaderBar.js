@@ -1,23 +1,41 @@
 import React,{Fragment, Component} from 'react';
-import {connect} from "react-redux";
+import {connect} from 'react-redux';
+import Toggle from './Toggle';
+import {actionToggleShopMode} from '../../actions/shop';
 
 class AppHeaderBar extends Component{
     constructor(props){
         super(props);
     }
     toggleAppMode=()=>{
-
+        this.props.dispatch(actionToggleShopMode());
     }
-
     render(){
-        let mode=this.state.isNavShow;
+        let onCheckoutMode=this.props.shop.onCheckoutMode;
+        let shop=this.props.shop;
         return (
-            <div id="app-headerBar">
-                <span>Reborn中正台門市</span>
-                <span>後台模式</span>
+            <div className="app-headerBar">
+                <span className="app-headerBar-shopTitle">{shop.title}</span>
+                <span className="app-headerBar-operateArea">
+                    <span id="appShowGuideBtn">使用導覽</span>
+                    <span id="appModeToggle">
+                        <label>{onCheckoutMode?'結帳模式':'後台模式'}</label>
+                        <Toggle isOn={onCheckoutMode} toggle={this.toggleAppMode} />
+                    </span>
+                </span>
             </div>
         )
     }
 }
 
-export default connect()(AppSideNav);
+function mapStateToProps({shop}){
+    return {
+        shop,
+    };
+}
+function mapDispatchToProps(dispatch){
+    return {
+        dispatch,
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(AppHeaderBar);

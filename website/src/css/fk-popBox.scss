@@ -1,16 +1,16 @@
 @import './fk-variables.scss';
 
-$popBoxWidth:500px;
+$popBoxWidth:450px;
 
-.fk-popBox-form{
+.fk-popBox{
     position: absolute;
     top:50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    z-index: 1;
+    z-index: 9;
     border-radius: $defaultBR;
     overflow: hidden;
-    width: $popBoxWidth;
+    min-width: $popBoxWidth;
     height: fit-content;
     border: .5px solid black;
     .fk-popBox-title{
@@ -19,47 +19,32 @@ $popBoxWidth:500px;
         font-size: $smallFS;
         line-height: 30px;
         text-align: left;
-        padding-left: 15px;
         background-color: $slightBlack;
+        border: 1px solid $slightBlack;
         color: white;
+        overflow: hidden;
+        padding: 0 10px;
     }
     .fk-popBox-content{
         min-height: 150px;
-        padding: 15px;
+        height: fit-content;
+        padding: 10px;
         background-color: $grayWhite;
+        border: 1px solid $grayWhite;
         color:black;
+        position: relative;
+        overflow: hidden;
         .fk-popBox-content-center{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            width: fit-content;
+            height: calc(100% - 50px);
+            margin: 0 auto;
         }
         .fk-popBox-content-btns{
-            position: absolute;
-            right: 0px;
-            bottom: 0px;
+            height: 30px;
+            width: 100%;
+            text-align: right;
             button{
-                cursor:default;
-                width: 75px;
-                color:black;
-                line-height: 25px;
-                text-align: center;
-                border-radius: $defaultBR;
-                border: none;
-                margin: 15px;
-            }
-            .cancel{
-                background-color:transparent;
-                border:none; 
-                &:hover{
-                    color:$slightBlack;
-                    background-color: white;
-                    border-radius: $defaultBR;
-                }
-            }
-            .submit{
-                color: white;
-                background-color: $mainColor;
+                margin: 0 10px;
             }
         }
     }

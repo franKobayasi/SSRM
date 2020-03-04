@@ -1,9 +1,9 @@
 import React,{Fragment} from "react";
-import {roundAfterPointAt} from "../../../../lib";
+import {roundAfterPointAt} from "../../lib";
 /** other resource */
-import editBtn from "../../../../img/editBtn.png";
-import deleteBtn from "../../../../img/deleteBtn.png";
-import addeBtn from "../../../../img/addBtn.png";
+import editBtn from "../../img/editBtn.png";
+import deleteBtn from "../../img/deleteBtn.png";
+import addeBtn from "../../img/addBtn.png";
 
 /**
     need props: 
@@ -21,7 +21,7 @@ function ContentTable(props){
     let order=props.order;
     console.log(props);
     return (
-    <div className="fk-table-flex--LH25px table">
+    <div className="fk-table orderContent-main">
         <div className="fk-table-header fk-table-row">
             <span className="fk-table-cell-175px">商品牌號</span>
             <span className="fk-table-cell-150px">商品名稱</span>
@@ -42,8 +42,8 @@ function ContentTable(props){
         {
             order.products.map((product,productIndex)=>(
                 <Fragment key={productIndex}>
-                    <div className="row">
-                        <span className="rowFlag">{`產品編號：${product.productID}`}</span>
+                    <div className="fk-table-row">
+                        <span className="flag">{`產品編號：${product.productID}`}</span>
                         {mode==="create"?
                         <Operator modifyProduct={()=>{props.modifyProduct(productIndex)}} 
                                     deleteProduct={()=>{props.deleteProduct(productIndex)}}/>:
@@ -72,10 +72,17 @@ function ContentTable(props){
                     ))}
                 </Fragment>))
         }
-        {mode==="create"?
-        <div  className="productAddBtn"><img className="defaultStyleBtn" src={addeBtn} onClick={props.startProductAdding} /></div>:
-        props.onOrderEditing?
-        <div  className="productAddBtn"><img className="defaultStyleBtn" src={addeBtn} onClick={props.startProductAdding} /></div>:null}
+        {
+            mode==="create"?
+            <div  className="fx-btn--Img-25px">
+                <img src={addeBtn} onClick={props.startProductAdding} />
+            </div>:
+            props.onOrderEditing?
+            <div  className="fx-btn--Img-25px">
+                <img src={addeBtn} onClick={props.startProductAdding} />
+            </div>:
+            null
+        }
     </div>
     )
 }
@@ -83,8 +90,8 @@ function ContentTable(props){
 function Operator(props){
     return (
          <Fragment>
-         <img className="defaultStyleBtn" src={editBtn} onClick={props.modifyProduct}/>
-         <img className="defaultStyleBtn" src={deleteBtn} onClick={props.deleteProduct}/>
+         <img className="fx-btn--Img-25px" src={editBtn} onClick={props.modifyProduct}/>
+         <img className="fx-btn--Img-25px" src={deleteBtn} onClick={props.deleteProduct}/>
          </Fragment>
     )
 }

@@ -26,6 +26,8 @@
     background-color: $slightBlack;
     position: absolute;
     overflow: hidden;
+    z-index: 9;
+    border-radius: 0 $defaultBR $defaultBR 0;
     .app-sideNav-main{
         margin-top: 50px;
         & > li{

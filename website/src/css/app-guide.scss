@@ -1,0 +1,65 @@
+$appGuideWidth:750px;
+$appGuideHidth:350px;
+
+.app-guide, .app-guide-box, .app-guide-slider{
+    border: none;
+    margin: 0;
+}
+.app-guide{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    overflow: hidden;
+}
+.app-guide, .app-guide-box{
+    background-color: $slightBlack;
+    width: $appGuideWidth;
+    height: 350px;
+}
+.app-guide-slider-1, .app-guide-slider-2, .app-guide-slider-3{
+    width: 3 * $appGuideWidth;
+    height: 350px;
+    transition-duration: 1s;
+}
+.app-guide-slider-2{
+    transform: translateX(-1 * $appGuideWidth);
+}
+.app-guide-slider-3{
+    transform: translateX(-2 * $appGuideWidth);
+}
+.app-guide-box{
+    padding: 25px 0;
+    color: white;
+    position: relative;
+    .app-guide-title, .app-guide-content{
+        height: 100%;
+        line-height: $appGuideHidth - 50px;
+        padding-right: 15px;
+        font-size: $bigFS;
+    }
+    .app-guide-title{
+        width: 20%;
+        text-align: right;
+        padding-right: 25px;
+        border-right: 1px solid white;
+    }
+    .app-guide-content{
+        width: 80%;
+        text-align: left;
+        padding: 0 25px;
+        & > span{
+            line-height: 25px;
+        }
+    }
+}
+.app-guide-actionBtn{
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+}
+.app-guide-actionBtn--left{
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+}
