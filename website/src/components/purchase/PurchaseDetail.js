@@ -5,7 +5,7 @@ import {createHashHistory as history} from 'history';
 /** component */
 import AppSideNav from '../common/AppSideNav';
 import ContentTable from './ContentTable';
-import Supplier, {FormSupplierEntry} from './Supplier';
+import Supplier, {FormSupplierEntry} from '../common/Supplier';
 import FormProductEditing from './FormProductEditing';
 
 /**

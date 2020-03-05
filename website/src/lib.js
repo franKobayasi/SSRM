@@ -38,15 +38,20 @@ function randomProductID(){
 
 /** Date */
 function getDateToYMD(millseconds,needHM){
-    let date=new Date(millseconds);
-    let year=`${date.getFullYear()}`;
-    let month=date.getMonth()<9?`0${date.getMonth()+1}`:`${date.getMonth()+1}`;
-    let day=date.getDate()<10?`0${date.getDate()}`:`${date.getDate()}`;
-    let hour=date.getHours()<10?`0${date.getHours()}`:`${date.getHours()}`;
-    let minute=date.getMinutes()<10?`0${date.getMinutes()}`:`${date.getMinutes()}`;
-    if(needHM)
-      return `${year}-${month}-${day} ${hour}:${minute}`;
-    return `${year}-${month}-${day}`;
+  let date=new Date(millseconds);
+  let year=`${date.getFullYear()}`;
+  let month=date.getMonth()<9?`0${date.getMonth()+1}`:`${date.getMonth()+1}`;
+  let day=date.getDate()<10?`0${date.getDate()}`:`${date.getDate()}`;
+  let hour=date.getHours()<10?`0${date.getHours()}`:`${date.getHours()}`;
+  let minute=date.getMinutes()<10?`0${date.getMinutes()}`:`${date.getMinutes()}`;
+  if(needHM)
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  return `${year}-${month}-${day}`;
+}
+function getMillSecondFromYMD(str){
+  let dateStrArray=str.split('-');
+  let millseconds=new Date(dateStrArray[0],Number(dateStrArray[1])-1,dateStrArray[2]).valueOf();
+  return millseconds;
 }
 
 /** Math round 取整數 */
@@ -80,4 +85,4 @@ function setRequestHeaders(req, headers){
   }
 }
 
-export {randomProductID, randomPurchaseOrderID, randomCheckOutOrderID, randomStockOrderID, roundAfterPointAt, getDateToYMD, ajax};
+export {randomProductID, randomPurchaseOrderID, randomCheckOutOrderID, randomStockOrderID, roundAfterPointAt, getDateToYMD, getMillSecondFromYMD, ajax};

@@ -7,32 +7,37 @@ import AppSideNav from '../common/AppSideNav';
 import AppHeaderBar from '../common/AppHeaderBar';
 import PurchaseOrderFilter from '../common/PurchaseOrderFilter';
 import PurchaseDetail from './PurchaseDetail';
-import Supplier from './Supplier';
+import {FormSupplierEntry} from '../common/Supplier';
 /** other resource */
 import editImg from '../../img/editBtn.png';
 import deleteImg from '../../img/deleteBtn.png';
+import Triangle_White from '../../img/Triangle_White.png';
 
 class PurchaseHistory extends Component{
     constructor(props){
         super(props);
         this.state={
+            paging:1,
+            isNextPageExist:true,
+            limitNum:20,
             onSupplierAdding:false,
             isNeedUpdateFromDB:false,
-            orderList:[]
-        }
-    }
-    componentDidMount(){
-        this.updateOrdersFromDB();
-    }
-    componentDidUpdate(){
-        if(this.state.isNeedUpdateFromDB===true){
-            this.updateOrdersFromDB();
+            orderByDesc:true, //asc
+            orderList:'loading',
+            orderRef:this.props.shopRef.collection('purchases'),
+            /**
+            targetRef
+            previousScope
+            */
         }
     }
     render(){
         let onSupplierAdding=this.state.onSupplierAdding;
         let orderList=this.state.orderList;
         let orderid=this.props.history.match.params.orderid;
+        let descStyle={
+            transform: 'rotate(180deg)',
+        }
         return (
             <Fragment>
                 <AppSideNav />
@@ -40,12 +45,12 @@ class PurchaseHistory extends Component{
                 {
                     orderid?
                     <OrderDetail shopRef={this.props.shopRef} shop={this.props.shop} id={orderid} 
-                    updateOrdersFromDB={this.updateOrdersFromDB} />:
+                    getOrdersFromDB={this.getOrdersFromDB} />:
                     <div className="app-pageMainArea app-purchase-history">
                         {/* 新增供應商 */}
                         {
                             onSupplierAdding?
-                            <Supplier shopRef={this.props.shopRef} toggle={this.toggleSupplierAddingForm} />:
+                            <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleSupplierAddingForm} />:
                             null
                         }
                         <div className="app-pageMainArea-header">
@@ -59,24 +64,30 @@ class PurchaseHistory extends Component{
                             </div>
                         </div>
                         <div className="app-pageMainArea-main orderList">
-                            <div className="orderList-filter">
-                                <PurchaseOrderFilter />
+                            <div className="orderList-header">
+                                <PurchaseOrderFilter orderRef={this.state.orderRef} callback={this.setTargetRef}/>
                             </div>
-                            <div className="orderList-table fk-table--black">
+                            <div className="orderList-main fk-table--black">
                                 <div className="fk-table-header">
                                     <span className="fk-table-cell-175px">訂單編號</span>
                                     <span className="fk-table-cell-100px">供應商</span>
                                     <span className="fk-table-cell-100px">成本總計</span>
                                     <span className="fk-table-cell-50px">總件數</span>
                                     <span className="fk-table-cell-100px">預估利潤</span>
-                                    <span className="fk-table-cell-125px">採購日期</span>
+                                    <span className="fk-table-cell-125px">
+                                        <span>採購日期</span>
+                                        <span onClick={this.toggleOrderByMode} style={this.state.orderByDesc?descStyle:null}
+                                        className="fx-btn--Img-15px"><img src={Triangle_White}/></span>
+                                    </span>
                                     <span className="fk-table-cell-125px">到貨進度</span>
                                     <span className="fk-table-floatR fk-table-cell-175px">操作</span>
                                 </div>
                                 <div className="fk-table-scrollArea">
                                 {   
+                                    orderList==='loading'?
+                                    <div className="app-loading-hourglass"></div>:
                                     orderList.length===0?
-                                    <div className="fk-table-row row">目前沒有符合查詢條件的訂單</div>:
+                                    <div className="fk-table-highlighter fk-table-row">-- 沒有符合查詢條件的訂單 --</div>:
                                     orderList.map((order,index)=>{
                                         return (
                                             <div key={index} className="fk-table-row row">
@@ -99,6 +110,26 @@ class PurchaseHistory extends Component{
                                         )
                                     })
                                 }
+                                {
+                                    orderList!='loading'&&orderList.length!=0&&orderList.length<this.state.limitNum?
+                                    <div className="fk-table-highlighter fk-table-row">-- 全 --</div>:
+                                    null
+                                }
+                                </div>
+                            </div>
+                            <div className="orderList-footer">
+                                <div className="orderList-footer-page">
+                                {
+                                    this.state.paging===1?
+                                    <button className="fx-btn--unable-black">前一頁</button>:
+                                    <button onClick={this.goPrePage} className="fx-btn--onlyText-black">前一頁</button>
+                                }
+                                    <span>{this.state.paging}</span>
+                                {
+                                    this.state.isNextPageExist?
+                                    <button onClick={this.goNextPage} className="fx-btn--onlyText-black">下一頁</button>:
+                                    <button className="fx-btn--unable-black">下一頁</button>
+                                }
                                 </div>
                             </div>
                         </div>
@@ -107,28 +138,91 @@ class PurchaseHistory extends Component{
             </Fragment>
         )
     }
-    updateOrdersFromDB=()=>{
-        this.props.shopRef.collection('purchases').get()
+    componentDidMount(){
+        this.setTargetRef(this.state.orderRef)
+    }
+    componentDidUpdate(){
+        if(this.state.isNeedUpdateFromDB===true){
+            this.getOrdersFromDB();
+        }
+    }
+    toggleOrderByMode=()=>{
+        this.setState(preState=>({
+            orderByDesc:!preState.orderByDesc,
+        }),()=>{this.getOrdersFromDB()})
+    }
+    setTargetRef=(targetRef)=>{
+        console.log(targetRef);
+        this.setState(preState=>({
+            paging:1, //reset paging
+            targetRef,
+            previousScope:null,
+        }),()=>{this.getOrdersFromDB()})
+    }
+    getOrdersFromDB=(changePage,goNext)=>{
+        /** goNext true 下一頁 false 上一頁*/
+        /** 時間採降序 */
+        let TR=this.state.targetRef;
+        let PS=this.state.previousScope;
+        let PT=PS?goNext?PS[1]:PS[0]:null;
+        let mode=this.state.orderByDesc?'desc':'asc';
+        let limitNum=this.state.limitNum;
+        let isNextPageExist=true;
+        let paging=this.state.paging;
+        let query=TR;
+        let orderList=[];
+        let previousScope=this.state.previousScope?this.state.previousScope:[];
+        console.log(PT,changePage);
+        if(PT&&changePage){
+            console.log('CP?')
+            query=query.orderBy('time',`${mode}`).startAt(PT);
+            paging=goNext?paging+1:paging-1;
+        }else{
+            query=query.orderBy('time',`${mode}`)
+        }
+        query.limit(limitNum).get()
         .then(snapshot=>{
-            let orderList=[];
-            snapshot.forEach(doc=>{
-                if(doc.exists){
-                    let order=doc.data();
-                    order.id=doc.id;
-                    orderList.push(order);
-                    this.setState(preState=>({
-                        orderList,
-                        isNeedUpdateFromDB:false,
-                    }))
-                }else{
-                    console.log('no any purchase history yet')
-                }
-            })
+            if(snapshot.empty){
+                console.log('no any purchase history yet')
+                previousScope=null;
+            }else{                
+                snapshot.forEach(doc=>{
+                    if(doc.exists){
+                        let order=doc.data();
+                        order.id=doc.id;
+                        orderList.push(order);
+                        if(paging===1&&orderList.length===1){
+                            // 第一個
+                            console.log(paging);
+                            previousScope[0]=doc;
+                        }else{
+                            previousScope[1]=doc;
+                        }
+                    }
+                })
+            }
+            if(orderList.length<limitNum){
+                isNextPageExist=false;
+            }
+            console.log(paging);
+            this.setState(preState=>({
+                paging,
+                orderList,
+                previousScope,
+                isNextPageExist,
+                isNeedUpdateFromDB:false,
+            }))
         })
         .catch(error=>{
             console.error("ERROR\n伺服器發生錯誤，目前無法獲取歷史訂單資料，請稍後再試")
             console.log(error);
         })
+    }
+    goPrePage=()=>{
+        this.getOrdersFromDB(true,false);
+    }
+    goNextPage=()=>{
+        this.getOrdersFromDB(true,true);
     }
     toggleSupplierAddingForm=(bool)=>{
         this.setState(preState=>({
@@ -141,18 +235,32 @@ class PurchaseHistory extends Component{
     }
     deleteHoldOrder=(orderid)=>{
         if(confirm(`確定刪除 ${orderid} 整筆訂單?`)){
-            this.props.shopRef.collection('purchases').doc(orderid).delete()
-            .then(res=>{
-                alert(`採購單 ${orderid} 刪除成功！`);
-                this.setState(preState=>({
-                    isNeedUpdateFromDB:true,
-                }))
-                return ;
+            let order=this.state.orderList.filter(order=>{
+                return order.id=orderid;
             })
-            .catch(error=>{
-                console.error('ERROR\n刪除採購單時發生問題')
-                console.log(error);
-            })
+            let isStartStocking=false;
+            search:for(let item of order.itemList){
+                if(item.inStock>0){
+                    isStartStocking=true;
+                    break search;
+                }
+            }
+            if(!isStartStocking){
+                this.props.shopRef.collection('purchases').doc(orderid).delete()
+                .then(res=>{
+                    alert(`採購單 ${orderid} 刪除成功！`);
+                    this.setState(preState=>({
+                        isNeedUpdateFromDB:true,
+                    }))
+                    return ;
+                })
+                .catch(error=>{
+                    console.error('ERROR\n刪除採購單時發生問題')
+                    console.log(error);
+                })
+            }else{
+                alert('此採購單存在已進貨商品，無法刪除');
+            }
         }
     }
 }

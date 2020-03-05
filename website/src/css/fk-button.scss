@@ -4,14 +4,14 @@ $defaultBtnLH:30px;
 $littleBtnLH:25px;
 
 /** common setting */ 
-.fx-btn, .fx-btn--nobg, .fx-btn--white, .fx-btn--mainColor,
-.fx-btn--25LH, .fx-btn--25LH-nobg, .fx-btn--25LH-white, .fx-btn--25LH-mainColor{
+.fx-btn, .fx-btn--nobg, .fx-btn--white, .fx-btn--mainColor, .fx-btn--onlyText, .fx-btn--onlyText-black, .fx-btn--unable-black,.fx-btn--25LH, .fx-btn--25LH-nobg, .fx-btn--25LH-white, .fx-btn--25LH-mainColor{
     width: fit-content;
     padding: 0 10px;
     text-align: center;
     cursor:default;
     border-radius: $defaultBR;
     font-size: $smallFS;
+    outline: none;
 }
 /** LH setting */
 .fx-btn, .fx-btn--nobg, .fx-btn--white, .fx-btn--mainColor{
@@ -30,6 +30,15 @@ $littleBtnLH:25px;
         color:$mainColor;
     }
 }
+.fx-btn--onlyText-black{
+    color:black;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    &:hover{
+        color:$mainColor;
+    }
+}
 .fx-btn--nobg{
     color:$mainColor;
     background-color:transparent;
@@ -38,6 +47,11 @@ $littleBtnLH:25px;
         color:white;
         background-color: $mainColor;
     }
+}
+.fx-btn--unable-black{
+    color: rgba($color: $slightBlack, $alpha: .5);
+    background-color:transparent;
+    border:none;
 }
 .fx-btn--white{
     color: black;
@@ -57,40 +71,49 @@ $littleBtnLH:25px;
         background-color: white;
     }
 }
-.fx-btn--Img-25px{
+.fx-btn--Img-15px, .fx-btn--Img-25px, .fx-btn--Img-30px{
     display: inline-block;
     vertical-align: middle;
-    height: 30px;
     line-height: 0px;
-    width: 30px;
     padding: 5px;
     overflow: hidden;
     text-align: center;
+    &:hover{
+        padding: 2.5px;
+    }
+}
+.fx-btn--Img-15px{
+    height: 20px;
+    width: 20px;
+    & > img{
+        width: 10px;
+    }
+    &:hover{
+        & > img{
+            width: 15px;
+        }
+    }
+}
+.fx-btn--Img-25px{
+    height: 30px;
+    width: 30px;
     & > img{
         width: 20px;
     }
     &:hover{
-        padding: 2.5px;
         & > img{
             width: 25px;
         }
     }
 }
 .fx-btn--Img-30px{
-    display: inline-block;
-    vertical-align: middle;
-    line-height: 0px;
     height: 35px;
     width: 35px;
-    overflow: hidden;
-    text-align: center;
-    padding: 5px;
     & > img{
         width: 25px;
     }
     &:hover{
         & > img{
-            padding: 2.5px;
             width: 30px;
         }
     }

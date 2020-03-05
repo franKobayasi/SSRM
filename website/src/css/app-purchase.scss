@@ -163,7 +163,7 @@ $slightBlack:#333;
 }
 .app-purchase-history{
     .orderList{
-        .orderList-filter{
+        .orderList-header{
             height: 30px;
             line-height: 30px;
             overflow: hidden;
@@ -172,11 +172,25 @@ $slightBlack:#333;
                 margin-top: 5px;
             }
         }
-        .orderList-table{
-            height: calc(100% - 45px);
+        .orderList-main{
+            height: calc(100% - 75px);
             width: 100%;
             .fk-table-scrollArea{
                 height: calc(100% - 40px);
+            }
+        }
+        .orderList-footer{
+            height: 30px;
+            width: 100%;
+            .orderList-footer-page{
+                width: fit-content;
+                line-height: 30px;
+                margin: 0 auto;
+                & > *{
+                    text-align: center;
+                    margin: 0 10px;
+                    width: 75px;
+                }
             }
         }
     }
