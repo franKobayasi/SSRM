@@ -14,40 +14,37 @@ class SelectedOrder extends Component{
     constructor(props){
         super(props);
     }
-    componentDidMount(){
-    }
     render(){
         let isAllSelected=this.props.isAllSelected;
         let orderSelected=this.props.orderSelected;
         return (
-            <div className="selectedOrderInfo">
-                <div className="orderInfoHeader">
-                    <span>採購單號：</span>
-                    <span>{orderSelected?orderSelected.id:'尚未選擇訂單'}</span>
-                    <span><span>全選</span><Checkbox value={isAllSelected} onClick={this.props.toSelectAll} /></span>
+            <div className="selectedOrderInfo fk-table">
+                <div className="orderInfoHeader fk-table-highlighter">
+                    <span><label>採購單號：</label><span>{orderSelected?orderSelected.id:'尚未選擇訂單'}</span></span>
+                    <span><label>全選</label><Checkbox value={isAllSelected} onClick={this.props.toSelectAll} /></span>
                 </div>
                 <div className="tableSmall">
-                    <div className="head">
-                        <span className="itemID">產品編號</span>
-                        <span className="productName">產品名稱</span>
-                        <span className="itemSpec">尺寸</span>
-                        <span className="itemSpec">顏色</span>
-                        <span className="itemSpec">總採購</span>
-                        <span className="itemSpec">未入庫</span>
-                        <span className="itemSpec">已入庫</span>
+                    <div className="fk-table-header">
+                        <span className="fk-table-cell-175px">產品編號</span>
+                        <span className="fk-table-cell-150px">產品名稱</span>
+                        <span className="fk-table-cell-50px">尺寸</span>
+                        <span className="fk-table-cell-50px">顏色</span>
+                        <span className="fk-table-cell-50px">總採購</span>
+                        <span className="fk-table-cell-50px">未入庫</span>
+                        <span className="fk-table-cell-50px">已入庫</span>
                     </div>
                 {   
                     orderSelected?
                     orderSelected.itemList.length===0?
-                    <div className="note_No_item">此訂單無尚未完成進貨的商品</div>:
+                    <div className="fk-table-header">此訂單無尚未完成進貨的商品</div>:
                     orderSelected.itemList.map((item,index)=>(
                         <ItemInfo  key={index} item={item} isActive={this.props.tempItemState[`${item.itemID}`]} 
                         updateItemList={()=>{this.props.changeItemState(item.itemID);}}/>
                     )):
-                    <div className="note_No_item">沒有搜尋到任何符合條件的訂單</div>
+                    <div className="fk-table-header">沒有搜尋到任何符合條件的訂單</div>
                 }
                 </div>
-                <button className="btnForFormLittle" onClick={this.props.callback}>批次添加</button>
+                <button className="fx-btn--25lH-mainColor" onClick={this.props.callback}>批次添加</button>
             </div>
         )
     }

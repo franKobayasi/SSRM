@@ -4,6 +4,7 @@ import {getAuthState} from '../useFirebase';
 /** component */
 import AfterSignIned from './AfterSignIned';
 import BeforeSignIned from './BeforeSignIned.js';
+import {LoadingBlack} from '../components/common/Loading';
 
 /*
     This Component 
@@ -20,7 +21,7 @@ function App(props){
 
     /** check if app is on fatch */
     if(isFetch===true){
-        return <div>is fetching data...please wait...</div>
+        return <LoadingBlack text="S S R M  簡 單 店 家"/>
     }
     /** if system crush */
     if(isError===true){
@@ -29,9 +30,8 @@ function App(props){
     /** check if store already have auth */
     if(isLogin==='unconnect'){
         /** firebase check login */
-        console.log('first time landing...checking user login state...');
         getAuthState(dispatch);
-        return <div>check member login state..please wait...</div>
+        return <LoadingBlack text="Welcome to SSRM"/>
     }else{
         if(isLogin===true){
             console.log('state: sign in');

@@ -4,6 +4,7 @@ import {roundAfterPointAt, getDateToYMD} from '../../lib';
 /** component */
 import ShowPercentage from '../common/ShowPercentage'
 import AppSideNav from '../common/AppSideNav';
+import {Loading} from '../common/Loading';
 import AppHeaderBar from '../common/AppHeaderBar';
 import PurchaseOrderFilter from '../common/PurchaseOrderFilter';
 import PurchaseDetail from './PurchaseDetail';
@@ -44,7 +45,7 @@ class PurchaseHistory extends Component{
                 <AppHeaderBar />
                 {
                     orderid?
-                    <OrderDetail shopRef={this.props.shopRef} shop={this.props.shop} id={orderid} 
+                    <PurchaseDetail shopRef={this.props.shopRef} shop={this.props.shop} id={orderid} 
                     getOrdersFromDB={this.getOrdersFromDB} />:
                     <div className="app-pageMainArea app-purchase-history">
                         {/* 新增供應商 */}
@@ -85,7 +86,7 @@ class PurchaseHistory extends Component{
                                 <div className="fk-table-scrollArea">
                                 {   
                                     orderList==='loading'?
-                                    <div className="app-loading-hourglass"></div>:
+                                    <Loading text="訂單列表載入中"/>:
                                     orderList.length===0?
                                     <div className="fk-table-highlighter fk-table-row">-- 沒有符合查詢條件的訂單 --</div>:
                                     orderList.map((order,index)=>{

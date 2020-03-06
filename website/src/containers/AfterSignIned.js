@@ -16,9 +16,11 @@ import {actionShopSignIn} from "../actions/shop";
 import {actionShopCreate} from "../actions/shop";
 /** component */
 import Auth from '../components/auth/Auth';
+import {LoadingBlack} from '../components/common/Loading';
 import Dashboard from '../components/dashboard/Dashboard.js';
 import PurchaseHistory from '../components/purchase/PurchaseHistory';
 import PurchaseCreating from '../components/purchase/PurchaseCreating';
+import StockInOrder from "../components/stock/StockInOrder";
 import Guide from '../components/common/Guide';
 
 /** enter the app */
@@ -34,8 +36,7 @@ class AfterSignIned extends Component{
         let auth=this.props.auth;
         let shopRef=ssrmDB.collection('shops').doc(auth.MEMBER_UID);
         if(shop.status==='loading'){
-            console.log('shop is loading');
-            return <div>loading..</div>
+            return <LoadingBlack text="店家資訊載入中"/>
         }
         return (
             <Router> 
@@ -44,8 +45,10 @@ class AfterSignIned extends Component{
                     <Route path="/auth" component={Auth}/> 
                     <Route path="/dashboard" render={()=><Dashboard shop={shop} shopRef={shopRef}/>}/>
                     <Route path="/purchase/new" render={(history)=><PurchaseCreating history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
-                    <Route path="/purchase/history" render={(history)=><PurchaseHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
-                    <Route path="/">
+                    <Route exact path="/purchase/history/" render={(history)=><PurchaseHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/purchase/history/:orderid" render={(history)=><PurchaseHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/stock/stockin" render={(history)=><StockInOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route exact path="/">
                         <Redirect to="/dashboard"/>
                     </Route>
                 </Switch>

@@ -30,14 +30,14 @@ function ContentTable(props){
             {mode==="create"?
             <span className="fk-table-cell-50px">件數</span>:
             <Fragment>
-                <span className="fk-table-cell-50px">採購件數</span>
-                <span className="fk-table-cell-50px">入庫件數</span>
-                <span className="fk-table-cell-50px">狀態</span>
+                <span className="fk-table-cell-75px">採購件數</span>
+                <span className="fk-table-cell-75px">入庫件數</span>
+                <span className="fk-table-cell-75px">狀態</span>
             </Fragment>}
-            <span className="fk-table-cell-100px">進貨單價</span>
-            <span className="fk-table-cell-100px">成本小計</span>
-            <span className="fk-table-cell-100px">商品標價</span>
-            <span className="fk-table-cell-100px">單項利潤</span>
+            <span className="fk-table-cell-75px">進貨單價</span>
+            <span className="fk-table-cell-75px">成本小計</span>
+            <span className="fk-table-cell-75px">商品標價</span>
+            <span className="fk-table-cell-75px">單項利潤</span>
         </div>
         {
             order.products.map((product,productIndex)=>(
@@ -60,14 +60,14 @@ function ContentTable(props){
                             {mode==="create"?
                             <span className="fk-table-cell-50px">{item.num}</span>:
                             <Fragment>
-                                <span className="fk-table-cell-50px">{item.num}</span>
-                                <span className="fk-table-cell-50px">{item.inStock}</span>
-                                <span className="fk-table-cell-50px">{item.status}</span>
+                                <span className="fk-table-cell-75px">{item.num}</span>
+                                <span className="fk-table-cell-75px">{item.inStock}</span>
+                                <span className="fk-table-cell-75px">{item.status}</span>
                             </Fragment>}
-                            <span className="fk-table-cell-100px">{product.cost}</span>
-                            <span className="fk-table-cell-100px">{`${item.num*product.cost}`}</span>
-                            <span className="fk-table-cell-100px">{product.price}</span>
-                            <span className="fk-table-cell-100px">{`${roundAfterPointAt(((product.price-product.cost)/product.price),2)}`}</span>
+                            <span className="fk-table-cell-75px">{product.cost}</span>
+                            <span className="fk-table-cell-75px">{`${item.num*product.cost}`}</span>
+                            <span className="fk-table-cell-75px">{product.price}</span>
+                            <span className="fk-table-cell-75px">{`${roundAfterPointAt(((product.price-product.cost)/product.price),2)}`}</span>
                         </div>
                     ))}
                 </Fragment>))

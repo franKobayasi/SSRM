@@ -4,6 +4,7 @@ import {randomPurchaseOrderID, randomProductID, roundAfterPointAt} from '../../l
 import {createHashHistory as history} from 'history';
 /** component */
 import AppSideNav from '../common/AppSideNav';
+import {Loading} from '../common/Loading';
 import ContentTable from './ContentTable';
 import Supplier, {FormSupplierEntry} from '../common/Supplier';
 import FormProductEditing from './FormProductEditing';
@@ -27,6 +28,102 @@ class PurchaseDetail extends Component{
             showModifyConfirm:false,
             localStorageLock:true,
         }
+    }
+    render(){
+        console.log('OrderDetail開始render');
+        let onProductEditing=this.state.onProductEditing;
+        let onSupplierAdding=this.state.onSupplierAdding;
+        let onOrderEditing=this.state.onOrderEditing;
+        let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
+        let currentProduct=this.state.currentProduct;
+        return (
+            <div className="app-pageMainArea app-purchase-order">
+                {/* 填寫修改原因訊息 */}
+                {this.state.showModifyConfirm?
+                <form className="modifyConfirm">
+                    <div>修改原因：</div>
+                    <textarea id="modifyDescription" onChange={this.handleChange} />
+                    <div className="btns"> 
+                    <button onClick={this.submitOrder}>送出</button>
+                    <button onClick={this.cancelSubmit}>取消</button>
+                    </div>
+                </form>:null
+                }
+                {onSupplierAdding? /* 新增供應商 */
+                <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
+                {onProductEditing? /* 新增產品表單 */
+                <FormProductEditing currentProduct={this.state.currentProduct} 
+                    submitProductSpecs={this.submitProductSpecs} 
+                    cancelUpdateProduct={this.cancelUpdateProduct} />:null}
+                <div className="app-pageMainArea-header">
+                    <div className="location">
+                        <div>當前位置：採購歷史訂單詳細頁面</div>
+                    </div>
+                    <div className="operatingBtns">
+                        <button className="fx-btn--mainColor" onClick={()=>{
+                            this.props.getOrdersFromDB();
+                            history().push(`/purchase/history`)}}>歷史訂單</button>
+                        <button className="fx-btn--mainColor">庫存查詢</button>
+                        <button className="fx-btn--mainColor" onClick={()=>{
+                            this.toggleSupplierAddingForm(true)
+                        }}>新增供應商</button>
+                    </div>
+                </div>
+                <div className="app-pageMainArea-main orderContent">
+                {
+                    orderToRender==="loading"?
+                    <Loading text="訂單載入中"/>:
+                    <Fragment>
+                        <div className="orderContent-header">
+                            <span className="orderID">
+                                <label>採購單號</label>
+                                <span>{orderToRender.id}</span>
+                            </span>
+                            <span className="orderContent-supplier-search">
+                            {
+                                onOrderEditing?
+                                <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>:null
+                            }
+                                <Supplier supplier={orderToRender.search_supplier}/>
+                            </span>
+                            {
+                                onOrderEditing?
+                                <span className="orderContent-moneyType-select">                            
+                                    <label className="title">進貨幣別</label>
+                                    <select>
+                                        <option value="TWD">{`台幣`}</option>
+                                        <option value="WON">{`韓元`}</option>
+                                        <option value="USD">{`美金`}</option>
+                                        <option value="CNY">{`人民幣`}</option>
+                                        <option value="JPY">{`日幣`}</option>
+                                    </select>
+                                </span>:null
+                            }
+                        </div>
+                        <ContentTable mode="detail" order={orderToRender}
+                            onOrderEditing={onOrderEditing} modifyProduct={this.modifyProduct} 
+                            deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
+                        <div className="orderContent-footer">
+                            <div className="actionBtns">
+                                {
+                                    onOrderEditing?
+                                    <Fragment>
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.showModifyConfirm}>完成</button>
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.cancelEditOrder}>取消</button>
+                                    </Fragment>:
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.editOrder}>編輯</button>
+                                }
+                            </div>
+                            <div className="staticInfo">
+                                <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
+                                <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
+                            </div>
+                        </div>
+                    </Fragment>
+                }
+                </div>
+            </div>
+        )
     }
     componentDidMount(){
         let currentOrder;
@@ -54,7 +151,7 @@ class PurchaseDetail extends Component{
         }
         if(this.state.currentOrder==='loading'){
             let currentOrder;
-            let shopRef=this.props.shop.shopRef;
+            let shopRef=this.props.shopRef;
             shopRef.collection('purchases').doc(this.props.id).get()
             .then(doc=>{
                 if(doc.exists){
@@ -65,91 +162,6 @@ class PurchaseDetail extends Component{
                 }
             })
         }
-    }
-    render(){
-        console.log('OrderDetail開始render');
-        let onProductEditing=this.state.onProductEditing;
-        let onSupplierAdding=this.state.onSupplierAdding;
-        let onOrderEditing=this.state.onOrderEditing;
-        let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
-        let currentProduct=this.state.currentProduct;
-        return (
-            orderToRender==="loading"?
-            <div>data is loading..</div>:
-            <div className="shopMainArea shopMainArea-purchase-orderDetail">
-                {/* 填寫修改原因訊息 */}
-                {this.state.showModifyConfirm?
-                <form className="modifyConfirm">
-                    <div>修改原因：</div>
-                    <textarea id="modifyDescription" onChange={this.handleChange} />
-                    <div className="btns"> 
-                    <button onClick={this.submitOrder}>送出</button>
-                    <button onClick={this.cancelSubmit}>取消</button>
-                    </div>
-                </form>:null
-                }
-                {onSupplierAdding? /* 新增供應商 */
-                <Supplier shopRef={this.props.shop.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
-                {onProductEditing? /* 新增產品表單 */
-                <FormProductEditing currentProduct={this.state.currentProduct} 
-                    submitProductSpecs={this.submitProductSpecs} 
-                    cancelUpdateProduct={this.cancelUpdateProduct} />:null}
-                <div className="operatingArea">
-                    <div className="currentInfo">
-                        <div>採購歷史訂單詳細頁面</div>
-                        <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
-                    </div>
-                    <div className="operatingBtns">
-                        <button className="btnForFormBig" onClick={()=>{
-                            this.props.updateOrdersFromDB();
-                            history().push(`${this.props.shopUrl}/purchase/history`)}}>歷史訂單</button> {/*返回訂單歷史*/}
-                        <button className="btnForFormBig">庫存查詢</button>
-                        <button className="btnForFormBig" onClick={()=>{
-                            this.toggleSupplierAddingForm(true)
-                        }}>新增供應商</button>
-                    </div>
-                </div>
-                <div className="informationArea">
-                    <div className="orderHeader">
-                        <span className="orderID">{`採購單號：${orderToRender.id}`}</span>
-                        <SupplierInfo title={orderToRender.search_supplier[0]} address={orderToRender.search_supplier[1]} tel={orderToRender.search_supplier[2]}/>
-                        {
-                            onOrderEditing?
-                            <div className="orderSetting">
-                                <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                                <span className="title">進貨幣別</span>
-                                <select className="moneyType">
-                                    <option value="TWD">{`台幣`}</option>
-                                    <option value="WON">{`韓元`}</option>
-                                    <option value="USD">{`美金`}</option>
-                                    <option value="CNY">{`人民幣`}</option>
-                                    <option value="JPY">{`日幣`}</option>
-                                </select>
-                            </div>:null
-                        }
-                    </div>
-                    <ContentTable mode="detail" order={orderToRender}
-                        onOrderEditing={onOrderEditing} modifyProduct={this.modifyProduct} 
-                        deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
-                    <div className="orderFooter">
-                        <div className="buttons">
-                            {
-                                onOrderEditing?
-                                <Fragment>
-                                <button className="btnForFormLittle" onClick={this.showModifyConfirm}>完成</button>
-                                <button className="btnForFormLittle" onClick={this.cancelEditOrder}>取消</button>
-                                </Fragment>:
-                                <button className="btnForFormLittle" onClick={this.editOrder}>編輯</button>
-                            }
-                        </div>
-                        <div className="totalInfo">
-                            <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
-                            <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
     }
     transformStructureCMPT=(orderFRBS)=>{
         /** direct copy productID,modifyRecord,search_supplier */
@@ -256,7 +268,7 @@ class PurchaseDetail extends Component{
     /** 確認此供應商是否註冊過 */
     checkSupplier=async(tel)=>{
         let result={};
-        await this.props.shop.shopRef.collection('suppliers').doc(tel).get()
+        await this.props.shopRef.collection('suppliers').doc(tel).get()
         .then(doc=>{
             if(!doc.exists){
                 result.message='查無供應商資料，請先新增'
@@ -419,10 +431,10 @@ class PurchaseDetail extends Component{
             unsavedHistoryOrder.modifyRecord.push({
                 description:description,
                 time:new Date().valueOf(),
-                user:this.props.shop.user.name,
+                user:this.state.operator,
             });
             let orderFRBS=this.transformStructureFRBS(unsavedHistoryOrder);
-            this.props.shop.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)
+            this.props.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)
             .then(()=>{
                 alert(`採購單: ${orderFRBS.id} 更新成功！`);
                 this.setState(preState=>({

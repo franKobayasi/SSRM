@@ -1,6 +1,7 @@
 import React,{Component,Fragment} from 'react';
 /** component */
 import PurchaseOrderFilter from '../common/PurchaseOrderFilter';
+import Toggle from '../common/Toggle';
 import SelectedOrder from './SelectedOrder';
 import Checkbox from '../common/Checkbox';
 import ShowPercentage from '../common/ShowPercentage';
@@ -16,42 +17,44 @@ class ItemSelector extends Component{
     constructor(props){
         super(props);
         this.state={
+            isShowSearchPanel:true,
             orderSelected:null,
             tempItemState:null,
             isAllSelected:false,
             orderSearchResult:null
         }
     }
-    componentDidMount(){
-       
-    }
-    componentDidUpdate(){
-
-    }
     render(){
         let orderSearchResult=this.state.orderSearchResult;
         let orderSelected=this.state.orderSelected;
+        let isShowSearchPanel=this.state.isShowSearchPanel;
         return (
-            <div className={`itemSelector ${this.props.isShow?'showItemSelector':''}` }>
+            <div className={`app-stock-itemSelector${isShowSearchPanel?'--show':''}` }>
+                <span className="searchToggle">
+                    <label>{`採購單查詢面板 ${isShowSearchPanel?'ON':'OFF'}`}</label>
+                    <Toggle isOn={isShowSearchPanel} toggle={this.searchPanelToggle} />
+                </span>
                 <div className="orderSearchArea">
                     {/* PurchaseOrderFilter */}
                     <PurchaseOrderFilter shopRef={this.props.shopRef} callback={this.getSearchResult}/>
-                    <div className="orderSelector table">
-                        <div className="head">
-                            <span className="orderID">採購單號</span>
-                            <span className="supplierTitle">供應商名稱</span>
-                            <span className="supplierTel">供應商電話</span>
-                            <span className="percentageOfStock">進貨完成度</span>
+                    <div className="orderSelector fk-table">
+                        <div className="fk-table-header">
+                            <span className="fk-table-cell-175px">採購單號</span>
+                            <span className="fk-table-cell-150px">供應商名稱</span>
+                            <span className="fk-table-cell-100px">供應商電話</span>
+                            <span className="fk-table-cell-100px">進貨完成度</span>
                         </div>
+                        <div className="fk-table-scrollArea">
                         {   
                             orderSearchResult?
                             orderSearchResult.length===0?
-                            <div className="note_No_item">沒有搜尋到任何符合條件的訂單</div>:
+                            <div className="fk-table-highlighter">沒有搜尋到任何符合條件的訂單</div>:
                             orderSearchResult.map((order,index)=>(
                                 <OlderSummary active={orderSelected?orderSelected.id===order.id?true:false:false} key={index} order={order} selectOrder={()=>{this.selectOrder(index)}}/>
                             )):
-                            <div className="note_No_item">沒有搜尋到任何符合條件的訂單</div>
+                            <div className="fk-table-highlighter">沒有搜尋到任何符合條件的訂單</div>
                         }
+                        </div>
                     </div>
                 </div>
                 <SelectedOrder orderSelected={orderSelected} callback={this.getItemListBackToTap} changeItemState={this.changeItemState}   
@@ -59,7 +62,11 @@ class ItemSelector extends Component{
             </div>
         )
     }
-    
+    searchPanelToggle=()=>{
+        this.setState(preState=>({
+            isShowSearchPanel:!preState.isShowSearchPanel,
+        }))
+    }
     getSearchResult=(result)=>{
         this.setState(preState=>({
             orderSearchResult:result,

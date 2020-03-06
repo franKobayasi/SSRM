@@ -4,6 +4,7 @@ import {createHashHistory as history} from 'history';
 /** component */
 import AppSideNav from '../common/AppSideNav';
 import AppHeaderBar from '../common/AppHeaderBar';
+import {Loading} from '../common/Loading';
 import ContentTable from './ContentTable';
 import Supplier, {FormSupplierEntry} from "../common/Supplier";
 import FormProductEditing from './FormProductEditing';
@@ -38,9 +39,6 @@ class PurchaseCreating extends Component{
             <Fragment>
                 <AppSideNav />
                 <AppHeaderBar />
-                {
-                currentOrder==='loading'?
-                <div>【 ORDER LOADING COMPONENT 】</div>: /** order data loading */
                 <div className="app-pageMainArea app-purchase-create"> {/** current order */}
                     {onSupplierEntry? /* 新增供應商 */
                     <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleFormSupplierEntry} />:null}
@@ -57,41 +55,46 @@ class PurchaseCreating extends Component{
                         </div>
                     </div>
                     <div className="app-pageMainArea-main orderContent">
-                        <div className="orderContent-header">
-                            <span className="orderID">
-                                <label>採購單號</label>
-                                <span>{currentOrder.id}</span>
-                            </span>
-                            <span className="orderContent-supplier-search">
-                                <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                                <Supplier supplier={currentOrder.search_supplier}/>
-                            </span>
-                            <span className="orderContent-moneyType-select">                            
-                                <label className="title">進貨幣別</label>
-                                <select>
-                                    <option value="TWD">{`台幣`}</option>
-                                    <option value="WON">{`韓元`}</option>
-                                    <option value="USD">{`美金`}</option>
-                                    <option value="CNY">{`人民幣`}</option>
-                                    <option value="JPY">{`日幣`}</option>
-                                </select>
-                            </span>
-                        </div>
-                        <ContentTable mode="create" order={currentOrder} modifyProduct={this.modifyProduct} 
-                        deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
-                        <div className="orderContent-footer">
-                            <div className="staticInfo">
-                                <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
-                                <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
+                    {
+                        currentOrder==='loading'?
+                        <Loading text="訂單生成中"/>:
+                        <Fragment>
+                            <div className="orderContent-header">
+                                <span className="orderID">
+                                    <label>採購單號</label>
+                                    <span>{currentOrder.id}</span>
+                                </span>
+                                <span className="orderContent-supplier-search">
+                                    <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
+                                    <Supplier supplier={currentOrder.search_supplier}/>
+                                </span>
+                                <span className="orderContent-moneyType-select">                            
+                                    <label className="title">進貨幣別</label>
+                                    <select>
+                                        <option value="TWD">{`台幣`}</option>
+                                        <option value="WON">{`韓元`}</option>
+                                        <option value="USD">{`美金`}</option>
+                                        <option value="CNY">{`人民幣`}</option>
+                                        <option value="JPY">{`日幣`}</option>
+                                    </select>
+                                </span>
                             </div>
-                            <div className="actionBtns">
-                                <button className="fx-btn--25LH-mainColor" onClick={this.submitOrder}>完成</button>
-                                <button className="fx-btn--25LH-mainColor" onClick={this.cancelOrder}>取消</button>
+                            <ContentTable mode="create" order={currentOrder} modifyProduct={this.modifyProduct} 
+                            deleteProduct={this.deleteProduct} startProductAdding={this.startProductAdding}/>
+                            <div className="orderContent-footer">
+                                <div className="staticInfo">
+                                    <span>成本總計</span><span className="sumOfCost">{this.getStaticData().sumOfCost}</span>
+                                    <span>平均利潤</span><span className="avgProfit">{this.getStaticData().avgProfit}</span>
+                                </div>
+                                <div className="actionBtns">
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.submitOrder}>完成</button>
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.cancelOrder}>取消</button>
+                                </div>
                             </div>
-                        </div>
+                        </Fragment>
+                    }
                     </div>
                 </div>
-                }
             </Fragment>
         )
     }
