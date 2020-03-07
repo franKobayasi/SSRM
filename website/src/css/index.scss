@@ -118,7 +118,8 @@
     }
 }
 /** Toggle Style */
-.app-toggle, .app-toggle-active{
+.app-toggle, .app-toggle-active,
+.app-toggle--Col,.app-toggle--Col-active{
     width: 50px;
     height: 20px;
     line-height: 20px;
@@ -135,19 +136,35 @@
     }
 }
 .app-toggle{
-    text-align: left;
     background-color: white;
     .app-toggle-ball{
         float: left;
     }
 }
 .app-toggle-active{
-    text-align: right;
     background-color: $slightBlack;
     .app-toggle-ball{
         float: right;
     }
 }
+.app-toggle--Col{
+    background-color: white;
+    transform: rotate(90deg);    
+    .app-toggle-ball{
+        position: relative;
+        top: -2px;
+        left: -25px;
+    }
+}
+.app-toggle--Col-active{
+    background-color: $slightBlack;
+    transform: rotate(90deg);
+    .app-toggle-ball{
+        position: relative;
+        top: -2px;
+    }
+}
+
 /** Checkbox */
 .app-checkbox{
     width: 15px;
@@ -155,7 +172,7 @@
     position: relative;
     border-radius: 50%;
     background-color: white;
-    border: 1px solid black ;
+    border: 1px solid black !important;
     margin: 0 5px;
     box-sizing: content-box;
     .app-checkbox-inner,
@@ -244,27 +261,27 @@
     height: 80px;
 }
 .app-loading-hourglass:after{
-content: " ";
-display: block;
-border-radius: 50%;
-width: 0;
-height: 0;
-margin: 8px;
-box-sizing: border-box;
-border: 32px solid $mainColor;
-border-color: $mainColor transparent $mainColor transparent;
-animation: loading-hourglass 1.2s infinite;
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid $mainColor;
+    border-color: $mainColor transparent $mainColor transparent;
+    animation: loading-hourglass 1.2s infinite;
 }
 @keyframes loading-hourglass{
-0%{
-    transform: rotate(0);
-    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-}
-50%{
-    transform: rotate(900deg);
-    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-100%{
-    transform: rotate(1800deg);
-}
+    0%{
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50%{
+        transform: rotate(900deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100%{
+        transform: rotate(1800deg);
+    }
 }

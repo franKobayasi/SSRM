@@ -1,12 +1,13 @@
 import React,{ Component,Fragment } from 'react';
-import {randomStockOrderID, roundAfterPointAt} from '../../../lib';
+import {randomStockOrderID, roundAfterPointAt} from '../../lib';
 import {createHashHistory as history} from 'history';
-import {ssrmDB} from '../../../useFirebase';
+import {ssrmDB} from '../../useFirebase';
 /** component */
-import SideNav from '../../layout/SideNav';
+import AppSideNav from '../common/AppSideNav';
+import AppHeaderBar from '../common/AppHeaderBar';
 import ItemSelector from './ItemSelector'
 /** resource */
-import deleteBtn from '../../../img/deleteBtn.png';
+import deleteBtn from '../../img/deleteBtn.png';
 
 /**
 This Component for create hold new order.
@@ -20,6 +21,81 @@ class StockReturnOrder extends Component{
             currentOrder:'loading',
             localStorageLock:true,
         }
+    }
+    render(){
+        let currentOrder=this.state.currentOrder;
+        return (
+            <Fragment>
+                <AppSideNav />
+                <AppHeaderBar />
+                <div className="app-pageMainArea app-stock-return">
+                    <div className="app-pageMainArea-header">
+                        <div className="location">
+                            <div>位置：退貨單登錄</div>
+                        </div>
+                        <div className="operatingBtns">
+                            <button className="fx-btn--mainColor" onClick={()=>{history().push(`${this.props.shopUrl}/stock/history`)}}>歷史進退貨單</button>
+                            <button className="fx-btn--mainColor">庫存查詢</button>
+                        </div>
+                    </div>
+                    <div className="app-pageMainArea-main">
+                        <div className="orderContent">
+                            <div className="orderContent-header">
+                                <span className="orderID">{`退貨單號：${currentOrder.id}`}</span>
+                            </div>
+                            <div className="orderContent-main fk-table">
+                                <div className="fk-table-header">
+                                    <span className="fk-table-cell-175px">產品編號</span>
+                                    <span className="fk-table-cell-150px">產品名稱</span>
+                                    <span className="fk-table-cell-50px">尺寸</span>
+                                    <span className="fk-table-cell-50px">顏色</span>
+                                    <span className="fk-table-cell-50px">總採購</span>
+                                    <span className="fk-table-cell-50px">已入庫</span>
+                                    <span className="fk-table-cell-75x flag">本次退回</span>
+                                </div>
+                                <div className="fk-table-scrollArea">
+                                {   
+                                currentOrder.stockInList&&currentOrder.stockInList.length>0?
+                                currentOrder.stockInList.map((order,orderIndex)=>(
+                                <Fragment key={orderIndex}>
+                                    <div className="fk-table-row">
+                                        <span className="flag">{`採購單號：${order.purchaseID}`}</span>
+                                    </div>
+                                    {
+                                    order.itemList.map((item,itemIndex)=>(
+                                        <div key={itemIndex} className="fk-table-row">
+                                            <span className="fk-table-cell-175px">{item.itemID}</span>
+                                            <span className="fk-table-cell-150px">{item.name}</span>
+                                            <span className="fk-table-cell-50px">{item.size}</span>
+                                            <span className="fk-table-cell-50px">{item.color}</span>
+                                            <span className="fk-table-cell-50px">{item.num}</span>
+                                            <span className="fk-table-cell-50px">{item.inStock}</span>
+                                            <input className="fk-table-cell-50px flag" onChange={(evnt)=>{evnt.persist(); this.setOperateNum(evnt,orderIndex,itemIndex)}} 
+                                                value={item.operateNum} ></input>
+                                            <span className="flag"> Pcs</span>        
+                                            <span className="fx-btn--Img-25px">
+                                                <img onClick={()=>{this.deleteItem(orderIndex,itemIndex)}} src={deleteBtn} />
+                                            </span>
+                                        </div>
+                                    ))
+                                    }
+                                </Fragment>
+                                )):<div className="fk-table-highlighter">尚未新增任何產品</div>
+                                }
+                                </div>
+                            </div>
+                            <div className="orderContent-footer">
+                                <div className="actionBtns">
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.submitOrder}>商品退庫</button>
+                                    <button className="fx-btn--25LH-mainColor" onClick={this.cancelOrder}>取消操作</button>
+                                </div>
+                            </div>
+                        </div>
+                        <ItemSelector orderType={currentOrder.type} callback={this.addItemList} shopRef={this.props.shopRef} />
+                    </div>
+                </div>
+            </Fragment>
+        )
     }
     componentDidMount(){
         let uncompletedNewOrder;
@@ -38,93 +114,12 @@ class StockReturnOrder extends Component{
     componentDidUpdate(){
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock){
-            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(this.state.currentOrder))
+            localStorage.setItem('uncompleted-stock-return-newOrder',JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))
             console.log('update to local');
         }
-    }
-    render(){
-        let currentOrder=this.state.currentOrder;
-        return (
-            <Fragment>
-                <SideNav />
-                <div className="shopMainArea shopMainArea-stock-orderCreating">
-                    <div className="operatingArea">
-                        <div className="currentInfo">
-                            <div>退貨單登錄</div>
-                            <div><span>{`使用者：${this.props.shop.user.name}`}</span></div>
-                        </div>
-                        <div className="operatingBtns">
-                            <button className="btnForFormBig" onClick={()=>{history().push(`${this.props.shopUrl}/stock/history`)}}>歷史進退貨單</button>
-                            <button className="btnForFormBig">庫存查詢</button>
-                        </div>
-                    </div>
-                    <div className="informationArea">
-                        <div className="stockProcessArea">
-                            <div className="basicInfoArea">
-                                <span className="orderID">{`退貨單號：${currentOrder.id}`}</span>
-                                <span className="searchToggle" onClick={this.searchPanelToggle}>
-                                    <span>採購單查詢面板</span>
-                                    <span className="btn">{this.state.isShowSearchPanel?'OPEN':'CLOSE'}</span>
-                                </span>
-                            </div>
-                            <div className="table">
-                                <div className="head">
-                                    <span className="itemID">產品編號</span>
-                                    <span className="productName">產品名稱</span>
-                                    <span className="itemSpec">尺寸</span>
-                                    <span className="itemSpec">顏色</span>
-                                    <span className="itemSpec">總採購</span>
-                                    <span className="itemSpec">已入庫</span>
-                                    <span className="return">本次退回</span>
-                                </div>
-                                <div className="scrollArea">
-                                {   
-                                currentOrder.stockInList&&currentOrder.stockInList.length>0?
-                                currentOrder.stockInList.map((order,orderIndex)=>(
-                                <div key={orderIndex} className="table">
-                                    <div className="row">
-                                        <span className="rowFlag">{`採購單號：${order.purchaseID}`}</span>
-                                    </div>
-                                    {
-                                    order.itemList.map((item,itemIndex)=>(
-                                        <div key={itemIndex} className="row">
-                                            <span className="itemID">{item.itemID}</span>
-                                            <span className="productName">{item.name}</span>
-                                            <span className="itemSpec">{item.size}</span>
-                                            <span className="itemSpec">{item.color}</span>
-                                            <span className="itemSpec">{item.num}</span>
-                                            <span className="itemSpec">{item.inStock}</span>
-                                            <span className="return">
-                                                <input onChange={(evnt)=>{evnt.persist(); this.setOperateNum(evnt,orderIndex,itemIndex)}} 
-                                                value={item.operateNum} ></input>
-                                                <span className="pcs"> Pcs</span>
-                                            </span>                                                
-                                            <span className="btns">
-                                                <img onClick={()=>{this.deleteItem(orderIndex,itemIndex)}} className="defaultStyleBtn" src={deleteBtn} />
-                                            </span>
-                                        </div>
-                                    ))
-                                    }
-                                </div>
-                                )):<div className="note_No_item">尚未新增任何產品</div>
-                                }
-                                </div>
-                            </div>
-                            <div className="orderFooter">
-                                <div className="buttons">
-                                    <button className="btnForFormLittle" onClick={this.submitOrder}>商品退庫</button>
-                                    <button className="btnForFormLittle" onClick={this.cancelOrder}>取消操作</button>
-                                </div>
-                            </div>
-                        </div>
-                        <ItemSelector orderType={currentOrder.type} callback={this.addItemList} shopRef={this.props.shop.shopRef} isShow={this.state.isShowSearchPanel}/>
-                    </div>
-                </div>
-            </Fragment>
-        )
     }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
@@ -183,7 +178,7 @@ class StockReturnOrder extends Component{
         }))
     }
     deleteItem=(orderIndex,itemIndex)=>{
-        if(confirm('確定刪除此筆商品?')){
+        if(confirm('移除此筆商品?')){
             let currentOrder=Object.assign({},this.state.currentOrder);
             currentOrder.stockInList[orderIndex].itemList.splice(itemIndex,1);
             if(currentOrder.stockInList[orderIndex].itemList.length===0){
@@ -213,7 +208,7 @@ class StockReturnOrder extends Component{
     新增進貨單到資料庫，同時新增產品庫存到產品collection，最後更新各採購單的狀態
     */
     submitOrder=async()=>{
-        let shopRef=this.props.shop.shopRef;
+        let shopRef=this.props.shopRef;
         let currentOrder=this.state.currentOrder;
         let isAllOperateNumKeyIn=true;
         let changedOrder=[];

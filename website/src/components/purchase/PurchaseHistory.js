@@ -237,10 +237,11 @@ class PurchaseHistory extends Component{
     deleteHoldOrder=(orderid)=>{
         if(confirm(`確定刪除 ${orderid} 整筆訂單?`)){
             let order=this.state.orderList.filter(order=>{
-                return order.id=orderid;
+                return order.id===orderid;
             })
             let isStartStocking=false;
-            search:for(let item of order.itemList){
+            search:
+            for(let item of order[0].itemList){                
                 if(item.inStock>0){
                     isStartStocking=true;
                     break search;

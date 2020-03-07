@@ -1,6 +1,6 @@
 import React,{Fragment, Component} from 'react';
 import {connect} from 'react-redux';
-import Toggle from './Toggle';
+import {Toggle} from './Toggle';
 import {actionToggleShopMode} from '../../actions/shop';
 
 class AppHeaderBar extends Component{

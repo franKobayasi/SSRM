@@ -24,15 +24,15 @@
     }
 }
 .app-stock-history{
-    .informationArea{
+    .orderList{
+        height: 100%;
         &>div{
-            display: inline-block;
-            vertical-align: middle;
+            float: left;
             height: 100%;
-            margin: 10px 20px;
         }
-        .orderSearch{
-            width: 450px;
+        .orderList-search{
+            width: 525px;
+            padding-right: 20px;
             .filter{
                 position: relative;
                 &>span{
@@ -57,17 +57,33 @@
                     border: $mainColor 1px solid;
                 }
             }
+            .orderList-search-result{
+                margin-top: 15px;
+                height: calc(100% - 70px);
+                .title{
+                    color: $mainColor;
+                    margin-bottom: 10px;
+                }
+                .content{
+                    height: calc(100% - 40px);
+                    .orderChoosed{
+                        background-color: $mainColor;
+                        color: white;
+                    }
+                }
+            }
         }
-        .orderDetail{
+        .orderList-detail{
             margin-top: 0px;
             padding-left: 20px;
             border-left: 1px solid $slightBlack;
-            .basicInfo{
+            width: calc(100% - 525px);
+            .title{
+                color: $mainColor;
                 margin-bottom: 10px;
-                .type, .buildDate{
-                    margin: 0 10px;
-                    width: fit-content;
-                }
+            }
+            .content{
+                height: calc(100% - 40px);
             }
         }
     }
@@ -76,7 +92,6 @@
     position: absolute;
     right: 0;
     top: 105px;
-    text-align: center;
     font-size: 14px;
     width: 775px;
     height: calc(100% - 125px);
@@ -98,9 +113,8 @@
         label{
             letter-spacing: 5px;
         }
-        .app-toggle, .app-toggle-active{
+        .app-toggle--Col, .app-toggle--Col-active{
             margin-top: 30px;
-            transform: rotate(90deg);
             border: 1px solid black;
         }
     }
@@ -119,50 +133,55 @@
             width:750px;
             height: 175px;
             overflow: hidden;
+            .fk-table-header{
+                height: 40px;
+            }
+            .fk-table-scrollArea{
+                height: calc(100% - 40px);
+            }
             .olderSummary{
                 border-radius: 5px;
-                line-height: 30px;
-                background-color: $slightGray;
+                line-height: 25px;
+                margin: 2.5px 0;
+                background-color: rgba($color: $slightGray, $alpha: 0.6);
             }
             .active{
-                background-color: rgba($color: $mainColor, $alpha: 0.6);
+                background-color: $mainColor;
             }
         }
     }
-    .selectedOrderInfo{        
+    .selectedOrder{        
         position: relative;
         background-color: white;
         color: black;
         border-radius: 5px;
         width:750px;
-        height: calc(100% - 320px);
+        height: calc(100% - 265px);
         padding: 5px;
         overflow:hidden;
-        .orderInfoHeader{
-            color:$mainColor;
-            margin-bottom: 15px;
-            &>span{
-                display: inline-block;
-                vertical-align: middle;
-                margin-right: 10px;
-            }
-        }
         & > div{
             margin-bottom: 10px;
         }
-        .tableSmall{
-            height: calc(100% - 100px);
+        .selectedOrder-header{
+            color:$mainColor;
+            margin-bottom: 15px;
+            .orderid{
+                margin-left: 10px;
+            }
+            .selectAll{
+                float: right;
+                margin-right: 10px;
+            }
+        }
+        .selectedOrder-main{
+            height: calc(100% - 80px);
             .pcs{
                 margin-right: 15px;
             }
         }
-        button{
-            margin-top: 20px;
-            position: absolute;
-            bottom: 14px;
-            left: 50;
-            left: 50%;
-            transform: translateX(-50%);
+        .selectedOrder-footer{
+            text-align: center;
+            height: 30px;
         }
     }
 }

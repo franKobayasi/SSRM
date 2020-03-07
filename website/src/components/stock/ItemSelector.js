@@ -1,7 +1,7 @@
 import React,{Component,Fragment} from 'react';
 /** component */
 import PurchaseOrderFilter from '../common/PurchaseOrderFilter';
-import Toggle from '../common/Toggle';
+import {ToggleCol} from '../common/Toggle';
 import SelectedOrder from './SelectedOrder';
 import Checkbox from '../common/Checkbox';
 import ShowPercentage from '../common/ShowPercentage';
@@ -17,7 +17,7 @@ class ItemSelector extends Component{
     constructor(props){
         super(props);
         this.state={
-            isShowSearchPanel:true,
+            isShowSearchPanel:false,
             orderSelected:null,
             tempItemState:null,
             isAllSelected:false,
@@ -28,15 +28,17 @@ class ItemSelector extends Component{
         let orderSearchResult=this.state.orderSearchResult;
         let orderSelected=this.state.orderSelected;
         let isShowSearchPanel=this.state.isShowSearchPanel;
+        let orderRef=this.props.shopRef.collection('purchases');
+        let orderType=this.props.orderType;
         return (
             <div className={`app-stock-itemSelector${isShowSearchPanel?'--show':''}` }>
                 <span className="searchToggle">
                     <label>{`採購單查詢面板 ${isShowSearchPanel?'ON':'OFF'}`}</label>
-                    <Toggle isOn={isShowSearchPanel} toggle={this.searchPanelToggle} />
+                    <ToggleCol isOn={isShowSearchPanel} toggle={this.searchPanelToggle} />
                 </span>
                 <div className="orderSearchArea">
                     {/* PurchaseOrderFilter */}
-                    <PurchaseOrderFilter shopRef={this.props.shopRef} callback={this.getSearchResult}/>
+                    <PurchaseOrderFilter orderRef={orderRef} callback={this.getSearchResult}/>
                     <div className="orderSelector fk-table">
                         <div className="fk-table-header">
                             <span className="fk-table-cell-175px">採購單號</span>
@@ -57,7 +59,7 @@ class ItemSelector extends Component{
                         </div>
                     </div>
                 </div>
-                <SelectedOrder orderSelected={orderSelected} callback={this.getItemListBackToTap} changeItemState={this.changeItemState}   
+                <SelectedOrder orderType={orderType} orderSelected={orderSelected} callback={this.getItemListBackToTap} changeItemState={this.changeItemState}   
                 toSelectAll={this.toSelectAll} isAllSelected={this.state.isAllSelected} tempItemState={this.state.tempItemState} />
             </div>
         )
@@ -67,10 +69,19 @@ class ItemSelector extends Component{
             isShowSearchPanel:!preState.isShowSearchPanel,
         }))
     }
-    getSearchResult=(result)=>{
-        this.setState(preState=>({
+    getSearchResult=(targetRef)=>{
+        targetRef.orderBy('time','desc').get()
+        .then(snapshot=>{
+            let result=[];
+            if(!snapshot.empty){
+                snapshot.forEach(doc=>{
+                    result.push(doc.data());
+                })
+            }
+            this.setState(preState=>({
             orderSearchResult:result,
         }))
+        })
     }
     selectOrder=(index)=>{
         /** 讓已經完成進貨的商品的不要被選到 */
@@ -80,6 +91,10 @@ class ItemSelector extends Component{
            orderSelected.itemList=orderSelected.itemList.filter(item=>{
                return item.status!='finish';
            });
+        }else{
+            orderSelected.itemList=orderSelected.itemList.filter(item=>{
+                return item.status!='purchase';
+            })
         }
         let tempItemState={};
         for(let item of orderSelected.itemList){
@@ -88,6 +103,7 @@ class ItemSelector extends Component{
         this.setState(preState=>({
             orderSelected,
             tempItemState,
+            isAllSelected:false,
         }))
     }
     /** handle SelectedOrder's item */
@@ -143,11 +159,11 @@ class ItemSelector extends Component{
 function OlderSummary(props){
     let order=props.order
     return (
-        <div onClick={props.selectOrder} className={`olderSummary btn row ${props.active?'active':''}`}>
-            <span className="orderID">{order.id}</span>
-            <span className="supplierTitle">{order.search_supplier[0]}</span>
-            <span className="supplierTel">{order.search_supplier[2]}</span>
-            <span className="percentageOfStock"><ShowPercentage order={order}/></span>
+        <div onClick={props.selectOrder} className={`olderSummary btn fk-table-row ${props.active?'active':''}`}>
+            <span className="fk-table-cell-175px">{order.id}</span>
+            <span className="fk-table-cell-150px">{order.search_supplier[0]}</span>
+            <span className="fk-table-cell-100px">{order.search_supplier[2]}</span>
+            <span className="fk-table-cell-100px fk-table-LH0"><ShowPercentage order={order}/></span>
         </div>
     )
 }

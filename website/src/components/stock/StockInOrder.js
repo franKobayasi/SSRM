@@ -50,39 +50,37 @@ class StockInOrder extends Component{
                                     <span className="fk-table-cell-50px">顏色</span>
                                     <span className="fk-table-cell-50px">總採購</span>
                                     <span className="fk-table-cell-50px">未入庫</span>
-                                    <span className="fk-table-cell-75px">本次入庫</span>
+                                    <span className="fk-table-cell-75px flag">本次入庫</span>
                                 </div>
                                 <div className="fk-table-scrollArea">
                                 {   
                                     currentOrder.stockInList&&currentOrder.stockInList.length>0?
                                     currentOrder.stockInList.map((order,orderIndex)=>(
-                                        <Fragment>
+                                        <Fragment key={orderIndex}>
                                             <div className="fk-table-row">
                                                 <span className="flag">{`採購單號：${order.purchaseID}`}</span>
                                             </div>
                                             {
                                             order.itemList.map((item,itemIndex)=>(
-                                                <div key={itemIndex} className="k-table-row">
+                                                <div key={itemIndex} className="fk-table-row">
                                                     <span className="fk-table-cell-175px">{item.itemID}</span>
                                                     <span className="fk-table-cell-150px">{item.name}</span>
                                                     <span className="fk-table-cell-50px">{item.size}</span>
                                                     <span className="fk-table-cell-50px">{item.color}</span>
                                                     <span className="fk-table-cell-50px">{item.num}</span>
                                                     <span className="fk-table-cell-50px">{item.num-item.inStock}</span>
-                                                    <span className="fk-table-cell-75px">
-                                                        <input onChange={(evnt)=>{evnt.persist(); this.setOperateNum(evnt,orderIndex,itemIndex)}} 
+                                                    <input className="fk-table-cell-50px flag" onChange={(evnt)=>{evnt.persist(); this.setOperateNum(evnt,orderIndex,itemIndex)}} 
                                                         value={item.operateNum} />
-                                                        <span className="flag"> Pcs</span>
-                                                    </span>                                                
-                                                    <span className="btns">
-                                                        <img onClick={()=>{this.deleteItem(orderIndex,itemIndex)}} className="defaultStyleBtn" src={deleteBtn} />
+                                                    <span className="flag"> Pcs</span>                                             
+                                                    <span className="fx-btn--Img-25px">
+                                                        <img onClick={()=>{this.deleteItem(orderIndex,itemIndex)}} src={deleteBtn} />
                                                     </span>
                                                 </div>
                                             ))
                                             }
                                         </Fragment>
                                     )):
-                                    <div className="fk-table-highlighter">尚未新增任何產品</div>
+                                    <div className="fk-table-highlighter">請從右側的採購單查詢面板中添加欲進貨的商品</div>
                                 }
                                 </div>
                             </div>
@@ -93,7 +91,7 @@ class StockInOrder extends Component{
                                 </div>
                             </div>
                         </div>
-                        <ItemSelector orderType={currentOrder.type} callback={this.addItemList} shopRef={this.props.shop.shopRef} />
+                        <ItemSelector orderType={currentOrder.type} callback={this.addItemList} shopRef={this.props.shopRef} />
                     </div>
                 </div>
             </Fragment>
@@ -205,7 +203,7 @@ class StockInOrder extends Component{
     新增進貨單到資料庫，同時新增產品庫存到產品collection，最後更新各採購單的狀態
     */
     submitOrder=async()=>{
-        let shopRef=this.props.shop.shopRef;
+        let shopRef=this.props.shopRef;
         let currentOrder=this.state.currentOrder;
         let isAllOperateNumKeyIn=true;
         let changedOrder=[];

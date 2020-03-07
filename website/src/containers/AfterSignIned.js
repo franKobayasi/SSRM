@@ -21,6 +21,8 @@ import Dashboard from '../components/dashboard/Dashboard.js';
 import PurchaseHistory from '../components/purchase/PurchaseHistory';
 import PurchaseCreating from '../components/purchase/PurchaseCreating';
 import StockInOrder from "../components/stock/StockInOrder";
+import StockReturnOrder from "../components/stock/StockReturnOrder";
+import StockHistory from "../components/stock/StockHistory";
 import Guide from '../components/common/Guide';
 
 /** enter the app */
@@ -47,7 +49,9 @@ class AfterSignIned extends Component{
                     <Route path="/purchase/new" render={(history)=><PurchaseCreating history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route exact path="/purchase/history/" render={(history)=><PurchaseHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/purchase/history/:orderid" render={(history)=><PurchaseHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/stock/history" render={(history)=><StockHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/stock/stockin" render={(history)=><StockInOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/stock/return" render={(history)=><StockReturnOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route exact path="/">
                         <Redirect to="/dashboard"/>
                     </Route>
