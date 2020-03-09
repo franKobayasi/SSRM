@@ -313,7 +313,7 @@ class PurchaseCreating extends Component{
             search_productNameAndID:search_productNameAndID, // for firebase structure need 
             search_supplier:orderCMPT.search_supplier,
             static:this.getStaticData(),
-            modifyRecord:[],
+            modifyRecords:[],
             time:new Date().valueOf()
         }
         return orderFRBS;

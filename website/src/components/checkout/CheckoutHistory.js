@@ -1,5 +1,6 @@
 import React, {Component,Fragment} from "react";
 import {ssrmDB} from '../../useFirebase';
+import {getDateToYMD} from '../../lib';
 import AppHeaderBar from '../common/AppHeaderBar';
 import AppSideNav from '../common/AppSideNav';
 import {Loading} from '../common/Loading';
@@ -42,7 +43,7 @@ class CheckoutHistory extends Component{
                 <div className="app-pageMainArea-main">
                     <div className="orderList">
                         <div className="orderList-header">
-                            <CheckoutOrderFilter />
+                            <CheckoutOrderFilter callback={this.setTargetRef} orderRef={this.state.orderRef} />
                         </div>
                         <div className="orderList-main fk-table--black">
                             <div className="fk-table-header">
@@ -53,7 +54,7 @@ class CheckoutHistory extends Component{
                                 <span className="fk-table-cell-75px">折扣</span>
                                 <span className="fk-table-cell-75px">訂金</span>
                                 <span className="fk-table-cell-75px">實收</span>
-                                <span className="fk-table-cell-100px">狀態</span>
+                                <span className="fk-table-cell-75px">狀態</span>
                                 <span className="fk-table-cell-125px">
                                         <span>結帳時間</span>
                                         <span onClick={this.toggleOrderByMode} style={this.state.orderByDesc?descStyle:null}
@@ -83,7 +84,7 @@ class CheckoutHistory extends Component{
                                         '未結暫存':
                                         '已付訂金'
                                     }</span>
-                                    <span className="fk-table-cell-125px">{order.time}</span>
+                                    <span className="fk-table-cell-125px">{getDateToYMD(order.time)}</span>
                                     <span className="fk-table-cell-175px fk-table-floatR">
                                         <span onClick={()=>{this.toDetailPage(order.id)}} className="fx-btn--Img-25px"><img src={editBtn}/></span>
                                         <span onClick={()=>{this.deleteCheckout(order.id)}} className="fx-btn--Img-25px"><img src={deleteBtn}/></span>
@@ -94,7 +95,19 @@ class CheckoutHistory extends Component{
                             </div>
                         </div>
                         <div className="orderList-footer">
-                            
+                            <div className="orderList-footer-page">
+                            {
+                                this.state.paging===1?
+                                <button className="fx-btn--unable-black">前一頁</button>:
+                                <button onClick={this.goPrePage} className="fx-btn--onlyText-black">前一頁</button>
+                            }
+                                <span>{this.state.paging}</span>
+                            {
+                                this.state.isNextPageExist?
+                                <button onClick={this.goNextPage} className="fx-btn--onlyText-black">下一頁</button>:
+                                <button className="fx-btn--unable-black">下一頁</button>
+                            }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,7 +223,7 @@ class CheckoutHistory extends Component{
                         console.error(error);
                     })
                     promises.push(itemUpdate); //加回庫存
-                    let tradeRecordUpdate=t.get(shopRef.collection('customers').doc(order.customer[1]))
+                    let tradeRecordsUpdate=t.get(shopRef.collection('customers').doc(order.customer[1]))
                     .then(doc=>{
                         let customer=doc.data();
                         delete customer.tradeRecords[order.id];
@@ -220,7 +233,7 @@ class CheckoutHistory extends Component{
                         console.log('ERROR\n顧客交易紀錄，更新失敗');
                         console.error(error);
                     })
-                    promises.push(tradeRecordUpdate); //更新顧客交易紀錄   
+                    promises.push(tradeRecordsUpdate); //更新顧客交易紀錄   
                 }
                 let deleteOrder=t.delete(shopRef.collection('checkouts').doc(order.id));
                 promises.push(deleteOrder);

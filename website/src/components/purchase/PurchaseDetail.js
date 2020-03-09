@@ -230,6 +230,7 @@ class PurchaseDetail extends Component{
             search_supplier:orderCMPT.search_supplier,
             static:this.getStaticData(),
             modifyRecord:orderCMPT.modifyRecord,
+            updateTimes:orderCMPT.updateTimes,
             time:orderCMPT.time
         }
         return orderFRBS;
@@ -434,7 +435,9 @@ class PurchaseDetail extends Component{
             alert('操作人員未填寫或長度過短，請確認');
         }else if(confirm('確定修改？')){
             let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
-            unsavedHistoryOrder.modifyRecord.push({
+            if(!unsavedHistoryOrder.modifyRecords)
+                unsavedHistoryOrder.modifyRecords=[];
+            unsavedHistoryOrder.modifyRecords.push({
                 reason,
                 operator,
                 time:new Date().valueOf(),

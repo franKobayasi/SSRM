@@ -189,6 +189,8 @@ class Customer extends Component{
                                 {   
                                     !detail.tradeRecords||Object.keys(detail.tradeRecords).length===0?
                                     <div className="fk-table-highlighter">尚未有任何消費紀錄</div>:
+                                    <div className="fk-table-scrollArea">
+                                {
                                     Object.keys(detail.tradeRecords).map((key,index)=>{
                                         return (
                                             <div key={index} className="fk-table-row">
@@ -199,6 +201,8 @@ class Customer extends Component{
                                             </div>
                                         )
                                     })
+                                }
+                                    </div>
                                 }
                             </div>
                             </div>

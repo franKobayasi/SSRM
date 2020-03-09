@@ -84,13 +84,27 @@
 .app-checkout-history{
     .orderList{
         height: 100%;
-        .orderList-header, .orderList-footer{
+        .orderList-header{
             height: 40px;
         }
         .orderList-main{
             height: calc(100% - 80px);
             .fk-table-scrollArea{
                 height: calc(100% - 50px);
+            }
+        }
+        .orderList-footer{
+            height: 30px;
+            width: 100%;
+            .orderList-footer-page{
+                width: fit-content;
+                line-height: 30px;
+                margin: 0 auto;
+                & > *{
+                    text-align: center;
+                    margin: 0 10px;
+                    width: 75px;
+                }
             }
         }
     }

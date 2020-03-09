@@ -43,6 +43,8 @@ class AfterSignIned extends Component{
             return <LoadingBlack text="店家資訊載入中"/>
         }
         return (
+            shop.status==='create'?
+            <Guide />:
             onCheckoutMode?
             <Router> 
                 <Switch>

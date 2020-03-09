@@ -445,7 +445,7 @@ class CheckoutCreate extends Component{
             return Promise.all(promises);
         })
         .then(res=>{
-            alert('新增成功！');
+            alert('結帳成功！');
             let currentOrder=this.createNewOrder();
             this.setState(preState=>({
                 currentOrder,
@@ -454,7 +454,7 @@ class CheckoutCreate extends Component{
             }))
         })
         .catch(error=>{
-            alert('新增失敗！');
+            alert('結帳失敗！');
             console.log(error);
         })
     }

@@ -5,6 +5,7 @@ import {randomCheckOutOrderID, roundAfterPointAt} from '../../lib';
 /** component */
 import FormSubmitBooking from "./FormSubmitBooking";
 import {Loading} from '../common/Loading';
+import ModifySubmit from '../common/ModifySubmit';
 import {FormCustomerEntry, Customer} from '../common/Customer';
 import StockChecker from '../common/StockChecker';
 
@@ -23,7 +24,8 @@ class CheckoutDetail extends Component{
             localStorageLock:true,
             isShowCustomerForm:false,
             isShowFormSubmitBooking:false,
-            isShowStockChecker:false
+            isShowStockChecker:false,
+            isShowModifySubmit:false,
         }
     }
     render(){
@@ -31,7 +33,7 @@ class CheckoutDetail extends Component{
         let history=this.props.history.history;
         let orderID=this.state.orderID;
         let onEditMode=this.state.onEditMode;
-
+        let isShowModifySubmit=this.state.isShowModifySubmit;
         let isShowCustomerForm=this.state.isShowCustomerForm;
         let isShowFormSubmitBooking=this.state.isShowFormSubmitBooking;
         let isShowStockChecker=this.state.isShowStockChecker;
@@ -41,17 +43,22 @@ class CheckoutDetail extends Component{
 
         return (
         <div className="app-pageMainArea app-checkout-detail">
-            {
-                isShowFormSubmitBooking?
-                <FormSubmitBooking toggle={this.toggleFormSubmitBooking} setDeposit={this.setDeposit} />:null
-            }
-            {
-                isShowCustomerForm?
-                <FormCustomerEntry shopRef={this.props.shopRef} callback={this.toogleShowCustomerForm} />:null
-            }{
-                isShowStockChecker?
-                <StockChecker toggle={this.toggleShowStockChecker}/>:null
-            }
+        {
+            isShowModifySubmit?
+            <ModifySubmit title="結帳單修正" submit={this.submitModifySubmit} cancel={this.cancelModifySubmit}/>:
+            null
+        }
+        {
+            isShowFormSubmitBooking?
+            <FormSubmitBooking toggle={this.toggleFormSubmitBooking} setDeposit={this.setDeposit} />:null
+        }
+        {
+            isShowCustomerForm?
+            <FormCustomerEntry shopRef={this.props.shopRef} callback={this.toogleShowCustomerForm} />:null
+        }{
+            isShowStockChecker?
+            <StockChecker toggle={this.toggleShowStockChecker}/>:null
+        }
             <div className="app-pageMainArea-header">
                 <div className="location">
                     <div>{`位置：訂單詳情`}</div>
@@ -164,7 +171,7 @@ class CheckoutDetail extends Component{
                             onEditMode?
                             <Fragment>
                                 <button onClick={this.cancelUpdateOrder} className="fx-btn--25LH-mainColor">取消</button>
-                                <button onClick={this.submitUpdatedOrder} className="fx-btn--25LH-mainColor">結帳</button>
+                                <button onClick={()=>{this.toggleShowModifySubmit(true)}} className="fx-btn--25LH-mainColor">儲存</button>
                             </Fragment>:
                             <button onClick={this.startToEditOrder} className="fx-btn--25LH-mainColor">編輯</button>
                         }
@@ -234,6 +241,11 @@ class CheckoutDetail extends Component{
     toggleShowStockChecker=(bool)=>{
         this.setState(preState=>({
             isShowStockChecker:bool,
+        }))
+    }
+    toggleShowModifySubmit=(bool)=>{
+        this.setState(preState=>({
+            isShowModifySubmit:bool,
         }))
     }
     keyInCustomer=(evnt)=>{
@@ -433,7 +445,7 @@ class CheckoutDetail extends Component{
             }),this.getOrderData)
         }
     }
-    submitOrder=()=>{
+    submitModifySubmit=(operator,reason)=>{
         let shopRef=this.props.shopRef;
         let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
         if(unsavedHistoryOrder.customer.length===0){
@@ -444,55 +456,107 @@ class CheckoutDetail extends Component{
             alert('尚未添加任何商品資料，請確認！');
             return ;
         }
-        let transaction=ssrmDB.runTransaction(t=>{
-            let modifyRecords={};
-            modifyRecords.time=new Date().valueOf();
-            modifyRecords.reason=this.state.reason;
-            
-            currentOrder.status='done';
-            let promises=[];
-            for(let item of currentOrder.itemList){
-                let updateProduct=t.get(shopRef.collection('products').doc(item.itemID))
-                .then(doc=>{
-                    if(doc.exists){
-                        let product=doc.data();
-                        product.stocks-=item.saleNum;
-                        //扣庫存
-                        t.set(shopRef.collection('products').doc(item.itemID),product);
-                    }
-                })
-                promises.push(updateProduct);
+        if(operator.length<1){
+            alert('操作人員未填寫或長度過短');
+            return ;
+        }
+        if(reason.length<5){
+            alert('修改原因未填寫或長度過短');
+            return ;
+        }
+        let transaction=ssrmDB.runTransaction(async(t)=>{
+            if(!unsavedHistoryOrder.modifyRecords){
+                unsavedHistoryOrder.modifyRecords=[];
             }
-            let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(currentOrder.customer[1]))
+            unsavedHistoryOrder.modifyRecords.push({
+                reason,
+                operator,
+                time:new Date().valueOf(),
+            });
+            let promises=[];
+            let previousCheckout;
+            await t.get(shopRef.collection('checkouts').doc(unsavedHistoryOrder.id))
             .then(doc=>{
                 if(doc.exists){
-                    let customer=doc.data();
-                    if(!customer.tradeRecords){
-                        customer.tradeRecords={};
-                    }
-                    customer.tradeRecords[currentOrder.id]=currentOrder.calcResult;
-                    customer.tradeRecords[currentOrder.id].time=currentOrder.time;
-                    t.set(shopRef.collection('customers').doc(currentOrder.customer[1]),customer)
+                    previousCheckout=doc.data();
                 }
-            })
-            promises.push(updateCustomerTradeRecord);
-            let addOrder=t.set(shopRef.collection('checkouts').doc(currentOrder.id),currentOrder);
-            promises.push(addOrder);
-            return Promise.all(promises);
+            });
+            if(previousCheckout){
+                // 回復先前的;
+                for(let item of previousCheckout.itemList){
+                    let itemUpdate=t.get(shopRef.collection('products').doc(item.itemID))
+                    .then(doc=>{
+                        let product=doc.data();
+                        product.stocks+=Number(item.saleNum);
+                        t.set(shopRef.collection('products').doc(item.itemID),product)
+                    })
+                    .catch(error=>{
+                        console.log('ERROR\n產品庫存更新失敗');
+                        console.error(error);
+                    })
+                    promises.push(itemUpdate); //加回庫存
+                    let tradeRecordsUpdate=t.get(shopRef.collection('customers').doc(previousCheckout.customer[1]))
+                    .then(doc=>{
+                        let customer=doc.data();
+                        delete customer.tradeRecords[previousCheckout.id];
+                        t.set(shopRef.collection('customers').doc(previousCheckout.customer[1]),customer)
+                    })
+                    .catch(error=>{
+                        console.log('ERROR\n顧客交易紀錄，更新失敗');
+                        console.error(error);
+                    })
+                    promises.push(tradeRecordsUpdate); //更新顧客交易紀錄   
+                }
+                // 扣除當前的;
+                for(let item of unsavedHistoryOrder.itemList){
+                    let updateProduct=t.get(shopRef.collection('products').doc(item.itemID))
+                    .then(doc=>{
+                        if(doc.exists){
+                            let product=doc.data();
+                            product.stocks-=Number(item.saleNum);
+                            //扣庫存
+                            t.set(shopRef.collection('products').doc(item.itemID),product);
+                        }
+                    })
+                    promises.push(updateProduct);
+                }
+                let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(unsavedHistoryOrder.customer[1]))
+                .then(doc=>{
+                    if(doc.exists){
+                        let customer=doc.data();
+                        if(!customer.tradeRecords){
+                            customer.tradeRecords={};
+                        }
+                        customer.tradeRecords[unsavedHistoryOrder.id]=unsavedHistoryOrder.calcResult;
+                        customer.tradeRecords[unsavedHistoryOrder.id].time=unsavedHistoryOrder.time;
+                        t.set(shopRef.collection('customers').doc(unsavedHistoryOrder.customer[1]),customer)
+                    }
+                })
+                promises.push(updateCustomerTradeRecord);
+                let addOrder=t.set(shopRef.collection('checkouts').doc(unsavedHistoryOrder.id),unsavedHistoryOrder);
+                promises.push(addOrder);
+                return Promise.all(promises);
+            }else{
+                alert('更新失敗，找無此交易紀錄');
+            }            
         })
         .then(res=>{
-            alert('新增成功！');
-            let currentOrder=this.createNewOrder();
+            alert(`交易 ${unsavedHistoryOrder.id} 更新成功！`);
+            localStorage.removeItem(`checkout-history-${this.state.orderID}`)
             this.setState(preState=>({
-                currentOrder,
-                discount:0,
-                localStorageLock:false,
-            }))
+                onEditMode:false,
+                isShowModifySubmit:false,
+                unsavedHistoryOrder:null,
+            }),this.getOrderData)
         })
         .catch(error=>{
-            alert('新增失敗！');
-            console.log(error);
+            alert(`交易 ${unsavedHistoryOrder.id} 更新失敗！`);
+            console.error('ERROR\n交易紀錄更新失敗');
+            console.log(error)
         })
+    }
+    cancelModifySubmit=()=>{
+        this.toggleShowModifySubmit(false);
     }
 }
 

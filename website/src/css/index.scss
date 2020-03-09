@@ -33,6 +33,7 @@
     position: fixed;
     width: 100%;
     height: 100%;
+    top:0;
     z-index: 10;
     background-color: rgba($color: $slightBlack, $alpha: .75);
 }
@@ -246,6 +247,9 @@
     .fk-form{
         span{
             background-color: white;
+        }
+        .fk-table-scrollArea{
+            height: 100px;
         }
     }
 }
