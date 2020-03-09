@@ -11,6 +11,9 @@
         }
         .orderContent-main{
             height: calc(100% - 70px);
+            .fk-table-scrollArea{
+                height: calc(100% - 30px);
+            }
         }
         .orderContent-footer{
             height: 35px;

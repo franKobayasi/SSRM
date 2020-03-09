@@ -23,6 +23,7 @@ import PurchaseCreating from '../components/purchase/PurchaseCreating';
 import StockInOrder from "../components/stock/StockInOrder";
 import StockReturnOrder from "../components/stock/StockReturnOrder";
 import StockHistory from "../components/stock/StockHistory";
+import Checkout from "../components/checkout/Checkout";
 import Guide from '../components/common/Guide';
 
 /** enter the app */
@@ -37,10 +38,23 @@ class AfterSignIned extends Component{
         let shop=this.props.shop;
         let auth=this.props.auth;
         let shopRef=ssrmDB.collection('shops').doc(auth.MEMBER_UID);
+        let onCheckoutMode=shop.onCheckoutMode;
         if(shop.status==='loading'){
             return <LoadingBlack text="店家資訊載入中"/>
         }
         return (
+            onCheckoutMode?
+            <Router> 
+                <Switch>
+                    <Route path="/auth" component={Auth}/> 
+                    <Route path="/checkout/new" render={(history)=><Checkout history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route exact path="/checkout/history" render={(history)=><Checkout history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/checkout/history/:orderid" render={(history)=><Checkout history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/">
+                        <Redirect to="/checkout/new"/>
+                    </Route>
+                </Switch>
+            </Router>:
             <Router> 
                 <Switch>
                     {/* <Route path="/test" render={()=><Purchase />} /> */}
@@ -52,7 +66,7 @@ class AfterSignIned extends Component{
                     <Route path="/stock/history" render={(history)=><StockHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/stock/stockin" render={(history)=><StockInOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/stock/return" render={(history)=><StockReturnOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
-                    <Route exact path="/">
+                    <Route path="/">
                         <Redirect to="/dashboard"/>
                     </Route>
                 </Switch>

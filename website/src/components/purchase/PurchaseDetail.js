@@ -5,7 +5,8 @@ import {createHashHistory as history} from 'history';
 /** component */
 import AppSideNav from '../common/AppSideNav';
 import {Loading} from '../common/Loading';
-import ContentTable from './ContentTable';
+import ContentTable from './ContentTable'; 
+import ModifySubmit from '../common/ModifySubmit';
 import Supplier, {FormSupplierEntry} from '../common/Supplier';
 import FormProductEditing from './FormProductEditing';
 
@@ -30,25 +31,19 @@ class PurchaseDetail extends Component{
         }
     }
     render(){
-        console.log('OrderDetail開始render');
         let onProductEditing=this.state.onProductEditing;
         let onSupplierAdding=this.state.onSupplierAdding;
         let onOrderEditing=this.state.onOrderEditing;
         let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
         let currentProduct=this.state.currentProduct;
+        console.log(orderToRender);
         return (
             <div className="app-pageMainArea app-purchase-order">
-                {/* 填寫修改原因訊息 */}
-                {this.state.showModifyConfirm?
-                <form className="modifyConfirm">
-                    <div>修改原因：</div>
-                    <textarea id="modifyDescription" onChange={this.handleChange} />
-                    <div className="btns"> 
-                    <button onClick={this.submitOrder}>送出</button>
-                    <button onClick={this.cancelSubmit}>取消</button>
-                    </div>
-                </form>:null
-                }
+            {
+                this.state.showModifyConfirm?
+                <ModifySubmit title="採購單修改" submit={this.submitOrder} cancel={this.cancelSubmit}/>:
+                null
+            }
                 {onSupplierAdding? /* 新增供應商 */
                 <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleSupplierAddingForm} />:null}
                 {onProductEditing? /* 新增產品表單 */
@@ -240,18 +235,17 @@ class PurchaseDetail extends Component{
         return orderFRBS;
     }
     editOrder=()=>{
-        let unsavedHistoryOrder=this.state.unsavedHistoryOrder;
+        let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`History_${this.props.id}`));
+        let localStorageLock=true;
         if(!unsavedHistoryOrder){
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
             unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
-            this.setState((preState)=>({
-                localStorageLock:false,
-                onOrderEditing:true,
-                unsavedHistoryOrder,
-            }));
+            localStorageLock=false;
         }else{
             this.setState((preState)=>({
+                localStorageLock,
                 onOrderEditing:true,
+                unsavedHistoryOrder,
             }));
         }
     }
@@ -352,7 +346,19 @@ class PurchaseDetail extends Component{
     deleteProduct=(productIndex)=>{
         let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
         let target=unsavedHistoryOrder.products[productIndex];
+        let isAlreadyStock=false;
         if(confirm(`確定刪除整筆產品:${target.productID}`)){
+            search:
+            for(let item of target.itemList){
+                if(item.inStock>0){
+                    isAlreadyStock=true;
+                }
+                break search;
+            }
+            if(isAlreadyStock){
+                alert('此商品已經進行入庫作業無法刪除！')
+                return;
+            }
             unsavedHistoryOrder.products.splice(productIndex,1)
             this.setState(preState=>({
                 localStorageLock:false, /** update to local */
@@ -421,17 +427,17 @@ class PurchaseDetail extends Component{
             modifyDescription:'',
         }))
     }
-    submitOrder=(evnt)=>{
-        evnt.preventDefault();
-        let description=this.state.modifyDescription;
-        if(description.length===0){
-            alert('請填寫修改原因');
+    submitOrder=(operator,reason)=>{
+        if(reason.length<5){
+            alert('修改原因未填寫或長度過短，請確認');
+        }else if(operator.length<1){
+            alert('操作人員未填寫或長度過短，請確認');
         }else if(confirm('確定修改？')){
             let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
             unsavedHistoryOrder.modifyRecord.push({
-                description:description,
+                reason,
+                operator,
                 time:new Date().valueOf(),
-                user:this.state.operator,
             });
             let orderFRBS=this.transformStructureFRBS(unsavedHistoryOrder);
             this.props.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)

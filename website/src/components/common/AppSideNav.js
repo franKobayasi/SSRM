@@ -31,6 +31,7 @@ class AppSideNav extends Component{
         })
     }
     render(){
+        let onCheckoutMode=this.props.shop.onCheckoutMode;
         let isNavShow=this.state.isNavShow;
         return (
             <div id="app-sideNav" className={isNavShow?'':'app-sideNav-hide'}>
@@ -38,33 +39,47 @@ class AppSideNav extends Component{
                     <div></div><div></div><div></div>
                 </div>
                 <ul className="app-sideNav-main">
-                    <li><NavLink 
+                {
+                    onCheckoutMode?
+                    <Fragment>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/checkout/new`}>結帳台</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/checkout/history`}>歷史交易紀錄查詢</NavLink></li>
+
+                    </Fragment>:
+                    <Fragment>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/dashboard/`}>主控台</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/purchase/new`}>採購單登錄</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/purchase/history`}>採購單歷史查詢</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active"
+                            to={`/stock/stockin`}>進貨登錄</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/stock/return`}>退貨登錄</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/stock/history`}>進退貨歷史查詢</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/checkout/history`}>歷史交易紀錄查詢</NavLink></li>
+                        <li><NavLink 
                         activeClassName="active" 
-                        to={`/dashboard/`}>主控台</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active" 
-                        to={`/purchase/new`}>採購單登錄</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active" 
-                        to={`/purchase/history`}>採購單歷史查詢</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active"
-                        to={`/stock/stockin`}>進貨登錄</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active" 
-                        to={`/stock/return`}>退貨登錄</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active" 
-                        to={`/stock/history`}>進退貨歷史查詢</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active" 
-                        to={`/checkout/history`}>歷史交易紀錄查詢</NavLink></li>
-                    <li><NavLink 
-                    activeClassName="active" 
-                    to={`/analysis/`}>營運數據分析</NavLink></li>
-                    <li><NavLink 
-                        activeClassName="active" 
-                        to={`/setting`}>店家設定</NavLink></li>
+                        to={`/analysis/`}>營運數據分析</NavLink></li>
+                        <li><NavLink 
+                            activeClassName="active" 
+                            to={`/setting`}>店家設定</NavLink></li>
+                    </Fragment>
+                }
                 </ul>
                 <ul className="app-sideNav-footer">
                     <li id="app-sideNav-signOutBtn" onClick={this.signOut}>系統登出</li>
@@ -75,4 +90,10 @@ class AppSideNav extends Component{
     }
 }
 
-export default connect()(AppSideNav);
+function mapStateToProps({shop}) {
+    return {
+        shop,
+    }
+}
+
+export default connect(mapStateToProps)(AppSideNav);

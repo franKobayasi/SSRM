@@ -5,7 +5,7 @@ const initialState={
     address:'',
     tel:'',
     time:'',
-    onCheckoutMode:false,
+    onCheckoutMode:true,
 }
 
 const shopReducer=(preState=initialState,action)=>{

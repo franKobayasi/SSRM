@@ -1,9 +1,10 @@
 @import './fk-variables.scss';
 $tableDefaultLH:35px; // default style's line hight
 
-.fk-table, .fk-table--black{
+.fk-table, .fk-table--black, .fk-table--white{
     width: 100%;
     overflow: hidden;
+    position: relative;
     .fk-table-row, .fk-table-header, .fk-table-footer, .fk-table-highlighter{
         width: 100%;
         // table row : setting row height and row left and right edge padding
@@ -22,6 +23,9 @@ $tableDefaultLH:35px; // default style's line hight
             text-align: center;
             color: $mainColor;
         }
+    }
+    .fk-table-row, .fk-table-header, .fk-table-footer{
+        text-align: left;
     }
     span,input,label,select{
         // all inline element with same line height and height and with no border
@@ -83,6 +87,23 @@ $tableDefaultLH:35px; // default style's line hight
     .fk-table-header{
         background-color: black;
         color: white;
+    }
+    .fk-table-row:nth-of-type(2n+1){
+        background-color: rgba($color: white, $alpha: .5);
+    }
+    .fk-table-row:nth-of-type(2n){
+        background-color: rgba($color: white, $alpha: 1.0);
+    }
+}
+
+.fk-table--white{
+    border-radius: $defaultBR;
+    border: none;
+    background-color: rgba($color: black, $alpha: .1);
+    .fk-table-header{
+        background-color: white;
+        color: black;
+        border: none;
     }
     .fk-table-row:nth-of-type(2n+1){
         background-color: rgba($color: white, $alpha: .5);

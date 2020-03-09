@@ -2,6 +2,14 @@
 function randomusefloor(min,max){
 	return Math.floor(Math.random()*(max-min+1)+min);
 }
+/** 隨機長度數字 */
+function makerandomNumber(max){
+	let text = "";
+  let possible = "0123456789";
+  for (var i = 0; i < max; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  return text;
+}
 // 亂數英文字
 function makerandomletter(max){
   let text = "";
@@ -15,25 +23,25 @@ function randomPurchaseOrderID(){
     let date=new Date();
     let year=`${date.getFullYear()}`.toUpperCase();
     let month=(parseInt(date.getMonth(),10)+1)>=10?`${parseInt(date.getMonth(),10)+1}`:`0${parseInt(date.getMonth(),10)+1}`;
-    return `P${year}${month}${makerandomletter(2)}${randomusefloor(1,99999)}`;
+    return `P${year}${month}${makerandomletter(2)}${makerandomNumber(5)}`;
 }
 function randomCheckOutOrderID(){
     let date=new Date();
     let year=`${date.getFullYear()}`.toUpperCase();
     let month=(parseInt(date.getMonth(),10)+1)>=10?`${parseInt(date.getMonth(),10)+1}`:`0${parseInt(date.getMonth(),10)+1}`;
-    return `C${year}${month}${makerandomletter(2)}${randomusefloor(1,99999)}`;
+    return `C${year}${month}${makerandomletter(2)}${makerandomNumber(5)}`;
 }
 function randomStockOrderID(){
     let date=new Date();
     let year=`${date.getFullYear()}`.toUpperCase();
     let month=(parseInt(date.getMonth(),10)+1)>=10?`${parseInt(date.getMonth(),10)+1}`:`0${parseInt(date.getMonth(),10)+1}`;
-    return `S${year}${month}${makerandomletter(2)}${randomusefloor(1,99999)}`;
+    return `S${year}${month}${makerandomletter(2)}${makerandomNumber(5)}`;
 }
 function randomProductID(){
     let date=new Date();
     let year=`${date.getFullYear()}`.toUpperCase();
     let month=(parseInt(date.getMonth(),10)+1)>=10?`${parseInt(date.getMonth(),10)+1}`:`0${parseInt(date.getMonth(),10)+1}`;
-    return `I${year}${month}${makerandomletter(3)}${randomusefloor(1,9999)}`;
+    return `I${year}${month}${makerandomletter(3)}${makerandomNumber(4)}`;
 }
 
 /** Date */

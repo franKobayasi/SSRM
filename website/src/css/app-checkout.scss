@@ -1,0 +1,97 @@
+@import './fk-variables.scss';
+
+.app-checkout-new,
+.app-checkout-detail{
+    .orderContent{
+        height: 100%;
+        width: 100%;
+        .orderContent-header{
+            &>div{
+                display: inline-block;
+                vertical-align: middle;
+            }
+            .orderid{
+                float: left;
+                margin-right: 10px;
+                label{
+                    margin-right: 10px;
+                }
+                span{
+                    color: $mainColor;
+                }
+            }
+            .keyInArea{
+                float: right;
+                & > *{
+                    margin: 0 5px;
+                }    
+            }
+        }
+        .orderContent-main{
+            height: calc(100% - 70px);
+            .fk-table-footer{
+                width: 800px;
+                .calcResult{
+                    float: right;
+                    color: $mainColor;
+                    label{
+                        margin-right: 10px;
+                    }
+                }
+            }
+        }
+        .orderContent-footer{
+            overflow: hidden;
+            line-height: 35px;
+            height: 40px;
+            .actionBtns{
+                float: right;
+                button{
+                    margin: 0 10px;
+                }
+            } 
+        }
+        .keyIn--black{
+            background-color: $slightBlack;
+            text-align: center;
+            color: white;
+            outline: none;
+            line-height: 25px;
+        }
+    }
+    .app-checkout-formSubmitBooking{
+        .content{
+            width: fit-content;
+            .deposit{
+                *{
+                    line-height: 20px;
+                }
+                label{
+                    margin-right: 15px;
+                }
+                input{
+                    width: 125px;
+                    text-align: center;
+                }
+            }
+            .remindMsg{
+                margin-top: 10px;
+                color: $mainColor;
+            }
+        }
+    }
+}
+.app-checkout-history{
+    .orderList{
+        height: 100%;
+        .orderList-header, .orderList-footer{
+            height: 40px;
+        }
+        .orderList-main{
+            height: calc(100% - 80px);
+            .fk-table-scrollArea{
+                height: calc(100% - 50px);
+            }
+        }
+    }
+}

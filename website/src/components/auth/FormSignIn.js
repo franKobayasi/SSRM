@@ -19,7 +19,7 @@ class FormSignIn extends Component{
     render(){
         return (
             <Fragment>
-                <form onSubmit={this.handleSubmit} className="app-auth-panel-inputArea fk-form-white">
+                <form onSubmit={this.handleSubmit} className="app-auth-panel-inputArea fk-form--white">
                     <div className="fk-form-row">
                         <span>Email</span>
                         <input onChange={this.handleChange} id="email" type="email" value={this.state.email}/>

@@ -230,7 +230,6 @@ class PurchaseHistory extends Component{
             onSupplierAdding:bool,
         }))
     }
-    /** 進貨完成度 */
     toDetailPage=(orderid)=>{
         history().push(`/purchase/history/${orderid}`);
     }

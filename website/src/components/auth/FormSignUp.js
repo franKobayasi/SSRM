@@ -20,7 +20,7 @@ class FormSignUp extends Component{
     render(){
         return (
             <Fragment>
-            <form onSubmit={this.handleSubmit} className="app-auth-panel-inputArea fk-form-white">
+            <form onSubmit={this.handleSubmit} className="app-auth-panel-inputArea fk-form--white">
                 <div className="fk-form-row">
                     <span>會員名稱</span>
                     <input onChange={this.handleChange} id="username" type="text"/>

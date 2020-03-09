@@ -13,7 +13,7 @@ class FormSubmitBooking extends Component{
         let deposit=this.state.deposit;
         let remindMsg=this.state.remindMsg;
         return (
-            <div className="fk-popBox-form formSubmitBooking">
+            <div className="fk-popBox app-checkout-formSubmitBooking">
                 <div className="fk-popBox-title">預付訂金</div>
                 <form className="fk-popBox-content">
                     <div className="fk-popBox-content-center content">
@@ -21,8 +21,8 @@ class FormSubmitBooking extends Component{
                         <div className="remindMsg">{remindMsg}</div> 
                     </div>
                     <div className="fk-popBox-content-btns">
-                        <button className="cancel" onClick={this.cancel}>取消</button>
-                        <button className="submit" onClick={this.submit}>完成</button>
+                        <button className="fx-btn--25LH-mainColor" onClick={this.submit}>完成</button>
+                        <button className="fx-btn--25LH-mainColor" onClick={this.cancel}>取消</button>
                     </div>
                 </form>
             </div>

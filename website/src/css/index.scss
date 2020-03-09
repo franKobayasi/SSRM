@@ -7,13 +7,7 @@
 @import './fk-form.scss';
 /** Pages */
 @import './app-auth.scss';
-@import './sideNav.scss';
-@import './shopAuth.scss';
-
-
-
-@import './checkout.scss';
-
+@import './app-checkout.scss';
 @import './app-stock.scss';
 @import './app-sideNav.scss';
 @import './app-guide.scss';
@@ -97,6 +91,14 @@
         border-radius: $defaultBR;
     }
 }
+/** Order Modify */
+.app-orderModifySubmit{
+    textarea{
+        width: 100%;
+        min-height: 150px;
+    }
+}
+
 /** Filter */
 .app-filter{
     .app-filter-option{
@@ -117,6 +119,13 @@
         float: right;
     }
 }
+/** Stock Checker*/
+.app-StockChecker{
+    .app-StockChecker-result{
+        height: 150px;
+    }
+}
+
 /** Toggle Style */
 .app-toggle, .app-toggle-active,
 .app-toggle--Col,.app-toggle--Col-active{
@@ -164,7 +173,6 @@
         top: -2px;
     }
 }
-
 /** Checkbox */
 .app-checkbox{
     width: 15px;
@@ -226,10 +234,26 @@
         }
     }
 }
+/** Customer */
+.app-customer-entryForm{
+    .fk-form{
+        .fk-form-row{
+            line-height: 35px !important;
+        }
+    }
+}
+.app-customer-detail{
+    .fk-form{
+        span{
+            background-color: white;
+        }
+    }
+}
 /** Loading */
 .app-loading, .app-loading--black{
     width: 100%;
     height: 100%;
+    min-height: fit-content;
     position: relative;
     background-color: transparent;
     .app-loading-center{
