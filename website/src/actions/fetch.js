@@ -1,20 +1,14 @@
 const actionType={
-    post:'FETCH_POST',
-    success:'FETCH_SUCCESS',
-    fail:'FETCH_FAIL',
+    start:'FETCH_START',
+    finish:'FETCH_FINISH',
 }
-export function actionFetchPosted(){
+export function actionFetchStart(){
     return {
-        type:actionType.post,
+        type:actionType.start,
     }
 }
-export function actionFetchSuccessed(){
+export function actionFetchFinish(){
     return {
-        type:actionType.success,
-    }
-}
-export function actionFetchFailed(){
-    return {
-        type:actionType.fail,
+        type:actionType.finish,
     }
 }

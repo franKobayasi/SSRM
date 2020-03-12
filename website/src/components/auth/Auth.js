@@ -7,7 +7,7 @@ import FormSignIn from './FormSignIn';
 import FormSignUp from './FormSignUp';
 
 import {actionSignIn} from "../../actions/auth";
-import {actionFetchPosted, actionFetchSuccessed, actionFetchFailed} from "../../actions/fetch";
+import {actionFetchStart, actionFetchFinish} from "../../actions/fetch";
 
 
 import webLogo from '../../img/SSRM_logo.png';
@@ -102,7 +102,7 @@ class Auth extends Component{
     }
     submitSignUp=(data)=>{
         let dispatch=this.props.dispatch;
-        dispatch(actionFetchPosted());
+        dispatch(actionFetchStart());
         ssrmFirebase.auth().createUserWithEmailAndPassword(data.email, data.password)
         .then((res)=>{
             console.log('firebase authentiaction sign up success！');
@@ -114,7 +114,7 @@ class Auth extends Component{
                     displayName: data.username,
                 }).then(function() {
                     console.log('update user profile success！');
-                    dispatch(actionFetchSuccessed());
+                    dispatch(actionFetchFinish());
                     let user = ssrmFirebase.auth().currentUser;
                     let memberInfo={
                         name:user.displayName,
@@ -125,7 +125,7 @@ class Auth extends Component{
 
                     history().push('/');
                 }).catch(function(error) {  
-                    dispatch(actionFetchFailed()); 
+                    dispatch(actionFetchFinish()); 
                     console.error('ERROR\nupdate user profile fail！');
                     console.log(error);
                 });

@@ -13,6 +13,15 @@
     & > button{
         margin-right:10px;
     }
+    .fk-table--black{
+        width: fit-content;
+        .fk-table-scrollArea{
+            height: 300px;
+        }
+    }
+    .app-loading{
+        height: 150px;
+    }
 }
 .app-dashboard-shopInfo, .app-dashboard-pwReset{
     width: 450px;
@@ -21,4 +30,9 @@
 .app-dashboard-bussiSummary{
     width: 900px;
     float: left;
+}
+.app-dashboard-resetMK{
+    .fk-form{
+        width: 450px;
+    }
 }

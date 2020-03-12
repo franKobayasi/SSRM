@@ -8,17 +8,12 @@ const stateReducer=(preState=initialState,action)=>{
         return initialState;
     }
     switch(action.type){
-        case 'FETCH_POST':
+        case 'FETCH_START':
             return Object.assign({},preState,{
                 isFetch:true,
             })
             break;
-        case 'FETCH_SUCCESS':
-            return Object.assign({},preState,{
-                isFetch:false,
-            })
-            break;
-        case 'FETCH_FAIL':
+        case 'FETCH_FINISH':
             return Object.assign({},preState,{
                 isFetch:false,
             })
