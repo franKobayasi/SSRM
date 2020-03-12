@@ -17,170 +17,73 @@ const app=admin.initializeApp({
 const DB = app.firestore();
 
 /** shop auth  */
-exports.shopAuth=functions.https.onRequest(async(req,res)=>{
+exports.modifyMasterKey=functions.https.onRequest(async(req,res)=>{
   cors(req, res, async()=>{
+    let resBody;
     if(req.method==="POST"){
       let body=req.body;
-      let userClient=body.user;
-      let resBody;
-      // await DB.ref(`members/${body.uid}/shops/${body.shopID}/users`).get()
-      await DB.collection('members').doc(body.uid).collection('shops').doc(body.shopID).collection('users').get()
-      .then(snapshot=>{
-        console.log(body);
-        if(snapshot.empty){
+      let shop;
+      await DB.collection('shops').doc(body.uid).get()
+      .then(doc=>{
+        if(!doc.exists){
           console.log('No matching documents.');
           resBody={
-            state:'fail',
-            message:'NO_USER_EXIST'
+            status:'fail',
+            message:'wrong shop infomation, this shop is not set up yet.'
           }
         }else{
-          let users=[];
-          snapshot.forEach(doc=>{
-            let user=doc.data();
-            user.id=doc.id;
-            users.push(user);
-          })
-          for(let temp of users){
-            if(userClient.type==='owner'){
-              if(temp.type==='owner'&&temp.password===userClient.password){
-                resBody={
-                  state:'success',
-                  user:{
-                    id:temp.id,
-                    name:temp.name
-                  }
-                }
-                console.log('owner login')
-                // owner login;
-              }else{
-                resBody={
-                  state:'fail',
-                  message:'owner login fail: wrong name or password'
-                }
-                // owner login fail 
-              }
-            }else{
-              if(temp.name===userClient.name&&temp.password===userClient.password){
-                resBody={
-                  state:'success',
-                  user:{
-                    id:temp.id,
-                    name:temp.name
-                  }
-                }
-                console.log('owner login')
-                // employee login;
-              }else{
-                resBody={
-                  state:'fail',
-                  message:'employee login fail: wrong name or password'
-                }
-                console.log('employee login fail: wrong name or password')
-                // employee login fail
-              }
-            }
-          }       
+          shop=doc.data();
         }
-        res.send(resBody);
         return;
       })
       .catch(error=>{
-        console.log('firebase error');
         resBody={
-          state:'error',
-          message:'FIREBASE_ERROR'
+          status:'error',
+          message:'FIREBASE_ERROR\nupdate MasterKey fail'
         }
-        res.send(resBody);
         return;
       })
-    }else{
-      console.log('type error');
-      resBody={
-        state:'error',
-        message:'error ajax method, please use post'
-      }
-      res.send(resBody);
-    }
-  })
-})
-
-/** add new supplier */
-exports.addNewSupplier=functions.https.onRequest(async(req,res)=>{
-  // 跨域請求
-  cors(req, res, async()=>{
-    // 收到供應商資料並確認是否有重複，如果沒有則新增成功
-    if(req.method==="POST"){
-      let data=req.body;
-      let supplier=data.supplier;
-      let isExist=false;
-      let resData;
-      try{
-        await DB.collection('members').doc(data.uid).collection('shops').doc(data.shopID).collection('provider')
-        .where('phone','==',`${supplier.phone}`).get()
-        .then(snapshot=>{
-          if(snapshot.empty){
-            console.log('確定無重複供應商，可以執行添加');
-            resData={
-              state:'succsee',
-              message:'新增成功'
-            }
-          }else{
-            snapshot.forEach(doc=>{
-              supplier.id=doc.id;
+      if(shop){        
+        if(body.old_MK&&body.old_MK===shop.masterKey){
+          if(body.new_MK&&body.new_MK.length>=4||/[A-z]+\d+\w+/.test(body.new_MK)){
+            await DB.collection('shops').doc(body.uid).update({
+              masterKey:body.new_MK
             })
-            isExist=true;
-            resData={
-              state:'fail',
-              message:'供應商已經存在，新增失敗',
-              supplier:supplier
+            .then(res=>{
+              resBody={
+                status:'success',
+                message:'權限密碼更新成功！'
+              }
+              return ;
+            })
+            .catch(error=>{
+              resBody={
+                status:'error',
+                message:'FIREBASE_ERROR\nupdate MasterKey fail'
+              }
+              console.error('權限密碼更新失敗！firebase error');
+              console.log(error);
+              return;
+            })
+          }else{
+            resBody={
+              status:'fail',
+              message:'新的權限密碼不符合格式要求，無法更改，請再次輸入'
             }
           }
-          return ;
-        })
-        .catch((error)=>{
-          console.error('Error\n在新增供應商過程，查詢供應商發生錯誤')
-          console.log(error);
-          resData={
-            state:'error',
-            message:'在新增供應商過程，查詢供應商發生錯誤'
+        }else{
+          resBody={
+            status:'fail',
+            message:'原始權限密碼輸入錯誤，無法更改，如果忘記權限密碼，請於側邊導航欄位點擊重設權限密碼，重設的連結會寄至您所設定的信箱'
           }
-          return ;
-        })
-      }
-      catch(error){
-        console.log("call firestore DB error");
-        console.log(error)
-        resData={
-          state:'error',
-          message:'在新增供應商過程，查詢供應商發生錯誤'
         }
       }
-      if(!isExist){
-        await DB.collection('members').doc(data.uid).collection('shops').doc(data.shopID).collection('provider').add(supplier)
-          .then(docRef=>{
-            console.log('供應商註冊中...')
-            supplier.id=docRef.id
-            resData.supplier=supplier;      
-            return ;
-          })
-          .catch(error=>{
-            console.error('Error\n在新增供應商過程，新增供應商發生錯誤')
-            console.log(error);
-            resData={
-              state:'error',
-              message:'在新增供應商過程，新增供應商發生錯誤'
-            }
-            return ;
-          })   
-      }
-      res.status(200).send(resBody);
     }else{
-      console.error('ERROR\nclient request type error');
       resBody={
-        state:'Error',
-        message:'wrong request method, this api need to use post'
+        status:'error',
+        message:'error ajax method, please use post'
       }
-      res.status(404).send(resBody);
     }
+    res.send(resBody);
   })
 })
