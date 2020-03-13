@@ -68,6 +68,8 @@ class AfterSignIned extends Component{
                     <Route path="/stock/history" render={(history)=><StockHistory history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/stock/stockin" render={(history)=><StockInOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/stock/return" render={(history)=><StockReturnOrder history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route exact path="/checkout/history" render={(history)=><Checkout history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
+                    <Route path="/checkout/history/:orderid" render={(history)=><Checkout history={history} auth={auth} shop={shop} shopRef={shopRef} />}/>
                     <Route path="/">
                         <Redirect to="/dashboard"/>
                     </Route>

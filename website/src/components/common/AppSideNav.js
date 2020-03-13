@@ -72,12 +72,6 @@ class AppSideNav extends Component{
                         <li><NavLink 
                             activeClassName="active" 
                             to={`/checkout/history`}>歷史交易紀錄查詢</NavLink></li>
-                        <li><NavLink 
-                        activeClassName="active" 
-                        to={`/analysis/`}>營運數據分析</NavLink></li>
-                        <li><NavLink 
-                            activeClassName="active" 
-                            to={`/setting`}>店家設定</NavLink></li>
                     </Fragment>
                 }
                 </ul>
