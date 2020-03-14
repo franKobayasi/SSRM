@@ -61,39 +61,39 @@ update date: 2020-03-13
 ### React and Redux Structure
 
 * React Structure
--- App
----- AfterSignIn
------- Dashboard
------- Purchase_Create
------- Purchase_Detail
------- Purchase_History
------- StockIn
------- StockReturn
------- StockHistory
------- Checkout_Create
------- Checkout_Detail
------- Checkout_History
----- BeforeSignIn
------- Auth
--------- SignIn
--------- SignUp
+-- App<br\>
+---- AfterSignIn<br\>
+------ Dashboard<br\>
+------ Purchase_Create<br\>
+------ Purchase_Detail<br\>
+------ Purchase_History<br\>
+------ StockIn<br\>
+------ StockReturn<br\>
+------ StockHistory<br\>
+------ Checkout_Create<br\>
+------ Checkout_Detail<br\>
+------ Checkout_History<br\>
+---- BeforeSignIn<br\>
+------ Auth<br\>
+-------- SignIn<br\>
+-------- SignUp<br\>
 * Redux State
--- State
----- state
-------isFetch
-------isError
----- shop
-------status
-------title
-------address
-------tel
-------onCheckoutMode
-------time
----- auth
-------MEMBER_UID
-------MEMBER_NAME
-------MEMBER_EMAIL
-------isLogin
+-- State<br\>
+---- state<br\>
+------isFetch<br\>
+------isError<br\>
+---- shop<br\>
+------status<br\>
+------title<br\>
+------address<br\>
+------tel<br\>
+------onCheckoutMode<br\>
+------time<br\>
+---- auth<br\>
+------MEMBER_UID<br\>
+------MEMBER_NAME<br\>
+------MEMBER_EMAIL<br\>
+------isLogin<br\>
 
 ### Contact
 
