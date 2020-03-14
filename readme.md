@@ -61,7 +61,7 @@ update date: 2020-03-13
 ### React and Redux Structure
 
 * React Structure
-** App
+* * App
 ---- AfterSignIn<br\>
 ------ Dashboard<br\>
 ------ Purchase_Create<br\>
