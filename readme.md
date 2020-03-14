@@ -6,9 +6,6 @@ website: https://ssrm-e7bc3.web.app/
 version: 1.0 
 update date: 2020-03-13
 
-### Table of Content
-
-
 ### Technologies
 * HTML, CSS, JavaScript
 * React for JS
@@ -59,42 +56,40 @@ update date: 2020-03-13
 ![](https://i.imgur.com/snlSnLx.png)
 
 ### React and Redux Structure
-
 * React Structure
--- App<br\>
----- AfterSignIn<br\>
------- Dashboard<br\>
------- Purchase_Create<br\>
------- Purchase_Detail<br\>
------- Purchase_History<br\>
------- StockIn<br\>
------- StockReturn<br\>
------- StockHistory<br\>
------- Checkout_Create<br\>
------- Checkout_Detail<br\>
------- Checkout_History<br\>
----- BeforeSignIn<br\>
------- Auth<br\>
--------- SignIn<br\>
--------- SignUp<br\>
+    * App
+        * AfterSignIn
+            * Dashboard
+            * Purchase_Create
+            * Purchase_Detail
+			* Purchase_History
+			* StockIn
+			* StockReturn
+			* StockHistory
+			* Checkout_Create
+			* Checkout_Detail
+			* Checkout_History
+        * BeforeSignIn
+            * Auth
+				* SignIn
+				* SignUp
 * Redux State
--- State<br\>
----- state<br\>
-------isFetch<br\>
-------isError<br\>
----- shop<br\>
-------status<br\>
-------title<br\>
-------address<br\>
-------tel<br\>
-------onCheckoutMode<br\>
-------time<br\>
----- auth<br\>
-------MEMBER_UID<br\>
-------MEMBER_NAME<br\>
-------MEMBER_EMAIL<br\>
-------isLogin<br\>
+    * Store
+        * state
+			* isFetch
+			* isError
+		* shop
+			* status
+			* title
+			* address
+			* tel
+			* onCheckoutMode
+			* time
+		* auth
+			* MEMBER_UID
+			* MEMBER_NAME
+			* MEMBER_EMAIL
+			* isLogin
 
 ### Contact
-
-email: alinktofrank@gmail.com
+* email: alinktofrank@gmail.com
