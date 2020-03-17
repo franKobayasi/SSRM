@@ -69,7 +69,6 @@ class CheckoutDetail extends Component{
                     onEditMode?
                     <Fragment>
                         <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSubmitBooking(true)}}>預付訂金</button>
-                        <button className="fx-btn--mainColor">未結暫存</button>
                     </Fragment>:
                     null
                 }

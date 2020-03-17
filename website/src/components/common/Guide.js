@@ -45,7 +45,7 @@ class Guide extends Component{
                         <span className="app-guide-box">
                             <span className="app-guide-title">使用導覽</span>
                             <span className="app-guide-content">
-                                <span>接下來，我們將簡單的說明如何SSRM的操作方式，未來仍可透過系統導覽功能更深入的了解如何使用本系統。<br/>
+                                <span>接下來，我們將簡單的說明如何SSRM的操作方式。<br/>
                                 為了避免一般店員接觸到較敏感數據資料，SSRM具有兩種模式：結帳模式／後台模式。 <br/>
                                 結帳模式用於店面日常結帳收營操作，僅能操作結帳、帳單查詢、修改及刪除、庫存查詢、新增顧客資料等等基礎操作。<br/>
                                 後台模式為敏感資料的操作，如採購、進貨、營業數據報 告、店家設定等，兩種模式的切換需要透過輸入權限密碼來達成。</span>

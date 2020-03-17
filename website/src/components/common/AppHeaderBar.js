@@ -17,7 +17,6 @@ class AppHeaderBar extends Component{
             <div className="app-headerBar">
                 <span className="app-headerBar-shopTitle">{shop.title}</span>
                 <span className="app-headerBar-operateArea">
-                    <span id="appShowGuideBtn">使用導覽</span>
                     <span id="appModeToggle">
                         <label>{onCheckoutMode?'結帳模式':'後台模式'}</label>
                         <Toggle isOn={onCheckoutMode} toggle={this.toggleAppMode} />

@@ -54,7 +54,6 @@ class CheckoutCreate extends Component{
                 <div className="operatingBtns">
                     <button className="fx-btn--mainColor" onClick={()=>{this.toogleShowCustomerForm(true)}}>新增會員</button>
                     <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSubmitBooking(true)}}>預付訂金</button>
-                    <button className="fx-btn--mainColor">未結暫存</button>
                     <button className="fx-btn--mainColor" onClick={()=>{this.toggleShowStockChecker(true)}}>庫存查詢</button>
                     <button onClick={()=>{this.props.history.history.push('/checkout/history')}} className="fx-btn--mainColor">歷史查詢</button>
                 </div>
