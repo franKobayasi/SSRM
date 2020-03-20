@@ -14,7 +14,7 @@ class FormProductEditing extends Component{
             cost:CP.cost,
             price:CP.price,
             startAt:CP.startAt,
-            itemList:CP.itemList,
+            itemList:CP.itemList.concat([]),
             tempSize:'',
             tempColor:'',
             tempNum:'',
@@ -22,6 +22,7 @@ class FormProductEditing extends Component{
             isCostRight:CP?true:false,
             isPriceRight:CP?true:false,
             remindMsg:'提示訊息',
+            remindMsg_Spec:'提示訊息'
         }
     }
     render(){
@@ -66,11 +67,12 @@ class FormProductEditing extends Component{
                                 <div className="productSpecArea-row" key={itemIndex}> {/** 如果在編輯狀態 */}
                                     <span className="productSpecArea-row-info">
                                         <label>尺寸</label>
-                                        <input onChange={(evnt)=>{this.updateSpec(itemIndex,'size',evnt.target.value)}} defaultValue={item.size}/>
+                                        <input onChange={(evnt)=>{this.updateSpec(itemIndex,'size',evnt.target.value)}} value={item.size}/>
                                         <label>顏色</label>
-                                        <input onChange={(evnt)=>{this.updateSpec(itemIndex,'color',evnt.target.value)}} defaultValue={item.color} />
+                                        <input onChange={(evnt)=>{this.updateSpec(itemIndex,'color',evnt.target.value)}} value={item.color} />
                                         <label>件數</label>
-                                        <input onChange={(evnt)=>{this.updateSpec(itemIndex,'num',evnt.target.value)}} defaultValue={item.num} />
+                                        <input onChange={(evnt)=>{this.updateSpec(itemIndex,'num',evnt.target.value)}} value={item.num} />
+                                        <div id="remindMsg_Spec">{this.state.remindMsg_Spec}</div>
                                     </span>
                                     <span className="productSpecArea-row-btns">
                                         <div className="fx-btn--Img-25px">
@@ -196,27 +198,51 @@ class FormProductEditing extends Component{
     }
     checkOutEditSpec=(target)=>{
         let itemList=this.state.itemList.concat([]);
-        itemList[target]['isEdit']=!itemList[target]['isEdit'];
-        this.setState(preState=>({
-            itemList,
-        }))
+        let item=itemList[target];
+        if(item.isEdit&&item.isWrongSpec){
+            alert('產品規格有誤，請確認！');
+        }else{
+            itemList[target]['isEdit']=!itemList[target]['isEdit'];
+            this.setState(preState=>({
+                itemList,
+            }))
+        }
     }
     updateSpec=(target,key,value)=>{
         let itemList=this.state.itemList.concat([]);
+        let msg="OK!";
         if(key==='num'){
-            itemList[target][key]=Number(value);
+            let item=itemList[target];
+            if(item.inStock>value){
+                msg="採購數量不能低於已進貨數量！";
+                item.num=Number(value);
+                item.isWrongSpec=true;
+            }else if(isNaN(Number(value))){
+                msg="格式錯誤，請輸入數字！"
+                item.num=value;
+                item.isWrongSpec=true;
+            }else{
+                item.num=Number(value);
+                delete item.isWrongSpec;
+            }
         }else{
             itemList[target][key]=value.toUpperCase();
         }
         this.setState(preState=>({
             itemList,
+            remindMsg_Spec:msg
         }))
     }
     removeSpec=(target)=>{
-        let itemList=this.state.itemList.filter((item,itemIndex)=>(!(itemIndex===target)));
-        this.setState(preState=>({
-            itemList,
-        }))
+        let preItemList=this.state.itemList;
+        if(preItemList[target].inStock===0){
+            let itemList=preItemList.filter((item,itemIndex)=>(!(itemIndex===target)));
+            this.setState(preState=>({
+                itemList,
+            }))
+        }else{
+            alert('此規格商品已經進貨，無法移除');
+        }
     }
     submitProductSpecs=()=>{
         let name=this.state.name;

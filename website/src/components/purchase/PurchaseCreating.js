@@ -5,6 +5,7 @@ import {createHashHistory as history} from 'history';
 import AppSideNav from '../common/AppSideNav';
 import AppHeaderBar from '../common/AppHeaderBar';
 import {Loading} from '../common/Loading';
+import StockChecker from '../common/StockChecker';
 import ContentTable from './ContentTable';
 import Supplier, {FormSupplierEntry} from "../common/Supplier";
 import FormProductEditing from './FormProductEditing';
@@ -40,12 +41,23 @@ class PurchaseCreating extends Component{
                 <AppSideNav />
                 <AppHeaderBar />
                 <div className="app-pageMainArea app-purchase-create"> {/** current order */}
-                    {onSupplierEntry? /* 新增供應商 */
-                    <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleFormSupplierEntry} />:null}
-                    {onProductEditing? /* 新增產品表單 */
+                {
+                    this.state.showStockChecker?
+                    <StockChecker toggle={this.showStockChecker}/>:
+                    null
+                }
+                {
+                    onSupplierEntry? /* 新增供應商 */
+                    <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleFormSupplierEntry} />:
+                    null
+                }
+                {
+                    onProductEditing? /* 新增產品表單 */
                     <FormProductEditing currentProduct={this.state.currentProduct} 
                     submitProductSpecs={this.submitProductSpecs} 
-                    cancelUpdateProduct={this.cancelUpdateProduct} />:null}
+                    cancelUpdateProduct={this.cancelUpdateProduct} />:
+                    null
+                }
                     <div className="app-pageMainArea-header">
                         <div className="location">當前位置：採購單登錄</div>
                         <div className="operatingBtns">

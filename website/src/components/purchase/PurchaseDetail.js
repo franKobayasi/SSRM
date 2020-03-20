@@ -7,6 +7,7 @@ import AppSideNav from '../common/AppSideNav';
 import {Loading} from '../common/Loading';
 import ContentTable from './ContentTable'; 
 import ModifySubmit from '../common/ModifySubmit';
+import StockChecker from '../common/StockChecker';
 import Supplier, {FormSupplierEntry} from '../common/Supplier';
 import FormProductEditing from './FormProductEditing';
 
@@ -27,6 +28,7 @@ class PurchaseDetail extends Component{
             onSupplierAdding:false,
             isModified:false,
             showModifyConfirm:false,
+            showStockChecker:false,
             localStorageLock:true,
         }
     }
@@ -39,6 +41,11 @@ class PurchaseDetail extends Component{
         console.log(orderToRender);
         return (
             <div className="app-pageMainArea app-purchase-order">
+            {
+                this.state.showStockChecker?
+                <StockChecker toggle={this.showStockChecker}/>:
+                null
+            }
             {
                 this.state.showModifyConfirm?
                 <ModifySubmit title="採購單修改" submit={this.submitOrder} cancel={this.cancelSubmit}/>:
@@ -58,7 +65,9 @@ class PurchaseDetail extends Component{
                         <button className="fx-btn--mainColor" onClick={()=>{
                             this.props.getOrdersFromDB();
                             history().push(`/purchase/history`)}}>歷史訂單</button>
-                        <button className="fx-btn--mainColor">庫存查詢</button>
+                        <button className="fx-btn--mainColor" onClick={()=>{
+                            this.showStockChecker(true);
+                        }}>庫存查詢</button>
                         <button className="fx-btn--mainColor" onClick={()=>{
                             this.toggleSupplierAddingForm(true)
                         }}>新增供應商</button>
@@ -235,6 +244,11 @@ class PurchaseDetail extends Component{
         }
         return orderFRBS;
     }
+    showStockChecker=(bool)=>{
+        this.setState(preState=>({
+            showStockChecker:bool
+        }));
+    }
     editOrder=()=>{
         let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`History_${this.props.id}`));
         let localStorageLock=true;
@@ -242,13 +256,12 @@ class PurchaseDetail extends Component{
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
             unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
             localStorageLock=false;
-        }else{
-            this.setState((preState)=>({
-                localStorageLock,
-                onOrderEditing:true,
-                unsavedHistoryOrder,
-            }));
         }
+        this.setState((preState)=>({
+            localStorageLock,
+            onOrderEditing:true,
+            unsavedHistoryOrder,
+        }));
     }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
@@ -294,8 +307,8 @@ class PurchaseDetail extends Component{
     /** 設定當前供應商 */
     setCurrentSuppier=(title,address,tel)=>{
         this.setState(preState=>({
-            currentOrder:{
-                ...preState.currentOrder,
+            unsavedHistoryOrder:{
+                ...preState.unsavedHistoryOrder,
                 search_supplier:[`${title}`,`${address}`,`${tel}`]
             },
             localStorageLock:false,
@@ -473,6 +486,7 @@ class PurchaseDetail extends Component{
             this.setState(preState=>({
                 onOrderEditing:false,
                 unsavedHistoryOrder:null,
+                currentOrder:'loading'
             }))
             localStorage.removeItem(`History_${this.props.id}`);
         }
