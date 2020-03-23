@@ -71,7 +71,7 @@ class CheckoutHistory extends Component{
                             orderList.map((order,index)=>(
                                 <div key={index} className="fk-table-row">
                                     <span className="fk-table-cell-175px">{order.id}</span>
-                                    <span className="fk-table-cell-125px">{order.customer[0]}</span>
+                                    <span className="fk-table-cell-125px">{order.customerNameAndID.name}</span>
                                     <span className="fk-table-cell-75px">{order.calcResult.sumOfNum}</span>
                                     <span className="fk-table-cell-75px">{order.calcResult.sumOfMoney}</span>
                                     <span className="fk-table-cell-75px">{order.calcResult.discount}</span>
@@ -223,11 +223,11 @@ class CheckoutHistory extends Component{
                         console.error(error);
                     })
                     promises.push(itemUpdate); //加回庫存
-                    let tradeRecordsUpdate=t.get(shopRef.collection('customers').doc(order.customer[1]))
+                    let tradeRecordsUpdate=t.get(shopRef.collection('customers').doc(order.customerNameAndID.id))
                     .then(doc=>{
                         let customer=doc.data();
                         delete customer.tradeRecords[order.id];
-                        t.set(shopRef.collection('customers').doc(order.customer[1]),customer)
+                        t.set(shopRef.collection('customers').doc(order.customerNameAndID.id),customer)
                     })
                     .catch(error=>{
                         console.log('ERROR\n顧客交易紀錄，更新失敗');

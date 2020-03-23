@@ -17,12 +17,15 @@ class FormCustomerEntry extends Component{
             tel:'',
             isTelRight:false,
             address:'',
-            remindMsg:'提示訊息',
-
+            remindMsg:{
+                default:'提示訊息',
+                msg:{}
+            }
         }
     }
     render(){
         let callback=this.props.callback;
+        let remindMsg=this.state.remindMsg;
         return (
             <div className="app-customer-entryForm fk-popBox">
                 <div className="fk-popBox-title">新增顧客資料</div>
@@ -30,17 +33,25 @@ class FormCustomerEntry extends Component{
                     <div className="fk-popBox-content-center fk-form">
                         <div className="fk-form-row">
                             <label>姓名</label>
-                            <input placeholder="required" onChange={this.keyInName} type="text" value={this.state.name}/>
+                            <input id="name" placeholder="required" onChange={this.handleChange} type="text" value={this.state.name}/>
                         </div>
                         <div className="fk-form-row">
                             <label>電話</label>
-                            <input placeholder="required" onChange={this.keyInTel} type="text" value={this.state.tel}/>
+                            <input id="tel" placeholder="required" onChange={this.handleChange} type="text" value={this.state.tel}/>
                         </div>
                         <div className="fk-form-row">
                             <label>地址</label>
-                            <input placeholder="optional" onChange={this.keyInAdress} type="text" value={this.state.address}/>
+                            <input id="address" placeholder="optional" onChange={this.handleChange} type="text" value={this.state.address}/>
                         </div>
-                        <div className="fk-form-remindMsg">{this.state.remindMsg}</div>
+                        <div className="fk-form-remindMsg">
+                    {
+                        Object.keys(remindMsg.msg).length===0?
+                        remindMsg.default:
+                        Object.keys(remindMsg.msg).map(key=>(
+                            <Fragment key={key}><span>{remindMsg.msg[key]}</span><br/></Fragment>
+                        ))
+                    }
+                        </div>
                     </div>
                     <div className="fk-popBox-content-btns">
                         <button className="fx-btn--25LH-mainColor" onClick={this.submitCustomer}>送出</button>
@@ -50,57 +61,49 @@ class FormCustomerEntry extends Component{
             </div>
         )
     }
-    keyInName=(evnt)=>{
-        let value=evnt.target.value;        
-        if(value.length===0){
-            this.setState(preState=>({
-                name:value,
-                isNameRight:false,
-                remindMsg:'尚未輸入',
-            }))
-        }else{
-            this.setState(preState=>({
-                name:value,
-                isNameRight:true,
-                remindMsg:'OK',
-            }))
-        }
-    }
-    keyInTel=(evnt)=>{
-        let value=evnt.target.value;    
-        if(value.length<5){
-            this.setState(preState=>({
-                tel:value,
-                isTelRight:false,
-                remindMsg:'電話號碼過短',
-            }))
-        }else if(/[A-z]|-/.test(value)){
-            this.setState(preState=>({
-                tel:value,
-                isTelRight:false,
-                remindMsg:'格式錯誤，不能有字母或是\'-\'符號',
-            })) 
-        }else{
-            this.setState(preState=>({
-                tel:value,
-                isTelRight:true,
-                remindMsg:'OK',
-            }))
-        }
-    }
-    keyInAdress=(evnt)=>{
+    handleChange=(evnt)=>{
         let value=evnt.target.value;
-        if(value.length<5){
-            this.setState(preState=>({
-                address:value,
-                remindMsg:'地址過短',
-            }))
-        }else{
-            this.setState(preState=>({
-                address:value,
-                remindMsg:'OK',
-            }))
+        let type=evnt.target.id;
+        let remindMsg=this.state.remindMsg;
+        let isNameRight=this.state.isNameRight;
+        let isTelRight=this.state.isTelRight;
+        switch (type) {
+            case 'name':
+                if(value.length===0){
+                    remindMsg.msg.name='名稱錯誤：尚未輸入，顧客名稱不得為空。';
+                    isNameRight=false;
+                }else if(value.length<2){
+                    remindMsg.msg.name='名稱錯誤：格式長度過短，至少兩個字元。'
+                    isNameRight=false;
+                }else{
+                    isNameRight=true;
+                    delete remindMsg.msg.name;
+                }   
+                break;
+            case 'tel':
+                if(value.length===0){
+                    remindMsg.msg.tel='電話錯誤：尚未輸入，顧客電話不得為空。';
+                    isTelRight=false;
+                }else if(value.length<7){
+                    isTelRight=false;
+                    remindMsg.msg.tel='電話錯誤：格式長度過短，至少7個字元。'
+                }else{
+                    isTelRight=true;
+                    delete remindMsg.msg.tel;
+                }
+                break;
+            default:
+                break;
         }
+        if(Object.keys(remindMsg.msg).length===0&&isNameRight&&isTelRight){
+            remindMsg.default='OK!';
+        }
+        this.setState(preState=>({
+            remindMsg,
+            isNameRight,
+            isTelRight,
+            [type]:value
+        }))
     }
     submitCustomer=(evnt)=>{
         evnt.preventDefault();
@@ -115,10 +118,12 @@ class FormCustomerEntry extends Component{
         }else if(!isTelRight){
             alert('尚未輸入電話或格式錯誤，請確認')
         }else{
-            shopRef.collection('customers').doc(this.state.tel).get()
-            .then(doc=>{
-                if(doc.exists){
-                    alert(`此電話已經註冊過\n顧客：${doc.data().name}!`)
+            shopRef.collection('customers').where('tel','==',this.state.tel).get()
+            .then(snapshot=>{
+                if(!snapshot.empty){
+                    snapshot.forEach(doc=>{
+                        alert(`此電話已經註冊過\n顧客：${doc.data().name}!`)
+                    })
                 }else{
                     let customer={
                         name,
@@ -126,10 +131,10 @@ class FormCustomerEntry extends Component{
                         address:address?address:'未填寫',
                         tradeRecords:{}
                     }
-                    shopRef.collection('customers').doc(this.state.tel).set(customer)
+                    shopRef.collection('customers').doc().set(customer)
                     .then(res=>{
                         alert('新增成功！');
-                        this.callback(false);
+                        this.props.callback(false);
                     })
                     .catch(error=>{
                         alert('新增失敗！')
@@ -152,11 +157,11 @@ class Customer extends Component{
     }
     render(){
         let isShow=this.state.isShow;
-        let customer=this.props.customer;
+        let customerNameAndID=this.props.customerNameAndID;
         let detail=this.state.detail;
         return (
             <Fragment>
-                <button onClick={this.toShowDetail} className="fx-btn--25LH-mainColor">{customer[0]?customer[0]:'請查詢'}</button>
+                <button onClick={this.toShowDetail} className="fx-btn--25LH-mainColor">{customerNameAndID?customerNameAndID.name:'請查詢'}</button>
                 {
                     isShow?
                     <div className="fk-popBox app-customer-detail">
@@ -173,7 +178,7 @@ class Customer extends Component{
                                     <label className="fk-form-cell-100px">電話</label><span>{detail.tel}</span>
                                 </div>
                                 <div className="fk-form-row">
-                                    <label className="fk-form-cell-100px">地址</label><span>{detail.address?detail.address:'未填寫'}</span>
+                                    <label className="fk-form-cell-100px">地址</label><span>{detail.address}</span>
                                 </div>
                                 <div className="fk-form-row">
                                     <label className="fk-form-cell-100px">累積消費</label><span>{this.getSumOfTrade(detail.tradeRecords)}</span>
@@ -218,9 +223,9 @@ class Customer extends Component{
         )
     }
     componentDidUpdate(){
-        let customer=this.props.customer
+        let customerNameAndID=this.props.customerNameAndID
         if(this.state.isShow&&this.state.getCustomerDetail){
-            this.props.shopRef.collection('customers').doc(customer[1]).get()
+            this.props.shopRef.collection('customers').doc(customerNameAndID.id).get()
             .then(doc=>{
                 this.setState(preState=>({
                     detail:doc.data(),
@@ -230,7 +235,7 @@ class Customer extends Component{
         }
     }
     toShowDetail=()=>{
-        if(this.props.customer[1]){
+        if(this.props.customerNameAndID){
             this.setState(preState=>({
                 isShow:true,
                 getCustomerDetail:true,

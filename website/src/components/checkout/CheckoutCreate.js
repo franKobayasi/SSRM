@@ -70,7 +70,7 @@ class CheckoutCreate extends Component{
                             <span>{currentOrder.id}</span>
                         </div>
                         <div className="keyInArea">
-                            <Customer shopRef={this.props.shopRef} customer={currentOrder.customer}/>
+                            <Customer shopRef={this.props.shopRef} customerNameAndID={currentOrder.customerNameAndID}/>
                             <input className="keyIn--black" onKeyPress={this.keyInCustomer} placeholder="會員查詢(TEL)" type="text"/>
                             <input className="keyIn--black" onKeyPress={this.keyInProduct} placeholder="商品輸入(ID)" type="text"/>
                         </div>
@@ -229,10 +229,9 @@ class CheckoutCreate extends Component{
             (async()=>{
                 let result= await this.checkCustomer(target.value);
                 if(result.data){
-                    let customer=result.data;
+                    let customerNameAndID=result.data;
                     target.value=''; /** 清空查詢 */
-                    console.log(customer);
-                    this.setCurrentCustomer(customer.name,customer.tel)
+                    this.setCurrentCustomer(customerNameAndID)
                 }else{
                     alert(`${result.message}`)
                 }
@@ -243,19 +242,24 @@ class CheckoutCreate extends Component{
     checkCustomer=async(tel)=>{
         let result={};
         let shopRef=this.props.shopRef;
-        await shopRef.collection('customers').doc(tel).get()
-        .then(doc=>{
-            if(doc.exists){
-                result.data=doc.data();
+        await shopRef.collection('customers').where('tel','==',tel).limit(1).get()
+        .then(snapshot=>{
+            if(!snapshot.empty){
+                snapshot.forEach(doc=>{
+                    result.data={
+                        name:doc.data().name,
+                        id:doc.id
+                    }
+                })
             }else{
                 result.message='查無此顧客，請確認電話號碼是否有誤，或新增此顧客';
             }
         })
         return result;
     }
-    setCurrentCustomer=(name,tel)=>{
+    setCurrentCustomer=(customerNameAndID)=>{
         let currentOrder=Object.assign({},this.state.currentOrder);
-        currentOrder.customer=[name,tel];
+        currentOrder.customerNameAndID=customerNameAndID;
         this.setState(preState=>({
             currentOrder,
             localStorageLock:false,
@@ -271,7 +275,6 @@ class CheckoutCreate extends Component{
                 if(result.product){
                     let product=result.product;
                     target.value=''; /** 清空查詢 */
-                    console.log(product);
                     /** 將商品加入Order */
                     this.pushNewProductToOrder(product)
                 }else{
@@ -403,7 +406,7 @@ class CheckoutCreate extends Component{
     submitOrder=()=>{
         let shopRef=this.props.shopRef;
         let currentOrder=Object.assign({},this.state.currentOrder);
-        if(currentOrder.customer.length===0){
+        if(!currentOrder.customerNameAndID){
             alert('尚未輸入顧客資料，請確認！');
             return ;
         }
@@ -427,7 +430,7 @@ class CheckoutCreate extends Component{
                 })
                 promises.push(updateProduct);
             }
-            let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(currentOrder.customer[1]))
+            let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(currentOrder.customerNameAndID.id))
             .then(doc=>{
                 if(doc.exists){
                     let customer=doc.data();
@@ -436,7 +439,7 @@ class CheckoutCreate extends Component{
                     }
                     customer.tradeRecords[currentOrder.id]=currentOrder.calcResult;
                     customer.tradeRecords[currentOrder.id].time=currentOrder.time;
-                    t.set(shopRef.collection('customers').doc(currentOrder.customer[1]),customer)
+                    t.set(shopRef.collection('customers').doc(currentOrder.customerNameAndID.id),customer)
                 }
             })
             promises.push(updateCustomerTradeRecord);
