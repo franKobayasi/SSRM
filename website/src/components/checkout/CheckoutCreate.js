@@ -20,6 +20,7 @@ class CheckoutCreate extends Component{
         super(props);
         this.state={
             currentOrder:null,
+            productsDetail:{},
             localStorageLock:true,
             isShowCustomerForm:false,
             isShowFormSubmitBooking:false,
@@ -33,6 +34,7 @@ class CheckoutCreate extends Component{
         let isShowStockChecker=this.state.isShowStockChecker;
         let currentOrder=this.state.currentOrder;
         let discount=this.state.discount;
+        let detail=this.state.productsDetail;
 
         return (
         <div className="app-pageMainArea app-checkout-new">
@@ -91,20 +93,12 @@ class CheckoutCreate extends Component{
                             currentOrder.itemList.length===0?
                             <div className="fk-table-row fk-table-highlighter">尚未添加任何商品</div>:
                             currentOrder.itemList.map((item,itemIndex)=>(
-                                <div key={itemIndex} className="fk-table-row">
-                                    <span className="fk-table-cell-175px">{item.itemID}</span>
-                                    <span className="fk-table-cell-150px">{item.name}</span>
-                                    <span className="fk-table-cell-50px">{item.color}</span>
-                                    <span className="fk-table-cell-50px">{item.size}</span>
-                                    <input className="fk-table-cell-50px" onChange={(evnt)=>{
-                                    evnt.persist();
-                                    this.updateNumToBuy(evnt,itemIndex)}} type="text" value={item.saleNum}/>
-                                    <span className="fk-table-cell-75px">{item.price}</span>
-                                    <span className="fk-table-cell-75px">{item.price*item.saleNum}</span>
-                                    <span className="fk-table-cell-100px fk-table-floatR">
-                                        <span onClick={()=>(this.deleteProductFromOrder(itemIndex))} className="fx-btn-little-nobg">刪除</span>
-                                    </span>
-                                </div>
+                                <Product key={itemIndex} detail={detail[item.itemID]} item={item} 
+                                    updateNumToBuy={(evnt)=>{
+                                        evnt.persist();
+                                        this.updateNumToBuy(evnt,itemIndex)}}
+                                    deleteProductFromOrder={()=>(this.deleteProductFromOrder(itemIndex))}
+                                />
                             ))
                         }
                         </div>
@@ -157,7 +151,7 @@ class CheckoutCreate extends Component{
         }
         this.setState(preState=>({
             currentOrder,
-        }))   
+        }),this.getAllProductDetail)   
     }
     componentDidUpdate(){
         /** auto upadte order to localStorage */
@@ -204,23 +198,6 @@ class CheckoutCreate extends Component{
             isShowStockChecker:bool,
         }))
     }
-    updateNumToBuy=(evnt,itemIndex)=>{
-        let currentOrder=Object.assign({},this.state.currentOrder);
-        let itemList=currentOrder.itemList.concat([]);
-        let item=Object.assign({},itemList[itemIndex]);
-        let value=evnt.target.value;
-        value=value>item.stocks?item.stocks:value;
-        if(String(Number(value))==="NaN"){
-            value=item.stocks;
-        }
-        item.saleNum=value;
-        itemList[itemIndex]=item;
-        currentOrder.itemList=itemList;
-        this.setState(preState=>({
-            currentOrder,
-            localStorageLock:false,
-        }))
-    }
     keyInCustomer=(evnt)=>{
         let target=evnt.target;
         let keyCode=evnt.charCode;
@@ -265,49 +242,70 @@ class CheckoutCreate extends Component{
             localStorageLock:false,
         }))
     }
+    getProductDetail=async(itemID)=>{
+        let shopRef=this.props.shopRef;
+        let doc=await shopRef.collection('products').doc(itemID).get();
+        let result={};
+        if(doc.exists){
+            let product=doc.data();
+            delete product.cost;
+            delete product.purchaseID;
+            delete product.time;
+            delete product.productID;
+            result.product=product;
+        }else{
+            result.msg=`未找到商品 ID：${itemID}`;
+        }
+        return result;
+    }
+    updateProductDetail=(product,callback)=>{
+        this.setState(preState=>({
+            productsDetail:{
+                ...preState.productsDetail,
+                [product.itemID]:product
+            }
+        }),callback?callback:null)
+    }
+    // get all products detail after mounting
+    getAllProductDetail=async()=>{
+        let currentOrder=this.state.currentOrder;
+        for(let item of currentOrder.itemList){
+            let result=await this.getProductDetail(item.itemID);
+            this.updateProductDetail(result.product)
+        }
+    }
     keyInProduct=(evnt)=>{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
+            let productsDetail=this.state.productsDetail;
+            let itemID=target.value.trim();
             (async()=>{
-                let result= await this.checkProduct(target.value.trim());
-                if(result.product){
-                    let product=result.product;
-                    target.value=''; /** 清空查詢 */
-                    /** 將商品加入Order */
-                    this.pushNewProductToOrder(product)
+                if(!productsDetail[itemID]){
+                    let result= await this.getProductDetail(itemID);
+                    if(result.product){
+                        let product=result.product;
+                        target.value=''; /** 清空查詢 */
+                        this.updateProductDetail(product,()=>{this.pushNewProductToOrder(itemID)})/** 將商品加入Order */
+                    }else{
+                        alert(`${result.msg}`)
+                    }    
                 }else{
-                    alert(`${result.msg}`)
+                    target.value=''; /** 清空查詢 */
+                    this.pushNewProductToOrder(itemID) /** 將商品加入Order */
                 }
             })();
         }
     }
-    checkProduct=async(itemID)=>{
-        let result={};
-        let shopRef=this.props.shopRef;
-        await shopRef.collection('products').doc(itemID).get()
-        .then(doc=>{
-            if(doc.exists){
-                result.product=doc.data();
-            }else{
-                result.msg=`未找到商品 ID：${itemID}`;
-            }
-        })
-        .catch(error=>{
-            console.error('ERROR\n查詢商品資料時發生錯誤！');
-            console.log(error);
-        })
-        return result;
-    }
-    pushNewProductToOrder=(product)=>{
+    pushNewProductToOrder=(itemID)=>{
         let isExist=false;
         let currentOrder=Object.assign({},this.state.currentOrder);
         let itemList=currentOrder.itemList.concat([]);
+        let stocks=this.state.productsDetail[itemID].stocks;
         itemList.map(item=>{
-            if(item.itemID===product.itemID){
+            if(item.itemID===itemID){
                 isExist=true;
-                if(item.saleNum===item.stocks){
+                if(item.saleNum===stocks){
                     alert(`該商品目前已輸入 ${item.saleNum} 件，已達此商品當前庫存，請確認！`);
                 }else{
                     item.saleNum=Number(item.saleNum)+1;
@@ -316,45 +314,72 @@ class CheckoutCreate extends Component{
             return item;
         })
         if(!isExist){
-            delete product.cost;
-            delete product.purchaseID;
-            delete product.time;
-            delete product.productID;
-            if(product.stocks===0){
+            if(stocks===0){
                 alert('此商品目前已無庫存，請確認！')
             }else{
-                product.saleNum=1;
-                itemList.push(product);
+                let item={
+                    itemID,
+                    saleNum:1
+                }
+                itemList.push(item);
             }
         }
         currentOrder.itemList=itemList;
-        currentOrder.calcResult=this.getCalcResult(itemList);
+        this.setState({
+            currentOrder,
+            localStorageLock:false,
+        },this.updateCalcResult)     
+    }
+    updateCalcResult=()=>{
+        let currentOrder=Object.assign({},this.state.currentOrder);
+        currentOrder.calcResult=this.getCalcResult();
         this.setState({
             currentOrder,
             localStorageLock:false,
         })     
+    }
+    updateNumToBuy=(evnt,itemIndex)=>{
+        let currentOrder=Object.assign({},this.state.currentOrder);
+        let itemList=currentOrder.itemList.concat([]);
+        let item=Object.assign({},itemList[itemIndex]);
+        let detail=this.state.productsDetail;
+        let value=evnt.target.value;
+        value=value>detail[item.itemID].stocks?detail[item.itemID].stocks:value;
+        if(String(Number(value))==="NaN"){
+            value=item.stocks;
+        }
+        if(Number(value)===0){
+            value=1;
+        }
+        item.saleNum=value;
+        itemList[itemIndex]=item;
+        currentOrder.itemList=itemList;
+        this.setState(preState=>({
+            currentOrder,
+            localStorageLock:false,
+        }),this.updateCalcResult)
     }
     deleteProductFromOrder=(itemIndex)=>{
         let currentOrder=Object.assign({},this.state.currentOrder);
         let itemList=currentOrder.itemList.concat([]);
         itemList.splice(itemIndex,1);
         currentOrder.itemList=itemList;
-        currentOrder.calcResult=this.getCalcResult(itemList);
         this.setState({
             currentOrder,
             localStorageLock:false,
-        }) 
+        },this.updateCalcResult) 
     }
-    getCalcResult=(list,deposit,discount)=>{
+    getCalcResult=(deposit,discount)=>{
         let result={};
         let itemList;
         let order=this.state.currentOrder;
-        itemList=list?list:order.itemList;
+        let detail=this.state.productsDetail;
+        itemList=order.itemList;
         result.sumOfMoney=0;
         result.sumOfNum=0;
         for(let item of itemList){
             result.sumOfNum+=item.saleNum;
-            result.sumOfMoney+=(item.price*item.saleNum)
+            result.sumOfMoney+=(detail[item.itemID].price*item.saleNum)
         }
         result.deposit=deposit||deposit===0?deposit:order.calcResult.deposit;
         result.discount=discount||discount===0?discount:order.calcResult.discount;
@@ -368,7 +393,7 @@ class CheckoutCreate extends Component{
     }
     setDeposit=(deposit)=>{
         let currentOrder=Object.assign({},this.state.currentOrder);
-        currentOrder.calcResult=this.getCalcResult(null,deposit,null);
+        currentOrder.calcResult=this.getCalcResult(deposit,null);
         this.setState(preState=>({
             currentOrder,
             localStorageLock:false,
@@ -390,7 +415,7 @@ class CheckoutCreate extends Component{
     setDiscount=(discount)=>{
         console.log(discount);
         let currentOrder=Object.assign({},this.state.currentOrder);
-        currentOrder.calcResult=this.getCalcResult(null,null,discount);
+        currentOrder.calcResult=this.getCalcResult(null,discount);
         this.setState(preState=>({
             currentOrder,
             localStorageLock:false,
@@ -462,5 +487,34 @@ class CheckoutCreate extends Component{
         })
     }
 }
+
+function Product(props) {
+    let detail=props.detail;
+    let item=props.item;
+    let updateNumToBuy=props.updateNumToBuy;
+    let deleteProductFromOrder=props.deleteProductFromOrder;
+    console.log(detail);
+    return (
+        <div className="fk-table-row">
+        {
+            detail?
+            <>
+            <span className="fk-table-cell-175px">{item.itemID}</span>
+            <span className="fk-table-cell-150px">{detail.name}</span>
+            <span className="fk-table-cell-50px">{detail.color}</span>
+            <span className="fk-table-cell-50px">{detail.size}</span>
+            <input className="fk-table-cell-50px" onChange={updateNumToBuy} type="text" value={item.saleNum}/>
+            <span className="fk-table-cell-75px">{detail.price}</span>
+            <span className="fk-table-cell-75px">{detail.price*item.saleNum}</span>
+            <span className="fk-table-cell-100px fk-table-floatR">
+                <span onClick={deleteProductFromOrder} className="fx-btn--onlyText-black">刪除</span>
+            </span>
+            </>:
+            <span className="fk-table-cell-175px flag">商品資訊載入中...</span>
+        }
+        </div>
+    )
+}
+
 
 export default CheckoutCreate;
