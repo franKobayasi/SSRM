@@ -5,6 +5,9 @@
 website: https://ssrm-e7bc3.web.app/
 version: 1.0 
 update date: 2020-03-13
+測試帳密：
+- 帳號：test@test.com
+- 密碼：test1234
 
 ### Technologies
 * HTML, CSS, JavaScript
