@@ -8,7 +8,6 @@ export function initializeFacebook(){
         xfbml      : true,
         version    : 'v6.0'
         });
-        console.log('facebook init');
     };
     (function(d, s, id){
      var js, fjs = d.getElementsByTagName(s)[0];

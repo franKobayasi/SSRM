@@ -1,4 +1,13 @@
 *.xmind
 *.ai
+*.gitignore
+*.firebaserc
 node_modules
 service-account-file.json
+database.rules.json
+firebase.json
+firestore.indexes.json
+firestore.rules
+storage.rules
+.firebase
+

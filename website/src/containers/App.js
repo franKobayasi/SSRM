@@ -34,10 +34,8 @@ function App(props){
         return <LoadingBlack text="Welcome to SSRM"/>
     }else{
         if(isLogin===true){
-            console.log('state: sign in');
             return <AfterSignIned />;
         }else{
-            console.log('state: sign out');
             return <BeforeSignIned />;
         }
     }

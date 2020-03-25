@@ -66,9 +66,6 @@ orderRef(order FB ref)
         let searchOrderID=this.state.searchOrderID;
         let searchBySupplierName=this.state.searchBySupplierName;
         let targetRef=this.props.orderRef;
-        
-        console.log(targetRef);
-
         if(isSearchNeedOrderID&&searchOrderID.length===0){
             alert('在勾選以採購單號搜尋時，該欄位不得為空');
         }else if(isSearchNeedSupplierName&&searchBySupplierName.length===0){
@@ -83,15 +80,12 @@ orderRef(order FB ref)
             if(isSearchNeedDateArea){
                 let from=this.state.searchByDateFrom?this.state.searchByDateFrom:this.state.defaultSearchByDateFrom;
                 let to=this.state.searchByDateTo?this.state.searchByDateTo:this.state.defaultSearchByDateTo;
-                console.log(`from: ${from}`,`to: ${to}`);
                 from=getMillSecondFromYMD(from);
                 to=getMillSecondFromYMD(to)+((23*60+59)*60*1000);
                 if(from>to){
                     from=to-((23*60+59)*60*1000);
                 }
-                console.log(`from: ${from}`,`to: ${to}`)
                 targetRef=targetRef.where('time','>=',from).where('time','<=',to);
-                console.log(from,to);
             }
             this.props.callback(targetRef);
         }

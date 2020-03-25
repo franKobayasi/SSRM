@@ -48,7 +48,8 @@ module.exports = {
             meta:{
             viewport: 'width=device-width, initial-scale=1'
             },
-            template:'./src/index.html'
+            template:'./src/index.html',
+            favicon: './src/img/favicon.ico',
         }),
     ],
 /** webpack-dev-sever*/

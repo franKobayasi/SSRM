@@ -199,9 +199,7 @@ class Dashboard extends Component{
         dispatch(actionFetchStart());
         ajax('POST',api_URL,reqBody,null,(req)=>{
             dispatch(actionFetchFinish());
-            console.log(req);
             let res=JSON.parse(req.response);
-            console.log(res);
             if(res.status==='error'||res.status==='fail'){
                 alert(res.message)
             }else{

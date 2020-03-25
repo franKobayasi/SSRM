@@ -32,7 +32,7 @@ class FormSignIn extends Component{
                         {this.state.remindMsg}
                     </div>
                     <div className="fk-form-actionBtns">
-                        <span className="fx-btn--white" onClick={this.props.facebook}>FACDBOOK登入</span>
+                        <span className="fx-btn--white" onClick={this.props.facebook}>FACEBOOK登入</span>
                         <button className="fx-btn--white" type="submit">登入</button>
                     </div>
                 </form>

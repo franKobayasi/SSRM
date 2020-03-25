@@ -71,7 +71,6 @@ class CheckoutDetail extends Component{
                     onEditMode?
                     <Fragment>
                         <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSubmitBooking(true)}}>預付訂金</button>
-                        <button className="fx-btn--mainColor">未結暫存</button>
                     </Fragment>:
                     null
                 }
@@ -190,13 +189,11 @@ class CheckoutDetail extends Component{
             this.setState(preState=>({
                 localStorageLock:true,
             }))
-            console.log('update to local');
         }
     }
     startToEditOrder=()=>{
         let orderID=this.state.orderID;
         let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`checkout-history-${orderID}`));
-        console.log(!unsavedHistoryOrder);
         if(!unsavedHistoryOrder)
             unsavedHistoryOrder=this.state.currentOrder;
         this.setState(preState=>({
@@ -273,13 +270,16 @@ class CheckoutDetail extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
             (async()=>{
                 let result= await this.checkCustomer(target.value);
                 if(result.data){
                     let customerNameAndID=result.data;
                     target.value=''; /** 清空查詢 */
+<<<<<<< HEAD
                     this.setCurrentCustomer(customerNameAndID)
+=======
+                    this.setCurrentCustomer(customer.name,customer.tel)
+>>>>>>> master
                 }else{
                     alert(`${result.message}`)
                 }
@@ -319,6 +319,7 @@ class CheckoutDetail extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
+<<<<<<< HEAD
             let productsDetail=this.state.productsDetail;
             let itemID=target.value.trim();
             (async()=>{
@@ -331,6 +332,15 @@ class CheckoutDetail extends Component{
                     }else{
                         alert(`${result.msg}`)
                     }    
+=======
+            (async()=>{
+                let result= await this.checkProduct(target.value.trim());
+                if(result.product){
+                    let product=result.product;
+                    target.value=''; /** 清空查詢 */
+                    /** 將商品加入Order */
+                    this.pushNewProductToOrder(product)
+>>>>>>> master
                 }else{
                     target.value=''; /** 清空查詢 */
                     this.pushNewProductToOrder(itemID) /** 將商品加入Order */
@@ -461,7 +471,6 @@ class CheckoutDetail extends Component{
         }
     }
     setDiscount=(discount)=>{
-        console.log(discount);
         let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
         unsavedHistoryOrder.calcResult=this.getCalcResult(null,null,discount);
         this.setState(preState=>({

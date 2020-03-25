@@ -56,7 +56,6 @@ class CheckoutCreate extends Component{
                 <div className="operatingBtns">
                     <button className="fx-btn--mainColor" onClick={()=>{this.toogleShowCustomerForm(true)}}>新增會員</button>
                     <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSubmitBooking(true)}}>預付訂金</button>
-                    <button className="fx-btn--mainColor">未結暫存</button>
                     <button className="fx-btn--mainColor" onClick={()=>{this.toggleShowStockChecker(true)}}>庫存查詢</button>
                     <button onClick={()=>{this.props.history.history.push('/checkout/history')}} className="fx-btn--mainColor">歷史查詢</button>
                 </div>
@@ -160,7 +159,6 @@ class CheckoutCreate extends Component{
             this.setState(preState=>({
                 localStorageLock:true,
             }))
-            console.log('update to local');
         }
     }
     createNewOrder(){
@@ -202,13 +200,16 @@ class CheckoutCreate extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
             (async()=>{
                 let result= await this.checkCustomer(target.value);
                 if(result.data){
                     let customerNameAndID=result.data;
                     target.value=''; /** 清空查詢 */
+<<<<<<< HEAD
                     this.setCurrentCustomer(customerNameAndID)
+=======
+                    this.setCurrentCustomer(customer.name,customer.tel)
+>>>>>>> master
                 }else{
                     alert(`${result.message}`)
                 }
@@ -278,6 +279,7 @@ class CheckoutCreate extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
+<<<<<<< HEAD
             let productsDetail=this.state.productsDetail;
             let itemID=target.value.trim();
             (async()=>{
@@ -290,6 +292,15 @@ class CheckoutCreate extends Component{
                     }else{
                         alert(`${result.msg}`)
                     }    
+=======
+            (async()=>{
+                let result= await this.checkProduct(target.value.trim());
+                if(result.product){
+                    let product=result.product;
+                    target.value=''; /** 清空查詢 */
+                    /** 將商品加入Order */
+                    this.pushNewProductToOrder(product)
+>>>>>>> master
                 }else{
                     target.value=''; /** 清空查詢 */
                     this.pushNewProductToOrder(itemID) /** 將商品加入Order */
@@ -413,7 +424,6 @@ class CheckoutCreate extends Component{
         }))
     }
     setDiscount=(discount)=>{
-        console.log(discount);
         let currentOrder=Object.assign({},this.state.currentOrder);
         currentOrder.calcResult=this.getCalcResult(null,discount);
         this.setState(preState=>({
