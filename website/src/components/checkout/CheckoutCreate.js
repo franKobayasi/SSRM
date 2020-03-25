@@ -205,11 +205,7 @@ class CheckoutCreate extends Component{
                 if(result.data){
                     let customerNameAndID=result.data;
                     target.value=''; /** 清空查詢 */
-<<<<<<< HEAD
                     this.setCurrentCustomer(customerNameAndID)
-=======
-                    this.setCurrentCustomer(customer.name,customer.tel)
->>>>>>> master
                 }else{
                     alert(`${result.message}`)
                 }
@@ -279,7 +275,6 @@ class CheckoutCreate extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-<<<<<<< HEAD
             let productsDetail=this.state.productsDetail;
             let itemID=target.value.trim();
             (async()=>{
@@ -292,15 +287,6 @@ class CheckoutCreate extends Component{
                     }else{
                         alert(`${result.msg}`)
                     }    
-=======
-            (async()=>{
-                let result= await this.checkProduct(target.value.trim());
-                if(result.product){
-                    let product=result.product;
-                    target.value=''; /** 清空查詢 */
-                    /** 將商品加入Order */
-                    this.pushNewProductToOrder(product)
->>>>>>> master
                 }else{
                     target.value=''; /** 清空查詢 */
                     this.pushNewProductToOrder(itemID) /** 將商品加入Order */
