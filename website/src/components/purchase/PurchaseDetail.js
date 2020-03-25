@@ -166,6 +166,7 @@ class PurchaseDetail extends Component{
             search_supplier:orderFRBS.search_supplier,
             time:orderFRBS.time,
             products:[],
+            updateTimes:orderFRBS.updateTimes
         }
         let itemList=orderFRBS.itemList
         /** 1. 先分組，將產品編號相同的商品分配到同組 */
@@ -229,7 +230,7 @@ class PurchaseDetail extends Component{
             search_productNameAndID:search_productNameAndID, // for firebase structure need 
             search_supplier:orderCMPT.search_supplier,
             static:this.getStaticData(),
-            modifyRecord:orderCMPT.modifyRecord,
+            modifyRecords:orderCMPT.modifyRecords,
             updateTimes:orderCMPT.updateTimes,
             time:orderCMPT.time
         }
@@ -443,6 +444,7 @@ class PurchaseDetail extends Component{
                 time:new Date().valueOf(),
             });
             let orderFRBS=this.transformStructureFRBS(unsavedHistoryOrder);
+            console.log(orderFRBS);
             this.props.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)
             .then(()=>{
                 alert(`採購單: ${orderFRBS.id} 更新成功！`);

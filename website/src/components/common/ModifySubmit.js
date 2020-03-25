@@ -62,12 +62,14 @@ class ModifySubmit extends Component{
             }
         });
     }
-    submitOrder=()=>{
+    submitOrder=(e)=>{
+        e.preventDefault();
         let operator=this.state.operator;
         let reason=this.state.reason;
         this.props.submit(operator,reason);
     }
-    cancelSubmit=()=>{
+    cancelSubmit=(e)=>{
+        e.preventDefault();
         this.props.cancel();
     }
 }
