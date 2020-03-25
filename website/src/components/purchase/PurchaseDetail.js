@@ -238,17 +238,17 @@ class PurchaseDetail extends Component{
     editOrder=()=>{
         let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`History_${this.props.id}`));
         let localStorageLock=true;
+        console.log('change mode')
         if(!unsavedHistoryOrder){
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
             unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
             localStorageLock=false;
-        }else{
-            this.setState((preState)=>({
-                localStorageLock,
-                onOrderEditing:true,
-                unsavedHistoryOrder,
-            }));
         }
+        this.setState((preState)=>({
+            localStorageLock,
+            onOrderEditing:true,
+            unsavedHistoryOrder,
+        }));
     }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
