@@ -165,7 +165,6 @@ class CheckoutCreate extends Component{
             this.setState(preState=>({
                 localStorageLock:true,
             }))
-            console.log('update to local');
         }
     }
     createNewOrder(){
@@ -224,13 +223,11 @@ class CheckoutCreate extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
             (async()=>{
                 let result= await this.checkCustomer(target.value);
                 if(result.data){
                     let customer=result.data;
                     target.value=''; /** 清空查詢 */
-                    console.log(customer);
                     this.setCurrentCustomer(customer.name,customer.tel)
                 }else{
                     alert(`${result.message}`)
@@ -264,13 +261,11 @@ class CheckoutCreate extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
             (async()=>{
                 let result= await this.checkProduct(target.value.trim());
                 if(result.product){
                     let product=result.product;
                     target.value=''; /** 清空查詢 */
-                    console.log(product);
                     /** 將商品加入Order */
                     this.pushNewProductToOrder(product)
                 }else{
@@ -384,7 +379,6 @@ class CheckoutCreate extends Component{
         }))
     }
     setDiscount=(discount)=>{
-        console.log(discount);
         let currentOrder=Object.assign({},this.state.currentOrder);
         currentOrder.calcResult=this.getCalcResult(null,null,discount);
         this.setState(preState=>({

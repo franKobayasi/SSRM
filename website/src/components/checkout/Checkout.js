@@ -11,7 +11,6 @@ function Checkout(props) {
     let shopRef=props.shopRef;
     let pathname=history.location.pathname;
     let orderid=history.match.params.orderid;
-    console.log(pathname==='/checkout/new'||'/checkout/new/');
     
     return (
         <Fragment>

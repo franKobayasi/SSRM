@@ -128,7 +128,6 @@ class CheckoutHistory extends Component{
         }),()=>{this.getOrdersFromDB()})
     }
     setTargetRef=(targetRef)=>{
-        console.log(targetRef);
         this.setState(preState=>({
             paging:1, //reset paging
             targetRef,
@@ -148,9 +147,7 @@ class CheckoutHistory extends Component{
         let query=TR;
         let orderList=[];
         let previousScope=this.state.previousScope?this.state.previousScope:[];
-        console.log(PT,changePage);
         if(PT&&changePage){
-            console.log('CP?')
             query=query.orderBy('time',`${mode}`).startAt(PT);
             paging=goNext?paging+1:paging-1;
         }else{
@@ -159,7 +156,6 @@ class CheckoutHistory extends Component{
         query.limit(limitNum).get()
         .then(snapshot=>{
             if(snapshot.empty){
-                console.log('no any purchase history yet')
                 previousScope=null;
             }else{                
                 snapshot.forEach(doc=>{
@@ -169,7 +165,6 @@ class CheckoutHistory extends Component{
                         orderList.push(order);
                         if(paging===1&&orderList.length===1){
                             // 第一個
-                            console.log(paging);
                             previousScope[0]=doc;
                         }else{
                             previousScope[1]=doc;
@@ -180,7 +175,6 @@ class CheckoutHistory extends Component{
             if(orderList.length<limitNum){
                 isNextPageExist=false;
             }
-            console.log(paging);
             this.setState(preState=>({
                 paging,
                 orderList,

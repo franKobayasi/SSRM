@@ -119,7 +119,6 @@ class PurchaseCreating extends Component{
             this.setState(preState=>({
                 localStorageLock:true,
             }))
-            console.log('update to local');
         }
     }
     createPurchaseOrder(){
@@ -185,13 +184,11 @@ class PurchaseCreating extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
             (async()=>{
                 let result= await this.checkSupplier(target.value);
                 if(result.supplier){
                     let supplier=result.supplier;
                     target.value=''; /** 清空查詢 */
-                    console.log(supplier)
                     this.setCurrentSuppier(supplier.title,supplier.address,supplier.tel)
                 }else{
                     alert(`${result.message}`)

@@ -118,7 +118,6 @@ class StockReturnOrder extends Component{
             this.setState(preState=>({
                 localStorageLock:true,
             }))
-            console.log('update to local');
         }
     }
     handleChange=(evnt)=>{
@@ -156,7 +155,6 @@ class StockReturnOrder extends Component{
                     for(let index in order.itemList){                      
                         if(stockInList[orderIndex].itemList[itemIndex].itemID===order.itemList[index].itemID){
                             order.itemList.splice(index,1);
-                            console.log('移除重複品項');
                         }
                     }
                 }
@@ -231,7 +229,6 @@ class StockReturnOrder extends Component{
                 if(order.updateTimes!=orderData.updateTimes){
                     changedOrder.push(order.id);
                 }
-                console.log(changedOrder);
             })
             checkAll.push(check);
         }
@@ -239,20 +236,17 @@ class StockReturnOrder extends Component{
         if(changedOrder.length>0){
             let order=Object.assign({},currentOrder);
             order.stockInList=order.stockInList.filter(stockIn=>{
-                console.log(changedOrder);
                 return !changedOrder.includes(stockIn.purchaseID)
             })
-            console.log(order);
             this.setState(preState=>({
                 currentOrder:order,
                 localStorageLock:false,
             }))
-            console.log(`移除已發生變更的採購單，請重新查詢`);
+            alert(`移除已發生變更的採購單，請重新查詢`);
             return ;
         }
         if(isAllOperateNumKeyIn){
             currentOrder.time=new Date().valueOf();
-            console.log(currentOrder);
             /** 退貨作業 */            
             let transaction=ssrmDB.runTransaction(t=>{
                 let allUpdate=[];

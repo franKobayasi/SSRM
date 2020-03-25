@@ -32,14 +32,12 @@ function getAuthState(dispatch){
             if(user){
                 try{
                     dispatch(actionSignIn(user));
-                    console.log('auto login!');
                 }catch(error){
                     console.error('ERROR\nUser infomation lost')
                     console.log(error);
                     dispatch(actionSignOut());
                 }
             }else{
-                console.log('not yet logined!');
                 dispatch(actionSignOut());
             }
         });

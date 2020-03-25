@@ -36,7 +36,6 @@ class PurchaseDetail extends Component{
         let onOrderEditing=this.state.onOrderEditing;
         let orderToRender=onOrderEditing?this.state.unsavedHistoryOrder:this.state.currentOrder;
         let currentProduct=this.state.currentProduct;
-        console.log(orderToRender);
         return (
             <div className="app-pageMainArea app-purchase-order">
             {
@@ -135,14 +134,12 @@ class PurchaseDetail extends Component{
     }
     componentDidUpdate(){
         let onOrderEditing=this.state.onOrderEditing;
-        console.log('OrderDetail更新')
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock&&onOrderEditing){
             localStorage.setItem(`History_${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))
-            console.log('update to local');
         }
         if(this.state.currentOrder==='loading'){
             let currentOrder;
@@ -239,7 +236,6 @@ class PurchaseDetail extends Component{
     editOrder=()=>{
         let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`History_${this.props.id}`));
         let localStorageLock=true;
-        console.log('change mode')
         if(!unsavedHistoryOrder){
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
             unsavedHistoryOrder=Object.assign({},this.state.currentOrder);
@@ -281,7 +277,6 @@ class PurchaseDetail extends Component{
         .catch(error=>{
             result.message='ERROR\n查詢確認供應商資料失敗'
             console.error(`${result.message}`);
-            console.log(error);
             return ;
         })
         return result;
@@ -307,13 +302,11 @@ class PurchaseDetail extends Component{
         let target=evnt.target;
         let keyCode=evnt.charCode;
         if(keyCode===13){
-            console.log(target.value);
             (async()=>{
                 let result= await this.checkSupplier(target.value);
                 if(result.supplier){
                     let supplier=result.supplier;
                     target.value=''; /** 清空查詢 */
-                    console.log(supplier)
                     this.setCurrentSuppier(supplier.title,supplier.address,supplier.tel)
                 }else{
                     alert(`${result.message}`)
@@ -444,7 +437,6 @@ class PurchaseDetail extends Component{
                 time:new Date().valueOf(),
             });
             let orderFRBS=this.transformStructureFRBS(unsavedHistoryOrder);
-            console.log(orderFRBS);
             this.props.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)
             .then(()=>{
                 alert(`採購單: ${orderFRBS.id} 更新成功！`);

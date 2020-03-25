@@ -1,15 +1,10 @@
 import React,{Component,Fragment} from "react";
 import {connect} from "react-redux";
-
 import ssrmFirebase,{fbAuthProvider} from "../../useFirebase";
-
 import FormSignIn from './FormSignIn';
 import FormSignUp from './FormSignUp';
-
 import {actionSignIn} from "../../actions/auth";
 import {actionFetchStart, actionFetchFinish} from "../../actions/fetch";
-
-
 import webLogo from '../../img/SSRM_logo.png';
 
 class Auth extends Component{
@@ -58,23 +53,20 @@ class Auth extends Component{
                     uid:user.uid
                 }
                 this.props.dispatch(actionSignIn(memberInfo));
-                console.log('sign in via email and password!');
                 this.props.history.push('/');
-            }else{
-                console.log('some error is happen...');
             }
         })
         .catch((e)=>{
             var errorCode = e.code;
             var errorMessage = e.message;
             if(errorCode==='auth/invalid-email'){
-                console.log('ERROR\nsignin fail: EMAIL格式錯誤');
+                alert('ERROR\nsignin fail: EMAIL格式錯誤');
             }else if(errorCode==='auth/wrong-password'){
-                console.log('ERROR\nsignin fail: 密碼錯誤');
+                alert('ERROR\nsignin fail: 密碼錯誤');
             }else if(errorCode==='auth/too-many-requests'){
-                console.log('ERROR\nsignin fail: 錯誤次數過多，請稍後再試！');
+                alert('ERROR\nsignin fail: 錯誤次數過多，請稍後再試！');
             }else if(errorCode==='auth/user-not-found'){
-                console.log('ERROR\nsignin fail: 無此帳號，請確認');
+                alert('ERROR\nsignin fail: 無此帳號，請確認');
             }
         })
     }
@@ -89,7 +81,6 @@ class Auth extends Component{
             }
             this.props.dispatch(actionSignIn(memberInfo));
             this.props.history.push('/');
-            console.log('sign in via facebook')
         })
         .catch(function(error) {
             let errorCode = error.code;
@@ -105,15 +96,12 @@ class Auth extends Component{
         dispatch(actionFetchStart());
         ssrmFirebase.auth().createUserWithEmailAndPassword(data.email, data.password)
         .then((res)=>{
-            console.log('firebase authentiaction sign up success！');
             ssrmFirebase.auth().signInWithEmailAndPassword(data.email, data.password)
             .then(()=>{
-                console.log('firebase auto signin success after sign up！');
                 let user = ssrmFirebase.auth().currentUser;
                 user.updateProfile({
                     displayName: data.username,
                 }).then(function() {
-                    console.log('update user profile success！');
                     dispatch(actionFetchFinish());
                     let user = ssrmFirebase.auth().currentUser;
                     let memberInfo={

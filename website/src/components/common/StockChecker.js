@@ -67,7 +67,6 @@ class StockChecker extends Component{
         });
     }
     search=async(evnt)=>{
-        console.log('start searching');
         let itemID=this.state.itemID;
         if(itemID){
             let result={};
@@ -88,7 +87,6 @@ class StockChecker extends Component{
         }
     }
     searchViaEnterasync=(evnt)=>{
-        console.log('start searching');
         let keyCode=evnt.charCode;
         if(keyCode===13){
             this.search();
