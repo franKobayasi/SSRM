@@ -183,9 +183,10 @@ class CheckoutDetail extends Component{
     }
     componentDidUpdate(){
         /** auto upadte order to localStorage */
+        let shopID=this.props.shopRef.id;
         let orderID=this.state.orderID; 
         if(!this.state.localStorageLock){
-            localStorage.setItem(`checkout-history-${orderID}`,JSON.stringify(this.state.unsavedHistoryOrder))
+            localStorage.setItem(`shop-${shopID}-history-${orderID}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))
@@ -193,7 +194,8 @@ class CheckoutDetail extends Component{
     }
     startToEditOrder=()=>{
         let orderID=this.state.orderID;
-        let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`checkout-history-${orderID}`));
+        let shopID=this.props.shopRef.id;
+        let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`shop-${shopID}-history-${orderID}`));
         if(!unsavedHistoryOrder)
             unsavedHistoryOrder=this.state.currentOrder;
         this.setState(preState=>({
@@ -466,7 +468,9 @@ class CheckoutDetail extends Component{
     }
     cancelUpdateOrder=()=>{
         if(confirm('有尚未完成儲存的變更，確定放棄編輯？')){
-            localStorage.removeItem(`checkout-history-${this.state.orderID}`)
+            let shopID=this.props.shopRef.id;
+            let orderID=this.state.unsavedHistoryOrder.id;
+            localStorage.removeItem(`shop-${shopID}-history-${orderID}`)
             this.setState(preState=>({
                 onEditMode:false,
                 unsavedHistoryOrder:null,
@@ -510,40 +514,28 @@ class CheckoutDetail extends Component{
                 }
             });
             if(previousCheckout){
-                // 回復先前的;
+                let productSaleNum={};
                 for(let item of previousCheckout.itemList){
-                    let itemUpdate=t.get(shopRef.collection('products').doc(item.itemID))
-                    .then(doc=>{
-                        let product=doc.data();
-                        product.stocks+=Number(item.saleNum);
-                        t.set(shopRef.collection('products').doc(item.itemID),product)
-                    })
-                    .catch(error=>{
-                        console.log('ERROR\n產品庫存更新失敗');
-                        console.error(error);
-                    })
-                    promises.push(itemUpdate); //加回庫存
-                    let tradeRecordsUpdate=t.get(shopRef.collection('customers').doc(previousCheckout.customerNameAndID.id))
-                    .then(doc=>{
-                        let customer=doc.data();
-                        delete customer.tradeRecords[previousCheckout.id];
-                        t.set(shopRef.collection('customers').doc(previousCheckout.customerNameAndID.id),customer)
-                    })
-                    .catch(error=>{
-                        console.log('ERROR\n顧客交易紀錄，更新失敗');
-                        console.error(error);
-                    })
-                    promises.push(tradeRecordsUpdate); //更新顧客交易紀錄   
+                    if(!productSaleNum[item.itemID]){
+                        productSaleNum[item.itemID]=0;
+                    }
+                    productSaleNum[item.itemID]-=Number(item.saleNum); //減去先前的購買數量
                 }
-                // 扣除當前的;
                 for(let item of unsavedHistoryOrder.itemList){
-                    let updateProduct=t.get(shopRef.collection('products').doc(item.itemID))
+                    if(!productSaleNum[item.itemID]){
+                        productSaleNum[item.itemID]=0;
+                    }
+                    productSaleNum[item.itemID]+=Number(item.saleNum); //加上當前的購買數量;
+                }
+                console.log(productSaleNum);
+                for(let key in productSaleNum){
+                    let saleNum=productSaleNum[key];
+                    let updateProduct=t.get(shopRef.collection('products').doc(key))
                     .then(doc=>{
                         if(doc.exists){
                             let product=doc.data();
-                            product.stocks-=Number(item.saleNum);
-                            //扣庫存
-                            t.set(shopRef.collection('products').doc(item.itemID),product);
+                            product.stocks-=Number(saleNum); //扣庫存
+                            t.set(shopRef.collection('products').doc(key),product);
                         }
                     })
                     promises.push(updateProduct);
@@ -569,8 +561,9 @@ class CheckoutDetail extends Component{
             }            
         })
         .then(res=>{
+            let shopID=this.props.shopRef.id;
             alert(`交易 ${unsavedHistoryOrder.id} 更新成功！`);
-            localStorage.removeItem(`checkout-history-${this.state.orderID}`)
+            localStorage.removeItem(`shop-${shopID}-history-${orderID}`)
             this.setState(preState=>({
                 onEditMode:false,
                 isShowModifySubmit:false,

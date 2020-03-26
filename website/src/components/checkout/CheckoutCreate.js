@@ -8,13 +8,6 @@ import {Loading} from '../common/Loading';
 import {FormCustomerEntry, Customer} from '../common/Customer';
 import StockChecker from '../common/StockChecker';
 
-/**
-實現結帳功能：
-
-
-
- */
-
 class CheckoutCreate extends Component{
     constructor(props){
         super(props);
@@ -139,12 +132,13 @@ class CheckoutCreate extends Component{
         )
     }
     componentDidMount(){
-        let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-checkout-newOrder'));
+        let shopID=this.props.shopRef.id;
+        let uncompletedNewOrder=JSON.parse(localStorage.getItem(`shop-${shopID}-new-checkout-order`));
         let currentOrder;
         /** 設定current order */
         if(!uncompletedNewOrder){
             currentOrder=this.createNewOrder();
-            localStorage.setItem('uncompleted-checkout-newOrder',JSON.stringify(currentOrder));       
+            localStorage.setItem(`shop-${shopID}-new-checkout-order`,JSON.stringify(currentOrder));       
         }else{
             currentOrder=uncompletedNewOrder; /** 如果有未完成的Order，則不新增新的Order */
         }
@@ -155,7 +149,8 @@ class CheckoutCreate extends Component{
     componentDidUpdate(){
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock){
-            localStorage.setItem('uncompleted-checkout-newOrder',JSON.stringify(this.state.currentOrder))
+            let shopID=this.props.shopRef.id;
+            localStorage.setItem(`shop-${shopID}-new-checkout-order`,JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))
