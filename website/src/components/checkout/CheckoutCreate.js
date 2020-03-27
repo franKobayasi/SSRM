@@ -18,7 +18,7 @@ class CheckoutCreate extends Component{
             isShowCustomerForm:false,
             isShowFormSubmitBooking:false,
             isShowStockChecker:false,
-            discount:0,
+            discount:0
         }
     }
     render(){
@@ -64,7 +64,7 @@ class CheckoutCreate extends Component{
                             <span>{currentOrder.id}</span>
                         </div>
                         <div className="keyInArea">
-                            <Customer shopRef={this.props.shopRef} customerNameAndID={currentOrder.customerNameAndID}/>
+                            <Customer shopRef={this.props.shopRef} customerIdAndName={currentOrder.customerIdAndName}/>
                             <input className="keyIn--black" onKeyPress={this.keyInCustomer} placeholder="會員查詢(TEL)" type="text"/>
                             <input className="keyIn--black" onKeyPress={this.keyInProduct} placeholder="商品輸入(ID)" type="text"/>
                         </div>
@@ -152,7 +152,7 @@ class CheckoutCreate extends Component{
             let shopID=this.props.shopRef.id;
             localStorage.setItem(`shop-${shopID}-new-checkout-order`,JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
-                localStorageLock:true,
+                localStorageLock:true
             }))
         }
     }
@@ -160,16 +160,15 @@ class CheckoutCreate extends Component{
         return {
             id:`${randomCheckOutOrderID()}`, 
             itemList:[], 
-            customer:[], 
+            customerIdAndName:[], 
             calcResult:{
                 sumOfMoney:0,
                 sumOfNum:0,
                 discount:0,
                 deposit:0,
-                receive:0,
+                receive:0
             },
-            time:null,
-            // status: done - undone - booking
+            time:null // status: done - undone - booking
         };
     }
     handleChange=(evnt)=>{
@@ -177,18 +176,18 @@ class CheckoutCreate extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }
     toogleShowCustomerForm=(bool)=>{
         this.setState(preState=>({
-            isShowCustomerForm:bool,
+            isShowCustomerForm:bool
         }))
     }
     toggleShowStockChecker=(bool)=>{
         this.setState(preState=>({
-            isShowStockChecker:bool,
+            isShowStockChecker:bool
         }))
     }
     keyInCustomer=(evnt)=>{
@@ -198,15 +197,14 @@ class CheckoutCreate extends Component{
             (async()=>{
                 let result= await this.checkCustomer(target.value);
                 if(result.data){
-                    let customerNameAndID=result.data;
+                    let customerIdAndName=result.data;
                     target.value=''; /** 清空查詢 */
-                    this.setCurrentCustomer(customerNameAndID)
+                    this.setCurrentCustomer(customerIdAndName)
                 }else{
                     alert(`${result.message}`)
                 }
             })();
         }
-        
     }
     checkCustomer=async(tel)=>{
         let result={};
@@ -215,10 +213,10 @@ class CheckoutCreate extends Component{
         .then(snapshot=>{
             if(!snapshot.empty){
                 snapshot.forEach(doc=>{
-                    result.data={
-                        name:doc.data().name,
-                        id:doc.id
-                    }
+                    result.data=[
+                        doc.id,
+                        doc.data().name
+                    ]
                 })
             }else{
                 result.message='查無此顧客，請確認電話號碼是否有誤，或新增此顧客';
@@ -226,12 +224,12 @@ class CheckoutCreate extends Component{
         })
         return result;
     }
-    setCurrentCustomer=(customerNameAndID)=>{
+    setCurrentCustomer=(customerIdAndName)=>{
         let currentOrder=Object.assign({},this.state.currentOrder);
-        currentOrder.customerNameAndID=customerNameAndID;
+        currentOrder.customerIdAndName=customerIdAndName;
         this.setState(preState=>({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     getProductDetail=async(itemID)=>{
@@ -327,7 +325,7 @@ class CheckoutCreate extends Component{
         currentOrder.calcResult=this.getCalcResult();
         this.setState({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         })     
     }
     updateNumToBuy=(evnt,itemIndex)=>{
@@ -348,7 +346,7 @@ class CheckoutCreate extends Component{
         currentOrder.itemList=itemList;
         this.setState(preState=>({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }),this.updateCalcResult)
     }
     deleteProductFromOrder=(itemIndex)=>{
@@ -358,7 +356,7 @@ class CheckoutCreate extends Component{
         currentOrder.itemList=itemList;
         this.setState({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         },this.updateCalcResult) 
     }
     getCalcResult=(deposit,discount)=>{
@@ -380,7 +378,7 @@ class CheckoutCreate extends Component{
     }
     toggleFormSubmitBooking=(bool)=>{
         this.setState(preState=>({
-            isShowFormSubmitBooking:bool,
+            isShowFormSubmitBooking:bool
         }))
     }
     setDeposit=(deposit)=>{
@@ -388,7 +386,7 @@ class CheckoutCreate extends Component{
         currentOrder.calcResult=this.getCalcResult(deposit,null);
         this.setState(preState=>({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     updateDiscount=(evnt)=>{
@@ -401,7 +399,7 @@ class CheckoutCreate extends Component{
             this.setDiscount(0);
         }
         this.setState(preState=>({
-            discount:value,
+            discount:value
         }))
     }
     setDiscount=(discount)=>{
@@ -409,20 +407,21 @@ class CheckoutCreate extends Component{
         currentOrder.calcResult=this.getCalcResult(null,discount);
         this.setState(preState=>({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     cancelOrder=()=>{
         let currentOrder=this.createNewOrder();
         this.setState(preStat=>({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     submitOrder=()=>{
         let shopRef=this.props.shopRef;
         let currentOrder=Object.assign({},this.state.currentOrder);
-        if(!currentOrder.customerNameAndID){
+        if(!currentOrder.customerIdAndName.length==2){
+            currentOrder.customerIdAndName=[];
             alert('尚未輸入顧客資料，請確認！');
             return ;
         }
@@ -446,7 +445,7 @@ class CheckoutCreate extends Component{
                 })
                 promises.push(updateProduct);
             }
-            let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(currentOrder.customerNameAndID.id))
+            let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(currentOrder.customerIdAndName[0]))
             .then(doc=>{
                 if(doc.exists){
                     let customer=doc.data();
@@ -455,7 +454,7 @@ class CheckoutCreate extends Component{
                     }
                     customer.tradeRecords[currentOrder.id]=currentOrder.calcResult;
                     customer.tradeRecords[currentOrder.id].time=currentOrder.time;
-                    t.set(shopRef.collection('customers').doc(currentOrder.customerNameAndID.id),customer)
+                    t.set(shopRef.collection('customers').doc(currentOrder.customerIdAndName[0]),customer)
                 }
             })
             promises.push(updateCustomerTradeRecord);
@@ -470,6 +469,7 @@ class CheckoutCreate extends Component{
                 currentOrder,
                 discount:0,
                 localStorageLock:false,
+                productsDetail:{}
             }))
         })
         .catch(error=>{
@@ -484,7 +484,6 @@ function Product(props) {
     let item=props.item;
     let updateNumToBuy=props.updateNumToBuy;
     let deleteProductFromOrder=props.deleteProductFromOrder;
-    console.log(detail);
     return (
         <div className="fk-table-row">
         {

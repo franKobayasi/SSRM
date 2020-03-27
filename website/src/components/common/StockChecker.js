@@ -75,7 +75,6 @@ class StockChecker extends Component{
             }))        
             await this.getItemData(result,itemID);
             if(result&&result.product){
-                console.log(result.product);
                 this.setState(preState=>({
                     product:result.product,
                 }))

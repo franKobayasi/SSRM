@@ -157,11 +157,11 @@ class Customer extends Component{
     }
     render(){
         let isShow=this.state.isShow;
-        let customerNameAndID=this.props.customerNameAndID;
+        let customerIdAndName=this.props.customerIdAndName;
         let detail=this.state.detail;
         return (
             <Fragment>
-                <button onClick={this.toShowDetail} className="fx-btn--25LH-mainColor">{customerNameAndID?customerNameAndID.name:'請查詢'}</button>
+                <button onClick={this.toShowDetail} className="fx-btn--25LH-mainColor">{customerIdAndName&&customerIdAndName[0]?customerIdAndName[1]:'請查詢'}</button>
                 {
                     isShow?
                     <div className="fk-popBox app-customer-detail">
@@ -223,9 +223,9 @@ class Customer extends Component{
         )
     }
     componentDidUpdate(){
-        let customerNameAndID=this.props.customerNameAndID
+        let customerIdAndName=this.props.customerIdAndName
         if(this.state.isShow&&this.state.getCustomerDetail){
-            this.props.shopRef.collection('customers').doc(customerNameAndID.id).get()
+            this.props.shopRef.collection('customers').doc(customerIdAndName[0]).get()
             .then(doc=>{
                 this.setState(preState=>({
                     detail:doc.data(),
@@ -235,7 +235,7 @@ class Customer extends Component{
         }
     }
     toShowDetail=()=>{
-        if(this.props.customerNameAndID){
+        if(this.props.customerIdAndName.length===2){
             this.setState(preState=>({
                 isShow:true,
                 getCustomerDetail:true,

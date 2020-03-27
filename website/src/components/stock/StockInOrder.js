@@ -100,10 +100,11 @@ class StockInOrder extends Component{
     componentDidMount(){
         let uncompletedNewOrder;
         let currentOrder;
-        uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-stock-stockin-newOrder'));
+        let shopID=this.props.shopRef.id;
+        uncompletedNewOrder=JSON.parse(localStorage.getItem(`shop-${shopID}-new-stockIn-order`));
         if(!uncompletedNewOrder){
             currentOrder=this.createNewOrder();
-            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(currentOrder));
+            localStorage.setItem(`shop-${shopID}-new-stockIn-order`,JSON.stringify(currentOrder));
         }else{
             currentOrder=uncompletedNewOrder;
         }
@@ -114,7 +115,8 @@ class StockInOrder extends Component{
     componentDidUpdate(){
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock){
-            localStorage.setItem('uncompleted-stock-stockin-newOrder',JSON.stringify(this.state.currentOrder))
+            let shopID=this.props.shopRef.id;
+            localStorage.setItem(`shop-${shopID}-new-stockIn-order`,JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))

@@ -111,12 +111,13 @@ class PurchaseCreating extends Component{
         )
     }
     componentDidMount(){
-        let uncompletedNewOrder=JSON.parse(localStorage.getItem('uncompleted-purchase-newOrder'));
+        let shopID=this.props.shopRef.id;
+        let uncompletedNewOrder=JSON.parse(localStorage.getItem(`shop-${shopID}-new-purchase-order`));
         let currentOrder;
         /** 設定current order */
         if(!uncompletedNewOrder){
             currentOrder=this.createPurchaseOrder();
-            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(currentOrder));       
+            localStorage.setItem(`shop-${shopID}-new-purchase-order`,JSON.stringify(currentOrder));       
         }else{
             currentOrder=uncompletedNewOrder; /** 如果有未完成的Order，則不新增新的Order */
         }
@@ -127,7 +128,8 @@ class PurchaseCreating extends Component{
     componentDidUpdate(){
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock){
-            localStorage.setItem('uncompleted-purchase-newOrder',JSON.stringify(this.state.currentOrder))
+            let shopID=this.props.shopRef.id;
+            localStorage.setItem(`shop-${shopID}-new-purchase-order`,JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))

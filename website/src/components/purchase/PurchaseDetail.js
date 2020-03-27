@@ -145,7 +145,8 @@ class PurchaseDetail extends Component{
         let onOrderEditing=this.state.onOrderEditing;
         /** auto upadte order to localStorage */
         if(!this.state.localStorageLock&&onOrderEditing){
-            localStorage.setItem(`History_${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
+            let shopID=this.props.shopRef.id;
+            localStorage.setItem(`shop-${shopID}-history-${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
                 localStorageLock:true,
             }))
@@ -248,7 +249,8 @@ class PurchaseDetail extends Component{
         }));
     }
     editOrder=()=>{
-        let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`History_${this.props.id}`));
+        let shopID=this.props.shopRef.id;
+        let unsavedHistoryOrder=JSON.parse(localStorage.getItem(`shop-${shopID}-history-${this.props.id}`));
         let localStorageLock=true;
         if(!unsavedHistoryOrder){
             // 如果不存在有未儲存的修改資料，則將訂單資料存入未儲存
@@ -460,7 +462,8 @@ class PurchaseDetail extends Component{
                     onOrderEditing:false,
                     unsavedHistoryOrder:null,
                 }))
-                localStorage.removeItem(`History_${this.props.id}`);
+                let shopID=this.props.shopRef.id;
+                localStorage.removeItem(`shop-${shopID}-history-${this.props.id}`);
                 return ;
             })
             .catch(error=>{
@@ -483,7 +486,8 @@ class PurchaseDetail extends Component{
                 unsavedHistoryOrder:null,
                 currentOrder:'loading'
             }))
-            localStorage.removeItem(`History_${this.props.id}`);
+            let shopID=this.props.shopRef.id;
+            localStorage.removeItem(`shop-${shopID}-history-${this.props.id}`);
         }
     }
 }

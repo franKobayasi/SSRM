@@ -26,7 +26,7 @@ class CheckoutDetail extends Component{
             isShowCustomerForm:false,
             isShowFormSubmitBooking:false,
             isShowStockChecker:false,
-            isShowModifySubmit:false,
+            isShowModifySubmit:false
         }
     }
     render(){
@@ -91,11 +91,11 @@ class CheckoutDetail extends Component{
                     {
                         onEditMode?
                         <div className="keyInArea">
-                            <Customer shopRef={this.props.shopRef} customerNameAndID={orderToRender.customerNameAndID}/>
+                            <Customer shopRef={this.props.shopRef} customerIdAndName={orderToRender.customerIdAndName}/>
                             <input className="keyIn--black" onKeyPress={this.keyInCustomer} placeholder="會員查詢(TEL)" type="text"/>
                             <input className="keyIn--black" onKeyPress={this.keyInProduct} placeholder="商品輸入(ID)" type="text"/>
                         </div>:
-                        <Customer shopRef={this.props.shopRef} customerNameAndID={orderToRender.customerNameAndID}/>
+                        <Customer shopRef={this.props.shopRef} customerIdAndName={orderToRender.customerIdAndName}/>
                     }
                     </div>
                     <div className="orderContent-main fk-table">
@@ -171,24 +171,24 @@ class CheckoutDetail extends Component{
         )
     }
     componentDidMount=async()=>{
+        this.upadteOrderData();
+    }
+    upadteOrderData=async()=>{
         let currentOrder=await this.getOrderData();
         if(currentOrder)
             this.setState(preState=>({currentOrder}),
             this.getAllProductDetail);
     }
-    upadteOrderData=async()=>{
-        let currentOrder=await this.getOrderData();
-        if(currentOrder)
-            this.setState(preState=>({currentOrder}));
-    }
     componentDidUpdate(){
         /** auto upadte order to localStorage */
         let shopID=this.props.shopRef.id;
         let orderID=this.state.orderID; 
+        let isNeedReloadOrderData=this.state.isNeedReloadOrderData;
+        let onEditMode=this.state.onEditMode;
         if(!this.state.localStorageLock){
             localStorage.setItem(`shop-${shopID}-history-${orderID}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
-                localStorageLock:true,
+                localStorageLock:true
             }))
         }
     }
@@ -201,7 +201,7 @@ class CheckoutDetail extends Component{
         this.setState(preState=>({
             onEditMode:true,
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     getOrderData=async()=>{
@@ -249,23 +249,23 @@ class CheckoutDetail extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }
     toogleShowCustomerForm=(bool)=>{
         this.setState(preState=>({
-            isShowCustomerForm:bool,
+            isShowCustomerForm:bool
         }))
     }
     toggleShowStockChecker=(bool)=>{
         this.setState(preState=>({
-            isShowStockChecker:bool,
+            isShowStockChecker:bool
         }))
     }
     toggleShowModifySubmit=(bool)=>{
         this.setState(preState=>({
-            isShowModifySubmit:bool,
+            isShowModifySubmit:bool
         }))
     }
     keyInCustomer=(evnt)=>{
@@ -275,9 +275,9 @@ class CheckoutDetail extends Component{
             (async()=>{
                 let result= await this.checkCustomer(target.value);
                 if(result.data){
-                    let customerNameAndID=result.data;
+                    let customerIdAndName=result.data;
                     target.value=''; /** 清空查詢 */
-                    this.setCurrentCustomer(customerNameAndID)
+                    this.setCurrentCustomer(customerIdAndName)
                 }else{
                     alert(`${result.message}`)
                 }
@@ -293,10 +293,10 @@ class CheckoutDetail extends Component{
             if(!snapshot.empty){
                 snapshot.forEach(doc=>{
                     if(doc.exists){
-                        result.data={
-                            id:doc.id,
-                            name:doc.data().name
-                        }
+                        result.data=[
+                            doc.id,
+                            doc.data().name
+                        ]
                     }
                 })
             }else{
@@ -305,12 +305,12 @@ class CheckoutDetail extends Component{
         })
         return result;
     }
-    setCurrentCustomer=(customerNameAndID)=>{
+    setCurrentCustomer=(customerIdAndName)=>{
         let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
-        unsavedHistoryOrder.customerNameAndID=customerNameAndID;
+        unsavedHistoryOrder.customerIdAndName=customerIdAndName;
         this.setState(preState=>({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     keyInProduct=(evnt)=>{
@@ -366,7 +366,7 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.itemList=itemList;
         this.setState({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         },this.updateCalcResult)     
     }
     updateCalcResult=()=>{
@@ -374,7 +374,7 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.calcResult=this.getCalcResult();
         this.setState({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         })     
     }
     updateNumToBuy=(evnt,itemIndex)=>{
@@ -383,9 +383,15 @@ class CheckoutDetail extends Component{
         let item=Object.assign({},itemList[itemIndex]);
         let detail=this.state.productsDetail;
         let value=evnt.target.value;
+        let currentOrder=this.state.currentOrder;
         value=value>detail[item.itemID].stocks?detail[item.itemID].stocks:value;
         if(String(Number(value))==="NaN"){
-            value=item.stocks;
+            let preSaleNum=currentOrder.itemList.filter(preItem=>{
+                return preItem.itemID=item.itemID;
+            })[0].saleNum;
+            let max=Number(detail[item.itemID].stocks)+Number(preSaleNum);
+            value=max;
+            alert(`以達當前庫存上限${value}`)
         }
         if(Number(value)===0){
             value=1;
@@ -395,7 +401,7 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.itemList=itemList;
         this.setState(preState=>({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }),this.updateCalcResult)
     }
     deleteProductFromOrder=(itemIndex)=>{
@@ -406,7 +412,7 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.calcResult=this.getCalcResult();
         this.setState({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         },this.updateCalcResult) 
     }
     getCalcResult=(deposit,discount)=>{
@@ -432,12 +438,12 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.calcResult=this.getCalcResult();
         this.setState({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         })     
     }
     toggleFormSubmitBooking=(bool)=>{
         this.setState(preState=>({
-            isShowFormSubmitBooking:bool,
+            isShowFormSubmitBooking:bool
         }))
     }
     setDeposit=(deposit)=>{
@@ -445,7 +451,7 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.calcResult=this.getCalcResult(null,deposit,null);
         this.setState(preState=>({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     updateDiscount=(evnt)=>{
@@ -463,7 +469,7 @@ class CheckoutDetail extends Component{
         unsavedHistoryOrder.calcResult=this.getCalcResult(null,null,discount);
         this.setState(preState=>({
             unsavedHistoryOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     cancelUpdateOrder=()=>{
@@ -473,14 +479,15 @@ class CheckoutDetail extends Component{
             localStorage.removeItem(`shop-${shopID}-history-${orderID}`)
             this.setState(preState=>({
                 onEditMode:false,
-                unsavedHistoryOrder:null,
+                unsavedHistoryOrder:null
             }),this.upadteOrderData)
         }
     }
     submitModifySubmit=(operator,reason)=>{
         let shopRef=this.props.shopRef;
         let unsavedHistoryOrder=Object.assign({},this.state.unsavedHistoryOrder);
-        if(!unsavedHistoryOrder.customerNameAndID){
+        if(!unsavedHistoryOrder.customerIdAndName.length===2){
+            unsavedHistoryOrder.customerIdAndName=[];
             alert('尚未輸入顧客資料，請確認！');
             return ;
         }
@@ -503,7 +510,7 @@ class CheckoutDetail extends Component{
             unsavedHistoryOrder.modifyRecords.push({
                 reason,
                 operator,
-                time:new Date().valueOf(),
+                time:new Date().valueOf()
             });
             let promises=[];
             let previousCheckout;
@@ -527,7 +534,6 @@ class CheckoutDetail extends Component{
                     }
                     productSaleNum[item.itemID]+=Number(item.saleNum); //加上當前的購買數量;
                 }
-                console.log(productSaleNum);
                 for(let key in productSaleNum){
                     let saleNum=productSaleNum[key];
                     let updateProduct=t.get(shopRef.collection('products').doc(key))
@@ -540,7 +546,7 @@ class CheckoutDetail extends Component{
                     })
                     promises.push(updateProduct);
                 }
-                let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(unsavedHistoryOrder.customerNameAndID.id))
+                let updateCustomerTradeRecord=t.get(shopRef.collection('customers').doc(unsavedHistoryOrder.customerIdAndName[0]))
                 .then(doc=>{
                     if(doc.exists){
                         let customer=doc.data();
@@ -549,7 +555,7 @@ class CheckoutDetail extends Component{
                         }
                         customer.tradeRecords[unsavedHistoryOrder.id]=unsavedHistoryOrder.calcResult;
                         customer.tradeRecords[unsavedHistoryOrder.id].time=unsavedHistoryOrder.time;
-                        t.set(shopRef.collection('customers').doc(unsavedHistoryOrder.customerNameAndID.id),customer)
+                        t.set(shopRef.collection('customers').doc(unsavedHistoryOrder.customerIdAndName[0]),customer)
                     }
                 })
                 promises.push(updateCustomerTradeRecord);
@@ -562,12 +568,14 @@ class CheckoutDetail extends Component{
         })
         .then(res=>{
             let shopID=this.props.shopRef.id;
-            alert(`交易 ${unsavedHistoryOrder.id} 更新成功！`);
+            let orderID=unsavedHistoryOrder.id
+            alert(`交易 ${orderID} 更新成功！`);
             localStorage.removeItem(`shop-${shopID}-history-${orderID}`)
             this.setState(preState=>({
                 onEditMode:false,
                 isShowModifySubmit:false,
                 unsavedHistoryOrder:null,
+                productsDetail:{}
             }),this.upadteOrderData)
         })
         .catch(error=>{
@@ -587,7 +595,6 @@ function Product(props) {
     let item=props.item;
     let updateNumToBuy=props.updateNumToBuy;
     let deleteProductFromOrder=props.deleteProductFromOrder;
-    console.log(detail);
     return (
         <div className="fk-table-row">
         {

@@ -66,15 +66,15 @@ orderRef(order FireBase firestore collection ref)
         let searchByCustomerName=this.state.searchByCustomerName;
         let targetRef=this.props.orderRef;
         if(isSearchNeedOrderID&&searchOrderID.length===0){
-            alert('在勾選以採購單號搜尋時，該欄位不得為空');
+            alert('在勾選以結帳單號搜尋時，該欄位不得為空');
         }else if(isSearchNeedCustomerName&&searchByCustomerName.length===0){
-            alert('在勾選以供應商名稱搜尋時，該欄位不得為空');
+            alert('在勾選以顧客名稱搜尋時，該欄位不得為空');
         }else{
             if(isSearchNeedOrderID){
                 targetRef=targetRef.where('id','==',`${searchOrderID}`);
             }
             if(isSearchNeedCustomerName){               
-                targetRef=targetRef.where('search_supplier','array-contains',`${searchByCustomerName}`)
+                targetRef=targetRef.where('customerIdAndName','array-contains',`${searchByCustomerName}`)
             }
             if(isSearchNeedDateArea){
                 let from=this.state.searchByDateFrom?this.state.searchByDateFrom:this.state.defaultSearchByDateFrom;
