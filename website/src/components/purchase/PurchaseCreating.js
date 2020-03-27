@@ -28,6 +28,7 @@ class PurchaseCreating extends Component{
             localStorageLock:true,  /** use for auto save to localStorage */
             onProductEditing:false, /** product item adding form */
             onSupplierEntry:false, /** supplier adding form */
+            showStockChecker:false,
             currentProduct:null /** current editing product */
         }
     }
@@ -62,7 +63,7 @@ class PurchaseCreating extends Component{
                         <div className="location">當前位置：採購單登錄</div>
                         <div className="operatingBtns">
                             <button className="fx-btn--mainColor" onClick={()=>{history().push(`/purchase/history`)}}>歷史訂單</button>
-                            <button className="fx-btn--mainColor">庫存查詢</button>
+                            <button className="fx-btn--mainColor" onClick={()=>{this.showStockChecker(true);}}>庫存查詢</button>
                             <button className="fx-btn--mainColor" onClick={()=>{this.toggleFormSupplierEntry(true)}}>新增供應商</button>
                         </div>
                     </div>
@@ -134,6 +135,11 @@ class PurchaseCreating extends Component{
                 localStorageLock:true
             }))
         }
+    }
+    showStockChecker=(bool)=>{
+        this.setState(preState=>({
+            showStockChecker:bool
+        }));
     }
     createPurchaseOrder(){
         return {
