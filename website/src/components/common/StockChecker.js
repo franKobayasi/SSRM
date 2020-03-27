@@ -8,6 +8,12 @@ toggle(show or hide Stock Checker)
 
  */
 class StockChecker extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            product:null
+        }
+    }
     render(){
         let product=this.state.product;
         return (
