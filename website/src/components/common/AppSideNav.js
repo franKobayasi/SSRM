@@ -10,12 +10,12 @@ class AppSideNav extends Component{
     constructor(props){
         super(props);
         this.state={
-            isNavShow:false,
+            isNavShow:false
         }
     }
     toggleShowNav=()=>{
         this.setState(preState=>({
-            isNavShow:!preState.isNavShow,
+            isNavShow:!preState.isNavShow
         }))
     }
     signOut=(evnt)=>{
@@ -86,7 +86,7 @@ class AppSideNav extends Component{
 
 function mapStateToProps({shop}) {
     return {
-        shop,
+        shop
     }
 }
 

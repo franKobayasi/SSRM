@@ -18,7 +18,7 @@ class FormSupplierEntry extends Component{
             title:'',
             address:'',
             tel:'',
-            remindMsg:'提示訊息',
+            remindMsg:'提示訊息'
         }
     }
     render(){
@@ -63,40 +63,40 @@ class FormSupplierEntry extends Component{
             if(value.length<3){
                 msg='供應商名稱過短';
                 this.setState(preState=>({
-                    isTitleRight:false,
+                    isTitleRight:false
                 }))
             }else{
                 this.setState(preState=>({
-                    isTitleRight:true,
+                    isTitleRight:true
                 }))
             }
         }else if(id==='address'){
             if(value.length<5){
                 msg='地址過短，至少5個字以上';
                 this.setState(preState=>({
-                    isAdressRight:false,
+                    isAdressRight:false
                 }))
             }else{
                 this.setState(preState=>({
-                    isAdressRight:true,
+                    isAdressRight:true
                 }))
             }
         }else if(id==='tel'){
             if(value.length<5){
                 msg='電話過短，至少5個字以上';
                 this.setState(preState=>({
-                    isTelRight:false,
+                    isTelRight:false
                 }))
             }else{
                 this.setState(preState=>({
-                    isTelRight:true,
+                    isTelRight:true
                 }))
             }
         }
         this.setState((preState)=>{
             return {
                 [id]:value,
-                remindMsg:msg,
+                remindMsg:msg
             }
         });
     }
@@ -187,9 +187,6 @@ class Supplier extends Component{
         let supplierIdAndTitle=this.props.supplierIdAndTitle;
         let isShowDetail=this.state.isShowDetail;
         let detail=this.state.detail;
-        /** 此地傳進來 supplier 陣列的格式
-        [0] title [1]address [2] tel
-         */
         return (
             <Fragment>
             <button onClick={()=>{this.toggleShowDetail(true)}} className="app-supplier-showDetailBtn fx-btn--25LH-mainColor">{supplierIdAndTitle.length===2?supplierIdAndTitle[1]:'供應商'}</button>

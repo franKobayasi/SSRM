@@ -28,7 +28,6 @@ class CheckoutCreate extends Component{
         let currentOrder=this.state.currentOrder;
         let discount=this.state.discount;
         let detail=this.state.productsDetail;
-
         return (
         <div className="app-pageMainArea app-checkout-new">
             {
@@ -143,7 +142,7 @@ class CheckoutCreate extends Component{
             currentOrder=uncompletedNewOrder; /** 如果有未完成的Order，則不新增新的Order */
         }
         this.setState(preState=>({
-            currentOrder,
+            currentOrder
         }),this.getAllProductDetail)   
     }
     componentDidUpdate(){
@@ -317,7 +316,7 @@ class CheckoutCreate extends Component{
         currentOrder.itemList=itemList;
         this.setState({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         },this.updateCalcResult)     
     }
     updateCalcResult=()=>{
@@ -369,7 +368,7 @@ class CheckoutCreate extends Component{
         result.sumOfNum=0;
         for(let item of itemList){
             result.sumOfNum+=item.saleNum;
-            result.sumOfMoney+=(detail[item.itemID].price*item.saleNum)
+            result.sumOfMoney+=(detail[item.itemID].price*item.saleNum);
         }
         result.deposit=deposit||deposit===0?deposit:order.calcResult.deposit;
         result.discount=discount||discount===0?discount:order.calcResult.discount;

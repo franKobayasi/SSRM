@@ -152,7 +152,7 @@ class Customer extends Component{
         super(props);
         this.state={
             isShow:false,
-            getCustomerDetail:false,
+            getCustomerDetail:false
         }
     }
     render(){
@@ -229,7 +229,7 @@ class Customer extends Component{
             .then(doc=>{
                 this.setState(preState=>({
                     detail:doc.data(),
-                    getCustomerDetail:false,
+                    getCustomerDetail:false
                 }))
             })
         }
@@ -238,7 +238,7 @@ class Customer extends Component{
         if(this.props.customerIdAndName.length===2){
             this.setState(preState=>({
                 isShow:true,
-                getCustomerDetail:true,
+                getCustomerDetail:true
             }))
         }else{
             alert('請先完成顧客查詢');
@@ -246,7 +246,7 @@ class Customer extends Component{
     }
     closeDetail=()=>{
         this.setState(preState=>({
-            isShow:false,
+            isShow:false
         }))
     }
     getSumOfTrade(tradeRecords){

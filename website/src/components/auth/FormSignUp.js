@@ -14,7 +14,7 @@ class FormSignUp extends Component{
             isUNRight:false,
             isEmailRight:false,
             isPWRight:false,
-            isPWSame:false,
+            isPWSame:false
         }
     }
     render(){
@@ -59,11 +59,11 @@ class FormSignUp extends Component{
             if(value.length===0){
                 msg='尚未輸入使用者名稱';
                 this.setState(preState=>({                    
-                    isUNRight:false,
+                    isUNRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isUNRight:true,
+                    isUNRight:true
                 }))
             }
         }
@@ -71,11 +71,11 @@ class FormSignUp extends Component{
             if(!/\w+\@\w+\.\w+/.test(value)){
                 msg='email格式不正確';
                 this.setState(preState=>({                    
-                    isEmailRight:false,
+                    isEmailRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isEmailRight:true,
+                    isEmailRight:true
                 }))
             }
         }
@@ -83,11 +83,11 @@ class FormSignUp extends Component{
             if(value.length<5||!/[A-z]+\d+\w+/.test(value)){
                 msg='密碼格式錯誤，請以字母開頭並至少包含兩個數字，總長度至少5個字以上';
                 this.setState(preState=>({                    
-                    isPWRight:false,
+                    isPWRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isPWRight:true,
+                    isPWRight:true
                 }))
             }
         }
@@ -95,18 +95,18 @@ class FormSignUp extends Component{
             if(value!==password){
                 msg='兩次密碼不一致';
                 this.setState(preState=>({                    
-                    isPWSame:false,
+                    isPWSame:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isPWSame:true,
+                    isPWSame:true
                 }))
             }
         }
         this.setState((preState)=>{
             return {
                 [id]:value,
-                remindMsg:msg,
+                remindMsg:msg
             }
         });
     }

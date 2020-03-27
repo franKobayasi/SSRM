@@ -34,19 +34,19 @@ class FormSubmitBooking extends Component{
             this.setState(preState=>({
                 remindMsg:'訂金不可為零',
                 isDepositRight:false,
-                deposit:value, 
+                deposit:value
             }))
         }else if(String(Number(value))==="NaN"){
             this.setState(preState=>({
                 remindMsg:'輸入的值不正確',
                 isDepositRight:false,
-                deposit:value, 
+                deposit:value
             }))
         }else{
             this.setState(preState=>({
                 remindMsg:'OK',
                 isDepositRight:true,
-                deposit:Number(value), 
+                deposit:Number(value)
             }))
         }
     }

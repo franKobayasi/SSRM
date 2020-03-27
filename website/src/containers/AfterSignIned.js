@@ -96,12 +96,12 @@ class AfterSignIned extends Component{
 function mapStateToProps({auth,shop}){
     return {
         auth,
-        shop,
+        shop
     };
 }
 function mapDispatchToProps(dispatch){
     return {
-        dispatch,
+        dispatch
     }
 }
 

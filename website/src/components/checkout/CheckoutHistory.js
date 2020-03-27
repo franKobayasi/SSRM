@@ -6,7 +6,6 @@ import AppSideNav from '../common/AppSideNav';
 import {Loading} from '../common/Loading';
 import CheckoutOrderFilter from '../common/CheckoutOrderFilter';
 import CheckoutCreate from './CheckoutCreate';
-
 /** img */
 import editBtn from '../../img/editBtn.png';
 import deleteBtn from '../../img/deleteBtn.png';
@@ -21,14 +20,13 @@ class CheckoutHistory extends Component{
             limitNum:20,
             orderRef:this.props.shopRef.collection('checkouts'),
             orderByDesc:'desc',
-            paging:1,
-            //targetRef,previousScope
+            paging:1
         }
     }
     render(){
         let orderList=this.state.orderList;
         let descStyle={
-            transform: 'rotate(180deg)',
+            transform: 'rotate(180deg)'
         }
         return (
             <div className="app-pageMainArea app-checkout-history">
@@ -136,7 +134,7 @@ class CheckoutHistory extends Component{
         this.setState(preState=>({
             paging:1, //reset paging
             targetRef,
-            previousScope:null,
+            previousScope:null
         }),()=>{this.getOrdersFromDB()})
     }
     getOrdersFromDB=(changePage,goNext)=>{
@@ -185,7 +183,7 @@ class CheckoutHistory extends Component{
                 orderList,
                 previousScope,
                 isNextPageExist,
-                isNeedUpdateFromDB:false,
+                isNeedUpdateFromDB:false
             }))
         })
         .catch(error=>{
@@ -241,7 +239,7 @@ class CheckoutHistory extends Component{
             .then(res=>{
                 alert(`交易 ${orderid} 取消成功！`);
                 this.setState(preState=>({
-                    isNeedUpdateFromDB:true,
+                    isNeedUpdateFromDB:true
                 }))
             })
             .catch(error=>{

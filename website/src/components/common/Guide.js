@@ -16,7 +16,7 @@ class Guide extends Component{
             masterKey_check:'',
             remindMsg:'提示訊息',
             isPWRight:false,
-            isPWSame:false,
+            isPWSame:false
         }
     }
     render(){
@@ -94,7 +94,7 @@ class Guide extends Component{
     }
     setSlide=(index)=>{
         this.setState(preState=>({
-            slide:index,
+            slide:index
         }))
     }
     handleChange=(evnt)=>{
@@ -110,11 +110,11 @@ class Guide extends Component{
             if(value.length<4||!/[A-z]+\d+\w+/.test(value)){
                 msg='權限密碼請以字母開頭並至少包含兩個數字，總長度至少4個字以上';
                 this.setState(preState=>({                    
-                    isPWRight:false,
+                    isPWRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isPWRight:true,
+                    isPWRight:true
                 }))
             }
         }
@@ -122,18 +122,18 @@ class Guide extends Component{
             if(value!==this.state.masterKey){
                 msg='兩次密碼不一致';
                 this.setState(preState=>({                    
-                    isPWSame:false,
+                    isPWSame:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isPWSame:true,
+                    isPWSame:true
                 }))
             }
         }
         this.setState((preState)=>{
             return {
                 remindMsg:msg,
-                [id]:value,
+                [id]:value
             }
         });
     }
@@ -171,12 +171,12 @@ class Guide extends Component{
 
 function mapStateToProps({auth}){
     return {
-        auth,
+        auth
     }
 }
 function mapDispatchToProps(dispatch){
     return {
-        dispatch,
+        dispatch
     }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Guide);

@@ -29,7 +29,7 @@ class PurchaseDetail extends Component{
             isModified:false,
             showModifyConfirm:false,
             showStockChecker:false,
-            localStorageLock:true,
+            localStorageLock:true
         }
     }
     render(){
@@ -136,7 +136,7 @@ class PurchaseDetail extends Component{
             if(doc.exists){
                 currentOrder=this.transformStructureCMPT(doc.data());
                 this.setState(preState=>({
-                    currentOrder,
+                    currentOrder
                 }))
             }
         })
@@ -148,7 +148,7 @@ class PurchaseDetail extends Component{
             let shopID=this.props.shopRef.id;
             localStorage.setItem(`shop-${shopID}-history-${this.props.id}`,JSON.stringify(this.state.unsavedHistoryOrder))
             this.setState(preState=>({
-                localStorageLock:true,
+                localStorageLock:true
             }))
         }
         if(this.state.currentOrder==='loading'){
@@ -159,7 +159,7 @@ class PurchaseDetail extends Component{
                 if(doc.exists){
                     currentOrder=this.transformStructureCMPT(doc.data());
                     this.setState(preState=>({
-                        currentOrder,
+                        currentOrder
                     }))
                 }
             })
@@ -192,7 +192,7 @@ class PurchaseDetail extends Component{
                 price:group[key][0].price,
                 cost:group[key][0].cost,
                 startAt:orderFRBS.startAt[key],
-                itemList:[],
+                itemList:[]
             };
             for(let item of group[key]){
                 let obj={
@@ -201,7 +201,7 @@ class PurchaseDetail extends Component{
                    color:item.color,
                    num:item.num,
                    inStock:item.inStock,
-                   status:item.status,
+                   status:item.status
                 }
                 product.itemList.push(obj);
             }
@@ -225,7 +225,7 @@ class PurchaseDetail extends Component{
                     productID:product.productID,
                     name:product.name,
                     price:product.price,
-                    cost:product.cost,
+                    cost:product.cost
                 })
                 itemList.push(obj);
             }
@@ -260,7 +260,7 @@ class PurchaseDetail extends Component{
         this.setState((preState)=>({
             localStorageLock,
             onOrderEditing:true,
-            unsavedHistoryOrder,
+            unsavedHistoryOrder
         }));
     }
     handleChange=(evnt)=>{
@@ -268,7 +268,7 @@ class PurchaseDetail extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }
@@ -286,7 +286,7 @@ class PurchaseDetail extends Component{
                     }else{
                         result.data=[
                             doc.id,
-                            doc.data().title,
+                            doc.data().title
                         ]
                         return ; 
                     }
@@ -307,17 +307,17 @@ class PurchaseDetail extends Component{
     /** show and hide 供應商註冊表單*/
     toggleSupplierAddingForm=(bool)=>{
         this.setState(preState=>({
-            onSupplierAdding:bool,
+            onSupplierAdding:bool
         }))
     }
     /** 設定當前供應商 */
-    setCurrentSuppier=(title,address,tel)=>{
+    setCurrentSuppier=(supplierIdAndTitle)=>{
         this.setState(preState=>({
             unsavedHistoryOrder:{
                 ...preState.unsavedHistoryOrder,
-                search_supplier:[`${title}`,`${address}`,`${tel}`]
+                supplierIdAndTitle
             },
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     /** 輸入供應商 */   
@@ -328,9 +328,9 @@ class PurchaseDetail extends Component{
             (async()=>{
                 let result= await this.checkSupplier(target.value);
                 if(result.supplier){
-                    let supplier=result.supplier;
+                    let supplierIdAndTitle=result.supplier;
                     target.value=''; /** 清空查詢 */
-                    this.setCurrentSuppier(supplier.title,supplier.address,supplier.tel)
+                    this.setCurrentSuppier(supplierIdAndTitle)
                 }else{
                     alert(`${result.message}`)
                 }
@@ -348,7 +348,7 @@ class PurchaseDetail extends Component{
                 cost:'',
                 price:'',
                 startAt:1,
-                itemList:[],
+                itemList:[]
             }
         }))
     }
@@ -357,7 +357,7 @@ class PurchaseDetail extends Component{
         let currentProduct=unsavedHistoryOrder.products[productIndex];
         this.setState(preState=>({
             onProductEditing:true,
-            currentProduct,
+            currentProduct
          }))
     }
     /** delete product */
@@ -380,7 +380,7 @@ class PurchaseDetail extends Component{
             unsavedHistoryOrder.products.splice(productIndex,1)
             this.setState(preState=>({
                 localStorageLock:false, /** update to local */
-                unsavedHistoryOrder,
+                unsavedHistoryOrder
             }))
         }
     }
@@ -404,13 +404,13 @@ class PurchaseDetail extends Component{
             unsavedHistoryOrder,
             onProductEditing:false,
             currentProduct:null,
-            localStorageLock:false, /** update to local */
+            localStorageLock:false /** update to local */
         }))
     }
     cancelUpdateProduct=()=>{
         this.setState(preState=>({
             onProductEditing:false,
-            currentProduct:null,
+            currentProduct:null
         }))
     }
     /** compute sum of cost and avanrage profit */
@@ -425,7 +425,7 @@ class PurchaseDetail extends Component{
             sumOfCost:0,
             sumOfPrice:0,
             avgProfit:0,
-            sumOfNum:0,
+            sumOfNum:0
         };
         for(let product of products){
             for(let item of product.itemList){
@@ -442,7 +442,7 @@ class PurchaseDetail extends Component{
     showModifyConfirm=()=>{
         this.setState(preState=>({
             showModifyConfirm:true,
-            modifyDescription:'',
+            modifyDescription:''
         }))
     }
     submitOrder=(operator,reason)=>{
@@ -457,7 +457,7 @@ class PurchaseDetail extends Component{
             unsavedHistoryOrder.modifyRecords.push({
                 reason,
                 operator,
-                time:new Date().valueOf(),
+                time:new Date().valueOf()
             });
             let orderFRBS=this.transformStructureFRBS(unsavedHistoryOrder);
             this.props.shopRef.collection('purchases').doc(orderFRBS.id).set(orderFRBS)
@@ -467,7 +467,7 @@ class PurchaseDetail extends Component{
                     currentOrder:'loading',
                     showModifyConfirm:false,
                     onOrderEditing:false,
-                    unsavedHistoryOrder:null,
+                    unsavedHistoryOrder:null
                 }))
                 let shopID=this.props.shopRef.id;
                 localStorage.removeItem(`shop-${shopID}-history-${this.props.id}`);
@@ -482,7 +482,7 @@ class PurchaseDetail extends Component{
     }
     cancelSubmit=()=>{
         this.setState(preState=>({
-            showModifyConfirm:false,
+            showModifyConfirm:false
         }))
     }
     /** cancel order */

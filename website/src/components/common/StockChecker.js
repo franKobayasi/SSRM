@@ -8,12 +8,6 @@ toggle(show or hide Stock Checker)
 
  */
 class StockChecker extends Component{
-    constructor(props){
-        super(props);
-        this.state={
-            // prodcut: undefined - loading - data
-        }
-    }
     render(){
         let product=this.state.product;
         return (
@@ -62,7 +56,7 @@ class StockChecker extends Component{
         let value=evnt.target.value.trim();
         this.setState((preState)=>{
             return {
-                itemID:value,
+                itemID:value
             }
         });
     }
@@ -71,12 +65,12 @@ class StockChecker extends Component{
         if(itemID){
             let result={};
             this.setState(preState=>({
-                product:'loading',
+                product:'loading'
             }))        
             await this.getItemData(result,itemID);
             if(result&&result.product){
                 this.setState(preState=>({
-                    product:result.product,
+                    product:result.product
                 }))
             }else{
                 alert(`${result.message}`);
@@ -112,7 +106,7 @@ class StockChecker extends Component{
 
 function mapStateToProps({auth}){
     return {
-        auth,
+        auth
     }
 }
 

@@ -46,7 +46,7 @@ class StockManager extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }

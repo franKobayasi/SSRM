@@ -6,19 +6,19 @@ class Selector extends Component{
         super(props);
         this.state={
             selected:null,
-            isShow:false,
+            isShow:false
         }
     }
     showOptions=()=>{
         this.setState(preState=>({
-            isShow:true,
+            isShow:true
         }))
     }
     optionClick=(evnt)=>{
         let selected=evnt.target;
         this.setState(preState=>({
             selected:selected.title,
-            isShow:false,
+            isShow:false
         }))
         this.props.callbackOfSelect(selected.value);
     }

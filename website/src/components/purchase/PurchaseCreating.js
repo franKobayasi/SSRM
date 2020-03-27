@@ -122,7 +122,7 @@ class PurchaseCreating extends Component{
             currentOrder=uncompletedNewOrder; /** 如果有未完成的Order，則不新增新的Order */
         }
         this.setState(preState=>({
-            currentOrder,
+            currentOrder
         }))   
     }
     componentDidUpdate(){
@@ -131,7 +131,7 @@ class PurchaseCreating extends Component{
             let shopID=this.props.shopRef.id;
             localStorage.setItem(`shop-${shopID}-new-purchase-order`,JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
-                localStorageLock:true,
+                localStorageLock:true
             }))
         }
     }
@@ -139,7 +139,7 @@ class PurchaseCreating extends Component{
         return {
             id:`${randomPurchaseOrderID()}`, /** purchase id */
             products:[], /** products go to be purchase  */
-            supplierIdAndTitle:[], /** for search.. */
+            supplierIdAndTitle:[] /** for search.. */
         };
     }
     handleChange=(evnt)=>{
@@ -147,7 +147,7 @@ class PurchaseCreating extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }
@@ -165,7 +165,7 @@ class PurchaseCreating extends Component{
                     }else{
                         result.data=[
                             doc.id,
-                            doc.data().title,
+                            doc.data().title
                         ]
                         return ; 
                     }
@@ -186,7 +186,7 @@ class PurchaseCreating extends Component{
     /** show and hide 供應商註冊表單*/
     toggleFormSupplierEntry=(bool)=>{
         this.setState(preState=>({
-            onSupplierEntry:bool,
+            onSupplierEntry:bool
         }))
     }
     /** 設定當前供應商 */
@@ -209,9 +209,9 @@ class PurchaseCreating extends Component{
                 if(result.data){
                     let supplierIdAndTitle=result.data;
                     target.value=''; /** 清空查詢 */
-                    this.setCurrentSuppier(supplierIdAndTitle)
+                    this.setCurrentSuppier(supplierIdAndTitle);
                 }else{
-                    alert(`${result.message}`)
+                    alert(`${result.message}`);
                 }
             })();
         }
@@ -227,7 +227,7 @@ class PurchaseCreating extends Component{
                 cost:'',
                 price:'',
                 itemList:[],
-                startAt:1,
+                startAt:1
             }
         }))
     }
@@ -236,7 +236,7 @@ class PurchaseCreating extends Component{
         let currentProduct=currentOrder.products[productIndex];
         this.setState(preState=>({
             onProductEditing:true,
-            currentProduct:currentProduct,
+            currentProduct:currentProduct
          }))
     }
     /** delete product */
@@ -247,7 +247,7 @@ class PurchaseCreating extends Component{
             currentOrder.products.splice(productIndex,1)
             this.setState(preState=>({
                 localStorageLock:false, /** update to local */
-                currentOrder,
+                currentOrder
             }))
         }
     }
@@ -258,7 +258,7 @@ class PurchaseCreating extends Component{
         let currentOrder=Object.assign({},this.state.currentOrder);
         for(let key in currentOrder.products){
             if(currentOrder.products[key].productID===productSpecs.productID){
-                productIndex=key
+                productIndex=key;
                 isNewPorduct=false;
             }
         }
@@ -271,13 +271,13 @@ class PurchaseCreating extends Component{
             currentOrder,
             onProductEditing:false,
             currentProduct:null,
-            localStorageLock:false, /** update to local */
+            localStorageLock:false /** update to local */
         }))
     }
     cancelUpdateProduct=()=>{
         this.setState(preState=>({
             onProductEditing:false,
-            currentProduct:null,
+            currentProduct:null
         }))
     }
     /** compute sum of cost and avanrage profit */
@@ -287,7 +287,7 @@ class PurchaseCreating extends Component{
             sumOfCost:0,
             sumOfPrice:0,
             avgProfit:0,
-            sumOfNum:0,
+            sumOfNum:0
         };
         if(products){
             for(let product of products){
@@ -318,7 +318,7 @@ class PurchaseCreating extends Component{
                     productID:product.productID,
                     name:product.name,
                     price:product.price,
-                    cost:product.cost,
+                    cost:product.cost
                 })
                 itemList.push(obj);
             }
@@ -353,7 +353,7 @@ class PurchaseCreating extends Component{
                 alert(`採購單: ${orderFRBS.id} 成功新增！`);
                 this.setState(preState=>({
                     currentOrder:this.createPurchaseOrder(),
-                    localStorageLock:false,
+                    localStorageLock:false
                 }))
                 return ;
             })
@@ -369,7 +369,7 @@ class PurchaseCreating extends Component{
         if(confirm('確定取消新增此訂單？')){
             this.setState(preState=>({
                 currentOrder:this.createPurchaseOrder(),
-                localStorageLock:false,
+                localStorageLock:false
             }))
         }
     }

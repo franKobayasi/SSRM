@@ -35,7 +35,7 @@ class StockHistory extends Component{
         let orderList=this.state.orderList;
         let selectOrder=this.state.selectOrder;
         let descStyle={
-            transform: 'rotate(180deg)',
+            transform: 'rotate(180deg)'
         }
         return (
             <Fragment>
@@ -190,7 +190,7 @@ class StockHistory extends Component{
         this.setState(preState=>({
             paging:1, //reset paging
             targetRef,
-            previousScope:null,
+            previousScope:null
         }),()=>{this.getOrdersFromDB()})
     }
     getOrdersFromDB=(changePage,goNext)=>{
@@ -239,7 +239,7 @@ class StockHistory extends Component{
                 orderList,
                 previousScope,
                 isNextPageExist,
-                isNeedUpdateFromDB:false,
+                isNeedUpdateFromDB:false
             }))
         })
         .catch(error=>{
@@ -253,14 +253,6 @@ class StockHistory extends Component{
     goNextPage=()=>{
         this.getOrdersFromDB(true,true);
     }
-
-
-
-
-
-
-
-
     showStockChecker=(bool)=>{
         this.setState(preState=>({
             showStockChecker:bool
@@ -271,14 +263,14 @@ class StockHistory extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }
     selectOrder=(orderIndex)=>{
         let selectOrder=this.state.orderList[orderIndex];
         this.setState(preState=>({
-            selectOrder,
+            selectOrder
         }))
     }
 }

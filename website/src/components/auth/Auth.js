@@ -11,7 +11,7 @@ class Auth extends Component{
     constructor(props){
         super(props);
         this.state={
-            showSignUp:false,
+            showSignUp:false
         }
     }
     render(){
@@ -39,7 +39,7 @@ class Auth extends Component{
     }
     toggle=()=>{
         this.setState(preState=>({
-            showSignUp:!preState.showSignUp,
+            showSignUp:!preState.showSignUp
         }))
     }
     signInViaEmailAndPassword=(email,password)=>{
@@ -77,7 +77,7 @@ class Auth extends Component{
             let memberInfo={
                 email:user.email,
                 displayName:user.displayName,
-                uid:user.uid,
+                uid:user.uid
             }
             this.props.dispatch(actionSignIn(memberInfo));
             this.props.history.push('/');
@@ -110,7 +110,6 @@ class Auth extends Component{
                         uid:user.uid
                     }
                     dispatch(actionSignIn(memberInfo));
-
                     history().push('/');
                 }).catch(function(error) {  
                     dispatch(actionFetchFinish()); 

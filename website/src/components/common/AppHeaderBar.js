@@ -29,12 +29,12 @@ class AppHeaderBar extends Component{
 
 function mapStateToProps({shop}){
     return {
-        shop,
+        shop
     };
 }
 function mapDispatchToProps(dispatch){
     return {
-        dispatch,
+        dispatch
     }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(AppHeaderBar);

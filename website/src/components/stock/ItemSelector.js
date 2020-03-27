@@ -80,7 +80,7 @@ class ItemSelector extends Component{
                 })
             }
             this.setState(preState=>({
-            orderSearchResult:result,
+            orderSearchResult:result
         }))
         })
     }
@@ -104,7 +104,7 @@ class ItemSelector extends Component{
         this.setState(preState=>({
             orderSelected,
             tempItemState,
-            isAllSelected:false,
+            isAllSelected:false
         }))
     }
     /** handle SelectedOrder's item */
@@ -112,7 +112,7 @@ class ItemSelector extends Component{
         let tempItemState=Object.assign({},this.state.tempItemState);
         tempItemState[itemID]=!tempItemState[itemID];
         this.setState(preState=>({
-            tempItemState,
+            tempItemState
         }))
     }
     toSelectAll=()=>{
@@ -122,7 +122,7 @@ class ItemSelector extends Component{
         }
         this.setState(preState=>({
             tempItemState,
-            isAllSelected:!preState.isAllSelected,
+            isAllSelected:!preState.isAllSelected
         }))
     }
     getItemListBackToTap=()=>{
@@ -150,7 +150,7 @@ class ItemSelector extends Component{
                 this.setState(preState=>({
                     isAllSelected:false,
                     orderSelected:null,
-                    tempItemState:null,
+                    tempItemState:null
                 }))
             }
         }

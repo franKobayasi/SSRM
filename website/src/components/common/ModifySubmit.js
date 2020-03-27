@@ -14,7 +14,7 @@ class ModifySubmit extends Component{
         this.state={
             operator:'',
             reason:'',
-            remindMsg:'提示訊息',
+            remindMsg:'提示訊息'
         }
     }
     render(){
@@ -58,7 +58,7 @@ class ModifySubmit extends Component{
         this.setState((preState)=>{
             return {
                 [id]:value,
-                remindMsg:msg,
+                remindMsg:msg
             }
         });
     }

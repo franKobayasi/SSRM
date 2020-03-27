@@ -16,7 +16,7 @@ class ShopInfo extends Component{
             title:shop.title,
             address:shop.address,
             tel:shop.tel,
-            time:shop.time,
+            time:shop.time
         }
     }
 
@@ -28,7 +28,7 @@ class ShopInfo extends Component{
         let title=this.state.title;
         let address=this.state.address;
         let tel=this.state.tel;
-        let time=this.state.time
+        let time=this.state.time;
         return (
              <div className="app-dashboard-shopInfo app-dashboard-block">
                 <div className="app-dashboard-blockTitle">

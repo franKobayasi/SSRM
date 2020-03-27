@@ -118,7 +118,7 @@ class StockInOrder extends Component{
             currentOrder=uncompletedNewOrder;
         }
         this.setState(preState=>({
-            currentOrder,
+            currentOrder
         }))   
     }
     componentDidUpdate(){
@@ -127,7 +127,7 @@ class StockInOrder extends Component{
             let shopID=this.props.shopRef.id;
             localStorage.setItem(`shop-${shopID}-new-stockIn-order`,JSON.stringify(this.state.currentOrder))
             this.setState(preState=>({
-                localStorageLock:true,
+                localStorageLock:true
             }))
         }
     }
@@ -141,7 +141,7 @@ class StockInOrder extends Component{
         let value=evnt.target.value;
         this.setState((preState)=>{
             return {
-                [id]:value,
+                [id]:value
             }
         });
     }
@@ -150,7 +150,7 @@ class StockInOrder extends Component{
             id:`${randomStockOrderID()}`,
             stockInList:[],
             search_purchaseID:[],
-            type:"stockin",
+            type:"stockin"
         };
     }
     addItemList=(order)=>{
@@ -176,14 +176,14 @@ class StockInOrder extends Component{
             currentOrder.stockInList.push({
                 purchaseID:order.purchaseID,
                 itemList:order.itemList,
-                updateTimes:order.updateTimes,
+                updateTimes:order.updateTimes
             });
         }else{
             currentOrder.stockInList[targetIndex].itemList=currentOrder.stockInList[targetIndex].itemList.concat(order.itemList);
         }
         this.setState(preState=>({
             currentOrder,
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     deleteItem=(orderIndex,itemIndex)=>{
@@ -196,7 +196,7 @@ class StockInOrder extends Component{
             }
             this.setState(preState=>({
                 currentOrder,
-                localStorageLock:false,
+                localStorageLock:false
             }))
         }
     }
@@ -210,7 +210,7 @@ class StockInOrder extends Component{
         }
         currentOrder.stockInList[orderIndex].itemList[itemIndex].operateNum=value;
         this.setState(preState=>({
-            currentOrder,
+            currentOrder
         }))
     }
     /**
@@ -251,7 +251,7 @@ class StockInOrder extends Component{
             })
             this.setState(preState=>({
                 currentOrder:order,
-                localStorageLock:false,
+                localStorageLock:false
             }))
             alert(`移除已發生變更的採購單，請重新查詢`);
             return ;
@@ -305,7 +305,7 @@ class StockInOrder extends Component{
                                     size:item.size,
                                     color:item.color,
                                     purchaseID:stockIn.purchaseID,
-                                    time:currentOrder.time,
+                                    time:currentOrder.time
                                 }
                             }
                             t.set(shopRef.collection('products').doc(item.itemID),itemData);
@@ -322,7 +322,7 @@ class StockInOrder extends Component{
                 /** 清空currentOrder */
                 this.setState(preState=>({
                     currentOrder:this.createNewOrder(),
-                    localStorageLock:false,
+                    localStorageLock:false
                 }))
             })
             .catch(error=>{
@@ -336,7 +336,7 @@ class StockInOrder extends Component{
         if(confirm('尚有未送出的資料，確定取消？')){
             this.setState(preState=>({
                 currentOrder:this.createNewOrder(),
-                localStorageLock:false,
+                localStorageLock:false
             }))
         }
     }

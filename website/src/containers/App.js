@@ -45,7 +45,7 @@ function App(props){
 function mapStateToProps({auth,state},ownProps){
     return {
         auth,
-        state,
+        state
     }
 }
 export default connect(mapStateToProps)(App);

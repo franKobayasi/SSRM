@@ -122,7 +122,7 @@ class FormProductEditing extends Component{
                 isNameRight=true;
             }
             this.setState(preState=>({
-                isNameRight,
+                isNameRight
             }))
         }
         if(id==='price'){
@@ -133,7 +133,7 @@ class FormProductEditing extends Component{
                 isPriceRight=true;
             }
             this.setState(preState=>({
-                isPriceRight,
+                isPriceRight
             }))
         }
         if(id==='cost'){
@@ -144,13 +144,13 @@ class FormProductEditing extends Component{
                 isCostRight=true;
             }
             this.setState(preState=>({
-                isCostRight,
+                isCostRight
             }))
         }
         this.setState((preState)=>{
             return {
                 [id]:value,
-                remindMsg:msg,
+                remindMsg:msg
             }
         });
     }
@@ -184,7 +184,7 @@ class FormProductEditing extends Component{
                     color,
                     num,
                     inStock:0,
-                    status:'purchase',
+                    status:'purchase'
                 })
                 this.setState(preState=>({
                     startAt:CP.startAt,
@@ -204,7 +204,7 @@ class FormProductEditing extends Component{
         }else{
             itemList[target]['isEdit']=!itemList[target]['isEdit'];
             this.setState(preState=>({
-                itemList,
+                itemList
             }))
         }
     }
@@ -238,7 +238,7 @@ class FormProductEditing extends Component{
         if(preItemList[target].inStock===0){
             let itemList=preItemList.filter((item,itemIndex)=>(!(itemIndex===target)));
             this.setState(preState=>({
-                itemList,
+                itemList
             }))
         }else{
             alert('此規格商品已經進貨，無法移除');
@@ -265,7 +265,7 @@ class FormProductEditing extends Component{
                 cost:Number(cost),
                 price:Number(price),
                 itemList,
-                startAt:this.state.startAt,
+                startAt:this.state.startAt
             }
             this.props.submitProductSpecs(productSpecs);
         }

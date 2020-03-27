@@ -9,11 +9,6 @@ import ModifySubmit from '../common/ModifySubmit';
 import {FormCustomerEntry, Customer} from '../common/Customer';
 import StockChecker from '../common/StockChecker';
 
-/**
-修改結帳單細節，刪除訂單：
-
- */
-
 class CheckoutDetail extends Component{
     constructor(props){
         super(props);

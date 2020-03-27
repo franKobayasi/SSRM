@@ -28,10 +28,6 @@ class PurchaseHistory extends Component{
             orderByDesc:true, //asc
             orderList:'loading',
             orderRef:this.props.shopRef.collection('purchases')
-            /**
-            targetRef
-            previousScope
-            */
         }
     }
     render(){
@@ -39,7 +35,7 @@ class PurchaseHistory extends Component{
         let orderList=this.state.orderList;
         let orderid=this.props.history.match.params.orderid;
         let descStyle={
-            transform: 'rotate(180deg)',
+            transform: 'rotate(180deg)'
         }
         return (
             <Fragment>
@@ -162,14 +158,14 @@ class PurchaseHistory extends Component{
     }
     toggleOrderByMode=()=>{
         this.setState(preState=>({
-            orderByDesc:!preState.orderByDesc,
+            orderByDesc:!preState.orderByDesc
         }),()=>{this.getOrdersFromDB()})
     }
     setTargetRef=(targetRef)=>{
         this.setState(preState=>({
             paging:1, //reset paging
             targetRef,
-            previousScope:null,
+            previousScope:null
         }),()=>{this.getOrdersFromDB()})
     }
     getOrdersFromDB=(changePage,goNext)=>{
@@ -218,7 +214,7 @@ class PurchaseHistory extends Component{
                 orderList,
                 previousScope,
                 isNextPageExist,
-                isNeedUpdateFromDB:false,
+                isNeedUpdateFromDB:false
             }))
         })
         .catch(error=>{
@@ -234,7 +230,7 @@ class PurchaseHistory extends Component{
     }
     toggleSupplierAddingForm=(bool)=>{
         this.setState(preState=>({
-            onSupplierAdding:bool,
+            onSupplierAdding:bool
         }))
     }
     toDetailPage=(orderid)=>{
@@ -258,7 +254,7 @@ class PurchaseHistory extends Component{
                 .then(res=>{
                     alert(`採購單 ${orderid} 刪除成功！`);
                     this.setState(preState=>({
-                        isNeedUpdateFromDB:true,
+                        isNeedUpdateFromDB:true
                     }))
                     return ;
                 })

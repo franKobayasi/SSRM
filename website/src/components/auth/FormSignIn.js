@@ -1,8 +1,6 @@
 import React,{Component,Fragment} from "react";
 import {connect} from "react-redux";
-
 import ssrmFirebase,{fbAuthProvider,ssrmDB,getDataFromFireBase} from "../../useFirebase";
-
 import {actionSignIn} from "../../actions/auth";
 
 class FormSignIn extends Component{
@@ -13,7 +11,7 @@ class FormSignIn extends Component{
             isEmailRight:false,
             password:'',
             isPWRight:false,
-            remindMsg:'提示訊息',
+            remindMsg:'提示訊息'
         }
     }
     render(){
@@ -50,11 +48,11 @@ class FormSignIn extends Component{
             if(!/\w+\@\w+\.\w+/.test(value)){
                 msg='email格式不正確';
                 this.setState(preState=>({                    
-                    isEmailRight:false,
+                    isEmailRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isEmailRight:true,
+                    isEmailRight:true
                 }))
             }
         }
@@ -62,18 +60,18 @@ class FormSignIn extends Component{
             if(value.length<5||!/[A-z]+\d+\w+/.test(value)){
                 msg='密碼格式不正確';
                 this.setState(preState=>({                    
-                    isPWRight:false,
+                    isPWRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isPWRight:true,
+                    isPWRight:true
                 }))
             }
         }
         this.setState((preState)=>{
             return {
                 [id]:value,
-                remindMsg:msg,
+                remindMsg:msg
             }
         });
     }

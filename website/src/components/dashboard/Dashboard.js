@@ -148,18 +148,18 @@ class Dashboard extends Component{
                 }
             }
             this.setState(preState=>({
-                checkouts,
+                checkouts
             }))
         })
     }
     toggleShowResetPW=(bool)=>{
         this.setState(preState=>({
-            isShowRSPW:bool, //Reset Password
+            isShowRSPW:bool //Reset Password
         }))
     }
     toggleShowResetMK=(bool)=>{
         this.setState(preState=>({
-            isShowRSMK:bool, // Reset MasterKey
+            isShowRSMK:bool // Reset MasterKey
         }))
     }
     getCheckoutsCalcResult=()=>{
@@ -215,11 +215,11 @@ class Dashboard extends Component{
             if(value.length<4||!/[A-z]+\d+\w+/.test(value)){
                 msg='權限密碼請以字母開頭並至少包含兩個數字，總長度至少4個字以上';
                 this.setState(preState=>({                    
-                    isMKRight:false,
+                    isMKRight:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isMKRight:true,
+                    isMKRight:true
                 }))
             }
         }
@@ -227,24 +227,24 @@ class Dashboard extends Component{
             if(value!==this.state.new_MK){
                 msg='兩次密碼不一致';
                 this.setState(preState=>({                    
-                    isMKSame:false,
+                    isMKSame:false
                 }))
             }else{
                 this.setState(preState=>({                    
-                    isMKSame:true,
+                    isMKSame:true
                 }))
             }
         }
         this.setState((preState)=>{
             return {
                 remindMsg:msg,
-                [id]:value,
+                [id]:value
             }
         });
         this.setState((preState)=>{
             return {
                 [id]:value,
-                remindMsg:msg,
+                remindMsg:msg
             }
         });
     }
@@ -253,12 +253,12 @@ function mapStateToProps({auth,shop,state}){
     return {
         auth,
         shop,
-        state,
+        state
     }
 }
 function mapDispatchToProps(dispatch){
     return {
-        dispatch,
+        dispatch
     }
 }
 
