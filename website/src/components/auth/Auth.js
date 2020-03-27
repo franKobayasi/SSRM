@@ -126,10 +126,10 @@ class Auth extends Component{
             });
         })
         /** 如果 firebase 伺服器發生問題 */
-        .catch((e)=>{
+        .catch((error)=>{
             dispatch(actionFetchFailed());
             console.error("ERROR\n sign up for new member fail");
-            console.log(e)
+            console.log(error)
         })
     }
 }

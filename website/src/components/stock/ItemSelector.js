@@ -159,7 +159,6 @@ class ItemSelector extends Component{
 
 function OlderSummary(props){
     let order=props.order;
-    console.log(order);
     return (
         <div onClick={props.selectOrder} className={`olderSummary btn fk-table-row ${props.active?'active':''}`}>
             <span className="fk-table-cell-175px">{order.id}</span>
