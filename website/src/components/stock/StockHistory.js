@@ -78,6 +78,7 @@ class StockHistory extends Component{
                                                 className="fx-btn--Img-15px"><img src={Triangle_White}/></span>
                                             </span>
                                         </div>
+                                        <div className="fk-table-scrollArea">
                                         {
                                             orderList.length===0?
                                             <div className="fk-table-highlighter">沒有查詢到符合條件的表單</div>:
@@ -96,6 +97,7 @@ class StockHistory extends Component{
                                             <div className="fk-table-highlighter fk-table-row">-- 全 --</div>:
                                             null
                                         }
+                                        </div>
                                     </div>
                                     <div className="orderList-search-result-footer">
                                         <div className="paging">
