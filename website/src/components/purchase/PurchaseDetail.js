@@ -87,7 +87,7 @@ class PurchaseDetail extends Component{
                                 onOrderEditing?
                                 <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>:null
                             }
-                                <Supplier supplier={orderToRender.search_supplier}/>
+                                <Supplier shopRef={this.props.shopRef} supplierIdAndTitle={orderToRender.supplierIdAndTitle}/>
                             </span>
                             {
                                 onOrderEditing?
@@ -170,7 +170,7 @@ class PurchaseDetail extends Component{
         let currentOrder={
             id:orderFRBS.id,
             modifyRecord:orderFRBS.modifyRecord,
-            search_supplier:orderFRBS.search_supplier,
+            supplierIdAndTitle:orderFRBS.supplierIdAndTitle,
             time:orderFRBS.time,
             products:[],
             updateTimes:orderFRBS.updateTimes
@@ -235,7 +235,7 @@ class PurchaseDetail extends Component{
             startAt:startAt, // for firebase structure need 
             itemList:itemList, // for firebase structure need 
             search_productNameAndID:search_productNameAndID, // for firebase structure need 
-            search_supplier:orderCMPT.search_supplier,
+            supplierIdAndTitle:orderCMPT.supplierIdAndTitle,
             static:this.getStaticData(),
             modifyRecords:orderCMPT.modifyRecords,
             updateTimes:orderCMPT.updateTimes,
@@ -276,23 +276,30 @@ class PurchaseDetail extends Component{
     /** 確認此供應商是否註冊過 */
     checkSupplier=async(tel)=>{
         let result={};
-        await this.props.shopRef.collection('suppliers').doc(tel).get()
-        .then(doc=>{
-            if(!doc.exists){
+        await this.props.shopRef.collection('suppliers').where('tel','==',tel).limit(1).get()
+        .then(snapshot=>{
+            if(!snapshot.empty){
+                snapshot.forEach(doc=>{
+                    if(!doc.exists){
+                        result.message='查無供應商資料，請先新增'
+                        return ;
+                    }else{
+                        result.data=[
+                            doc.id,
+                            doc.data().title,
+                        ]
+                        return ; 
+                    }
+                })
+            }else{
                 result.message='查無供應商資料，請先新增'
                 return ;
-            }else{
-                result.supplier={
-                    title:doc.data().title,
-                    address:doc.data().address,
-                    tel:doc.id
-                }
-                return ; 
             }
         })
         .catch(error=>{
             result.message='ERROR\n查詢確認供應商資料失敗'
             console.error(`${result.message}`);
+            console.log(error);
             return ;
         })
         return result;

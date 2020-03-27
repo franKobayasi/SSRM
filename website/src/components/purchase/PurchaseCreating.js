@@ -78,7 +78,7 @@ class PurchaseCreating extends Component{
                                 </span>
                                 <span className="orderContent-supplier-search">
                                     <input placeholder="供應商搜尋(電話)" onKeyPress={this.keyInSupplier}/>
-                                    <Supplier supplier={currentOrder.search_supplier}/>
+                                    <Supplier shopRef={this.props.shopRef} supplierIdAndTitle={currentOrder.supplierIdAndTitle}/>
                                 </span>
                                 <span className="orderContent-moneyType-select">                            
                                     <label className="title">進貨幣別</label>
@@ -139,7 +139,7 @@ class PurchaseCreating extends Component{
         return {
             id:`${randomPurchaseOrderID()}`, /** purchase id */
             products:[], /** products go to be purchase  */
-            search_supplier:[], /** for search.. */
+            supplierIdAndTitle:[], /** for search.. */
         };
     }
     handleChange=(evnt)=>{
@@ -155,18 +155,24 @@ class PurchaseCreating extends Component{
     /** 確認此供應商是否註冊過 */
     checkSupplier=async(tel)=>{
         let result={};
-        await this.props.shopRef.collection('suppliers').doc(tel).get()
-        .then(doc=>{
-            if(!doc.exists){
+        await this.props.shopRef.collection('suppliers').where('tel','==',tel).limit(1).get()
+        .then(snapshot=>{
+            if(!snapshot.empty){
+                snapshot.forEach(doc=>{
+                    if(!doc.exists){
+                        result.message='查無供應商資料，請先新增'
+                        return ;
+                    }else{
+                        result.data=[
+                            doc.id,
+                            doc.data().title,
+                        ]
+                        return ; 
+                    }
+                })
+            }else{
                 result.message='查無供應商資料，請先新增'
                 return ;
-            }else{
-                result.supplier={
-                    title:doc.data().title,
-                    address:doc.data().address,
-                    tel:doc.id
-                }
-                return ; 
             }
         })
         .catch(error=>{
@@ -184,13 +190,13 @@ class PurchaseCreating extends Component{
         }))
     }
     /** 設定當前供應商 */
-    setCurrentSuppier=(title,address,tel)=>{
+    setCurrentSuppier=(supplierIdAndTitle)=>{
         this.setState(preState=>({
             currentOrder:{
                 ...preState.currentOrder,
-                search_supplier:[`${title}`,`${address}`,`${tel}`]
+                supplierIdAndTitle
             },
-            localStorageLock:false,
+            localStorageLock:false
         }))
     }
     /** 輸入供應商 */   
@@ -200,10 +206,10 @@ class PurchaseCreating extends Component{
         if(keyCode===13){
             (async()=>{
                 let result= await this.checkSupplier(target.value);
-                if(result.supplier){
-                    let supplier=result.supplier;
+                if(result.data){
+                    let supplierIdAndTitle=result.data;
                     target.value=''; /** 清空查詢 */
-                    this.setCurrentSuppier(supplier.title,supplier.address,supplier.tel)
+                    this.setCurrentSuppier(supplierIdAndTitle)
                 }else{
                     alert(`${result.message}`)
                 }

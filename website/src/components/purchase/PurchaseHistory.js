@@ -93,11 +93,11 @@ class PurchaseHistory extends Component{
                                         return (
                                             <div key={index} className="fk-table-row row">
                                                 <span className="fk-table-cell-175px">{order.id}</span>
-                                                <span className="fk-table-cell-100px">{order.search_supplier[0]}</span>
+                                                <span className="fk-table-cell-100px">{order.supplierIdAndTitle[1]}</span>
                                                 <span className="fk-table-cell-100px">{order.static.sumOfCost}</span>
                                                 <span className="fk-table-cell-50px">{order.static.sumOfNum}</span>
                                                 <span className="fk-table-cell-100px">{order.static.avgProfit}</span>
-                                                <span className="fk-table-cell-125px">{getDateToYMD(order.time,true)}</span>
+                                                <span className="fk-table-cell-125px">{getDateToYMD(order.time)}</span>
                                                 <span className="fk-table-cell-125px fk-table-LH0"><ShowPercentage order={order} /></span>
                                                 <span className="fk-table-floatR fk-table-cell-175px">
                                                     <span className="fx-btn--Img-25px">
