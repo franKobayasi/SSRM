@@ -1,6 +1,6 @@
 *.xmind
 *.ai
-*.gitignore
+.gitignore
 *.firebaserc
 node_modules
 service-account-file.json
@@ -10,4 +10,4 @@ firestore.indexes.json
 firestore.rules
 storage.rules
 .firebase
-
+website/dist/*
