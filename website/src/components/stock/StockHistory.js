@@ -72,8 +72,8 @@ class StockHistory extends Component{
                                         <div className="fk-table-header">
                                             <span className="fk-table-cell-175px">進退貨單號</span>
                                             <span className="fk-table-cell-50px">類別</span>
-                                            <span className="fk-table-cell-125px">
-                                                <span>採購日期</span>
+                                            <span className="fk-table-cell-150px">
+                                                <span>進退貨時間</span>
                                                 <span onClick={this.toggleOrderByMode} style={this.state.orderByDesc?descStyle:null}
                                                 className="fx-btn--Img-15px"><img src={Triangle_White}/></span>
                                             </span>
