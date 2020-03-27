@@ -52,6 +52,8 @@
                 }
                 .orderList-search-result-content{
                     height: calc(100% - 75px);
+                    overflow-x: hidden;
+                    overflow-y: scroll;
                     .orderChoosed{
                         background-color: $mainColor;
                         color: white;
