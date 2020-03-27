@@ -6,6 +6,10 @@ import AppHeaderBar from '../common/AppHeaderBar';
 import AppSideNav from '../common/AppSideNav';
 import Checkbox from '../common/Checkbox'; 
 import {Loading} from '../common/Loading';
+import StockChecker from '../common/StockChecker';
+import StockOrderFilter from '../common/StockOrderFilter';
+/** other resource */
+import Triangle_White from '../../img/Triangle_White.png';
 
 /**
 This Component for create hold new order.
@@ -18,32 +22,41 @@ class StockHistory extends Component{
         let from=new Date(to-(24*60*60*1000*14)).valueOf();
         this.state={
             orderList:null,
-            preOderTime:0,
-            isSearchNeedPurchaseID:false,
-            isSearchNeedDateArea:true,
-            defaultSearchByDateFrom:from,
-            defaultSearchByDateTo:to,
-            searchByDateFrom:'',
-            searchByDateTo:'',
-            searchByPurchaseID:'',
+            paging:1,
+            limitNum:20,
+            previousScope:null,
+            orderRef:this.props.shopRef.collection('stocks'),
+            showStockChecker:false,
+            isNeedUpdateFromDB:false,
+            orderByDesc:true //asc
         }
     }
     render(){
         let orderList=this.state.orderList;
         let selectOrder=this.state.selectOrder;
+        let descStyle={
+            transform: 'rotate(180deg)',
+        }
         return (
             <Fragment>
                 <AppSideNav />
                 <AppHeaderBar />
                 <div className="app-pageMainArea app-stock-history">
+                {
+                    this.state.showStockChecker?
+                    <StockChecker toggle={this.showStockChecker} callback={this.set}/>:
+                    null
+                }
                     <div className="app-pageMainArea-header">
                         <div className="location">
                             <div>歷史進退貨單紀錄</div>
                         </div>
                         <div className="operatingBtns">
                             <button className="fx-btn--mainColor" onClick={()=>{history().push(`/stock/stockin`)}}>進貨單登錄</button>
-                            <button className="fx-btn--mainColor" onClick={()=>{history().push(`stock/return`)}}>退貨單登錄</button>
-                            <button className="fx-btn--mainColor">商品庫存查詢</button>
+                            <button className="fx-btn--mainColor" onClick={()=>{history().push(`/stock/return`)}}>退貨單登錄</button>
+                            <button className="fx-btn--mainColor" onClick={()=>{
+                                this.showStockChecker(true);
+                            }}>庫存查詢</button>
                         </div>
                     </div>
                     <div className="app-pageMainArea-main">
@@ -52,28 +65,18 @@ class StockHistory extends Component{
                         <Loading text="歷史訂單載入中" />:
                         <div className="orderList">
                             <div className="orderList-search">
-                                <div className="app-filter">
-                                    <span className="app-filter-option">
-                                        <Checkbox value={this.state.isSearchNeedPurchaseID} onClick={()=>{this.setState(preState=>({isSearchNeedPurchaseID:!preState.isSearchNeedPurchaseID}))}} />
-                                        <label>採購單號</label>
-                                        <input onChange={this.handleChange}  id="searchByPurchaseID" />
-                                    </span>
-                                    <span className="app-filter-option">
-                                        <Checkbox value={this.state.isSearchNeedDateArea} onClick={()=>{this.setState(preState=>({isSearchNeedDateArea:!preState.isSearchNeedDateArea}))}} />
-                                        <label>日期區間從</label>
-                                        <input className="date" onChange={this.handleChange} type='date' id="searchByDateFrom" defaultValue={getDateToYMD(this.state.defaultSearchByDateFrom)}/>
-                                        <label>至</label>
-                                        <input className="date" onChange={this.handleChange}  type='date' id="searchByDateTo" defaultValue={getDateToYMD(this.state.defaultSearchByDateTo)} />
-                                    </span>
-                                    <span className="app-filter-actionBtn fx-btn--25LH-mainColor">搜尋</span>
-                                </div>
+                                <StockOrderFilter orderRef={this.state.orderRef} callback={this.setTargetRef}/>
                                 <div className="orderList-search-result">
                                     <div className="title">進退貨單搜尋結果列表</div>
-                                    <div className="content fk-table--black">
+                                    <div className="orderList-search-result-content fk-table--black">
                                         <div className="fk-table-header">
                                             <span className="fk-table-cell-175px">進退貨單號</span>
                                             <span className="fk-table-cell-50px">類別</span>
-                                            <span className="fk-table-cell-150px">時間</span>
+                                            <span className="fk-table-cell-125px">
+                                                <span>採購日期</span>
+                                                <span onClick={this.toggleOrderByMode} style={this.state.orderByDesc?descStyle:null}
+                                                className="fx-btn--Img-15px"><img src={Triangle_White}/></span>
+                                            </span>
                                         </div>
                                         {
                                             orderList.length===0?
@@ -88,6 +91,26 @@ class StockHistory extends Component{
                                                 </div>
                                             ))
                                         }
+                                        {
+                                            orderList!='loading'&&orderList.length!=0&&orderList.length<this.state.limitNum?
+                                            <div className="fk-table-highlighter fk-table-row">-- 全 --</div>:
+                                            null
+                                        }
+                                    </div>
+                                    <div className="orderList-search-result-footer">
+                                        <div className="paging">
+                                        {
+                                            this.state.paging===1?
+                                            <button className="fx-btn--unable-black">前一頁</button>:
+                                            <button onClick={this.goPrePage} className="fx-btn--onlyText-black">前一頁</button>
+                                        }
+                                            <span>{this.state.paging}</span>
+                                        {
+                                            this.state.isNextPageExist?
+                                            <button onClick={this.goNextPage} className="fx-btn--onlyText-black">下一頁</button>:
+                                            <button className="fx-btn--unable-black">下一頁</button>
+                                        }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -144,25 +167,102 @@ class StockHistory extends Component{
         )
     }
     componentDidMount(){
+        this.setTargetRef(this.state.orderRef)
+    }
+    componentDidUpdate(){
+        if(this.state.isNeedUpdateFromDB===true){
+            this.getOrdersFromDB();
+        }
+    }
+    showStockChecker=(bool)=>{
+        this.setState(preState=>({
+            showStockChecker:bool
+        }));
+    }
+    toggleOrderByMode=()=>{
+        this.setState(preState=>({
+            orderByDesc:!preState.orderByDesc,
+        }),()=>{this.getOrdersFromDB()})
+    }
+    setTargetRef=(targetRef)=>{
+        this.setState(preState=>({
+            paging:1, //reset paging
+            targetRef,
+            previousScope:null,
+        }),()=>{this.getOrdersFromDB()})
+    }
+    getOrdersFromDB=(changePage,goNext)=>{
+        /** goNext true 下一頁 false 上一頁*/
+        /** 時間採降序 */
+        let TR=this.state.targetRef;
+        let PS=this.state.previousScope;
+        let PT=PS?goNext?PS[1]:PS[0]:null;
+        let mode=this.state.orderByDesc?'desc':'asc';
+        let limitNum=this.state.limitNum;
+        let isNextPageExist=true;
+        let paging=this.state.paging;
+        let query=TR;
         let orderList=[];
-        let shopRef=this.props.shopRef;
-        shopRef.collection('stocks').orderBy('time','desc').limit(10).get()
+        let previousScope=this.state.previousScope?this.state.previousScope:[];
+        if(PT&&changePage){
+            query=query.orderBy('time',`${mode}`).startAt(PT);
+            paging=goNext?paging+1:paging-1;
+        }else{
+            query=query.orderBy('time',`${mode}`)
+        }
+        query.limit(limitNum).get()
         .then(snapshot=>{
             if(snapshot.empty){
-                this.setState(preState=>({
-                    orderList,
-                }))
-            }else{
+                previousScope=null;
+            }else{                
                 snapshot.forEach(doc=>{
-                    orderList.push(doc.data());
-                });
-                let preOderTime=orderList[orderList.length-1].time;
-                this.setState(preState=>({
-                    orderList,
-                    preOderTime,
-                }))
+                    if(doc.exists){
+                        let order=doc.data();
+                        order.id=doc.id;
+                        orderList.push(order);
+                        if(paging===1&&orderList.length===1){
+                            // 第一個
+                            previousScope[0]=doc;
+                        }else{
+                            previousScope[1]=doc;
+                        }
+                    }
+                })
             }
+            if(orderList.length<limitNum){
+                isNextPageExist=false;
+            }
+            this.setState(preState=>({
+                paging,
+                orderList,
+                previousScope,
+                isNextPageExist,
+                isNeedUpdateFromDB:false,
+            }))
         })
+        .catch(error=>{
+            console.error("ERROR\n伺服器發生錯誤，目前無法獲取歷史訂單資料，請稍後再試")
+            console.log(error);
+        })
+    }
+    goPrePage=()=>{
+        this.getOrdersFromDB(true,false);
+    }
+    goNextPage=()=>{
+        this.getOrdersFromDB(true,true);
+    }
+
+
+
+
+
+
+
+
+    showStockChecker=(bool)=>{
+        this.setState(preState=>({
+            showStockChecker:bool
+        }));
     }
     handleChange=(evnt)=>{
         let id=evnt.target.id;

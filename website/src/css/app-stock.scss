@@ -36,28 +36,11 @@
         .orderList-search{
             width: 525px;
             padding-right: 20px;
-            .filter{
+            .app-filter{
                 position: relative;
                 &>span{
-                    margin-bottom: 10px;
-                    label{
-                        margin: 0 5px;
-                    }
-                    .fromDate, .toDate{
-                        width:fit-content;
-                    }
-                }
-                .searchBtn{
-                    position: absolute;
-                    cursor:default;
-                    right: 15px;
-                    background-color: $mainColor;
-                    width: 75px;
-                    line-height: 20px;
-                    color: white;
-                    font-size: 14px;
-                    border-radius: 5px;
-                    border: $mainColor 1px solid;
+                    display: inline-block;
+                    margin: 5px;
                 }
             }
             .orderList-search-result{
@@ -67,12 +50,16 @@
                     color: $mainColor;
                     margin-bottom: 10px;
                 }
-                .content{
-                    height: calc(100% - 40px);
+                .orderList-search-result-content{
+                    height: calc(100% - 75px);
                     .orderChoosed{
                         background-color: $mainColor;
                         color: white;
                     }
+                }
+                .orderList-search-result-footer{
+                    text-align: center;
+                    
                 }
             }
         }
@@ -81,12 +68,13 @@
             padding-left: 20px;
             border-left: 1px solid $slightBlack;
             width: calc(100% - 525px);
+            
             .title{
                 color: $mainColor;
                 margin-bottom: 10px;
             }
             .content{
-                height: calc(100% - 40px);
+                height: calc(100% - 30px);
             }
         }
     }

@@ -328,7 +328,7 @@ class PurchaseCreating extends Component{
             startAt:startAt, // for firebase structure need 
             itemList:itemList, // for firebase structure need 
             search_productNameAndID:search_productNameAndID, // for firebase structure need 
-            search_supplier:orderCMPT.search_supplier,
+            supplierIdAndTitle:orderCMPT.supplierIdAndTitle,
             static:this.getStaticData(),
             modifyRecords:[],
             time:new Date().valueOf()
@@ -343,7 +343,7 @@ class PurchaseCreating extends Component{
         let currentOrder=this.state.currentOrder;
         if(currentOrder.products.length===0){
             alert('尚未新增任何產品，請先新增產品');
-        }else if(currentOrder.search_supplier.length===0){
+        }else if(currentOrder.supplierIdAndTitle.length===0){
             alert('尚未填寫供應商，請先填寫供應商');
         }else if(confirm('確定送出採購單？')){
             let orderFRBS=this.transformStructureFRBS(currentOrder);

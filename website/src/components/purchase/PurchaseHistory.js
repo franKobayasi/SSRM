@@ -13,6 +13,7 @@ import {FormSupplierEntry} from '../common/Supplier';
 import editImg from '../../img/editBtn.png';
 import deleteImg from '../../img/deleteBtn.png';
 import Triangle_White from '../../img/Triangle_White.png';
+import StockChecker from '../common/StockChecker';
 
 class PurchaseHistory extends Component{
     constructor(props){
@@ -22,10 +23,11 @@ class PurchaseHistory extends Component{
             isNextPageExist:true,
             limitNum:20,
             onSupplierAdding:false,
+            showStockChecker:false,
             isNeedUpdateFromDB:false,
             orderByDesc:true, //asc
             orderList:'loading',
-            orderRef:this.props.shopRef.collection('purchases'),
+            orderRef:this.props.shopRef.collection('purchases')
             /**
             targetRef
             previousScope
@@ -48,7 +50,11 @@ class PurchaseHistory extends Component{
                     <PurchaseDetail shopRef={this.props.shopRef} shop={this.props.shop} id={orderid} 
                     getOrdersFromDB={this.getOrdersFromDB} />:
                     <div className="app-pageMainArea app-purchase-history">
-                        {/* 新增供應商 */}
+                        {
+                            this.state.showStockChecker?
+                            <StockChecker toggle={this.showStockChecker}/>:
+                            null
+                        }
                         {
                             onSupplierAdding?
                             <FormSupplierEntry shopRef={this.props.shopRef} toggle={this.toggleSupplierAddingForm} />:
@@ -58,7 +64,9 @@ class PurchaseHistory extends Component{
                             <div className="location">歷史採購單列表</div>
                             <div className="operatingBtns">
                                 <button className="fx-btn--mainColor" onClick={()=>{history().push(`/purchase/new`)}}>新增訂單</button>
-                                <button className="fx-btn--mainColor">庫存查詢</button>
+                                <button className="fx-btn--mainColor" onClick={()=>{
+                                    this.showStockChecker(true);
+                                }}>庫存查詢</button>
                                 <button className="fx-btn--mainColor" onClick={()=>{
                                     this.toggleSupplierAddingForm(true)
                                 }}>新增供應商</button>
@@ -146,6 +154,11 @@ class PurchaseHistory extends Component{
         if(this.state.isNeedUpdateFromDB===true){
             this.getOrdersFromDB();
         }
+    }
+    showStockChecker=(bool)=>{
+        this.setState(preState=>({
+            showStockChecker:bool
+        }));
     }
     toggleOrderByMode=()=>{
         this.setState(preState=>({

@@ -52,7 +52,8 @@ class ItemSelector extends Component{
                             orderSearchResult.length===0?
                             <div className="fk-table-highlighter">沒有搜尋到任何符合條件的訂單</div>:
                             orderSearchResult.map((order,index)=>(
-                                <OlderSummary active={orderSelected?orderSelected.id===order.id?true:false:false} key={index} order={order} selectOrder={()=>{this.selectOrder(index)}}/>
+                                <OlderSummary key={index} active={orderSelected?orderSelected.id===order.id?true:false:false} 
+                                              order={order} selectOrder={()=>{this.selectOrder(index)}}/>
                             )):
                             <div className="fk-table-highlighter">沒有搜尋到任何符合條件的訂單</div>
                         }
@@ -157,12 +158,12 @@ class ItemSelector extends Component{
 }
 
 function OlderSummary(props){
-    let order=props.order
+    let order=props.order;
+    console.log(order);
     return (
         <div onClick={props.selectOrder} className={`olderSummary btn fk-table-row ${props.active?'active':''}`}>
             <span className="fk-table-cell-175px">{order.id}</span>
-            <span className="fk-table-cell-150px">{order.search_supplier[0]}</span>
-            <span className="fk-table-cell-100px">{order.search_supplier[2]}</span>
+            <span className="fk-table-cell-150px">{order.supplierIdAndTitle[1]}</span>
             <span className="fk-table-cell-100px fk-table-LH0"><ShowPercentage order={order}/></span>
         </div>
     )

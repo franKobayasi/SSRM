@@ -5,7 +5,8 @@ import {ssrmDB} from '../../useFirebase';
 /** component */
 import AppSideNav from '../common/AppSideNav';
 import AppHeaderBar from '../common/AppHeaderBar';
-import ItemSelector from './ItemSelector'
+import ItemSelector from './ItemSelector';
+import StockChecker from '../common/StockChecker';
 /** resource */
 import deleteBtn from '../../img/deleteBtn.png';
 
@@ -19,6 +20,7 @@ class StockInOrder extends Component{
         this.state={
             currentOrder:'loading',
             localStorageLock:true,
+            showStockChecker:false
         }
     }
     render(){
@@ -28,13 +30,20 @@ class StockInOrder extends Component{
                 <AppSideNav />
                 <AppHeaderBar />
                 <div className="app-pageMainArea app-stock-create">
+                {
+                    this.state.showStockChecker?
+                    <StockChecker toggle={this.showStockChecker}/>:
+                    null
+                }
                     <div className="app-pageMainArea-header">
                         <div className="location">
                             <div>位置：進貨單登錄</div>
                         </div>
                         <div className="operatingBtns">
                             <button className="fx-btn--mainColor" onClick={()=>{history().push(`/stock/history/`)}}>歷史進退貨單</button>
-                            <button className="fx-btn--mainColor">庫存查詢</button>
+                            <button className="fx-btn--mainColor" onClick={()=>{
+                                this.showStockChecker(true);
+                            }}>庫存查詢</button>
                         </div>
                     </div>
                     <div className="app-pageMainArea-main">
@@ -121,6 +130,11 @@ class StockInOrder extends Component{
                 localStorageLock:true,
             }))
         }
+    }
+    showStockChecker=(bool)=>{
+        this.setState(preState=>({
+            showStockChecker:bool
+        }));
     }
     handleChange=(evnt)=>{
         let id=evnt.target.id;
