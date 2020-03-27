@@ -106,7 +106,7 @@ class Dashboard extends Component{
                                 <div key={index} className="fk-table-row">
                                     <span className="fk-table-cell-50px">{index+1}</span>
                                     <span className="fk-table-cell-175px">{checkout.id}</span>
-                                    <span className="fk-table-cell-75px">{checkout.customer[0]}</span>
+                                    <span className="fk-table-cell-75px">{checkout.customerIdAndName[0]}</span>
                                     <span className="fk-table-cell-75px">{checkout.calcResult.sumOfNum}</span>
                                     <span className="fk-table-cell-75px">{checkout.calcResult.sumOfMoney}</span>
                                     <span className="fk-table-cell-150px">{getDateToYMD(checkout.time,true)}</span>
